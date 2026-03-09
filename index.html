@@ -14,9 +14,9 @@
             theme: {
                 extend: {
                     colors: {
-                        sage: { 50: '#f6f7f4', 100: '#e8ebe3', 200: '#d4d9ca', 300: '#b5bea6', 400: '#95a17f', 500: '#778562', 600: '#5d6a4d', 700: '#49533e', 800: '#3c4434', 900: '#343b2e' },
-                        warm: { 50: '#fdf8f3', 100: '#faf0e4', 200: '#f4ddc5', 300: '#ecc69e', 400: '#e2a76f', 500: '#db904c', 600: '#c87941', 700: '#a76037', 800: '#864e33', 900: '#6e412c' },
-                        cream: { 50: '#fefdfb', 100: '#fdf9f3', 200: '#fbf3e6', 300: '#f7e8d0', 400: '#f2d9b3' },
+                        sage: { 50: '#fff8f1', 100: '#feedd8', 200: '#fdd8b0', 300: '#fcbe7d', 400: '#fa9a48', 500: '#f97d22', 600: '#ea6418', 700: '#c24e14', 800: '#9a3f1a', 900: '#7e3518' },
+                        warm: { 50: '#fef7ee', 100: '#fdecd6', 200: '#f9d5ac', 300: '#f5b877', 400: '#ef9240', 500: '#eb7a1f', 600: '#dc6415', 700: '#b74b13', 800: '#923c18', 900: '#7a3316' },
+                        cream: { 50: '#fffcf8', 100: '#fff7ed', 200: '#fff0db', 300: '#ffe4c2', 400: '#ffd5a0' },
                     },
                     fontFamily: {
                         sans: ['DM Sans', 'system-ui', 'sans-serif'],
@@ -30,7 +30,7 @@
         html { scroll-behavior: smooth; }
         .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
         .fade-in.visible { opacity: 1; transform: translateY(0); }
-        .step-line::before { content: ''; position: absolute; left: 28px; top: 60px; bottom: -24px; width: 2px; background: linear-gradient(to bottom, #b5bea6, transparent); }
+        .step-line::before { content: ''; position: absolute; left: 28px; top: 60px; bottom: -24px; width: 2px; background: linear-gradient(to bottom, #fcbe7d, transparent); }
         .step-line:last-child::before { display: none; }
     </style>
 </head>
@@ -70,17 +70,17 @@
 
     <!-- Hero -->
     <section class="relative min-h-screen flex items-center pt-20 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-sage-50 via-cream-50 to-warm-50"></div>
+        <div class="absolute inset-0 bg-gradient-to-br from-sage-50 via-cream-50 to-sage-50"></div>
         <div class="absolute top-20 right-0 w-96 h-96 bg-sage-200/30 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-0 left-0 w-80 h-80 bg-warm-200/20 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 left-0 w-80 h-80 bg-sage-200/20 rounded-full blur-3xl"></div>
         <div class="relative max-w-6xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-12 items-center">
             <div class="space-y-8">
                 <div class="inline-flex items-center gap-2 px-4 py-2 bg-sage-100 rounded-full text-sage-700 text-sm font-medium">
-                    <svg class="w-4 h-4 text-warm-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                    <svg class="w-4 h-4 text-sage-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                     1,700+ Five-Star Reviews &mdash; Utah's Highest Rated Tax Nerds
                 </div>
                 <h1 class="font-serif text-5xl lg:text-6xl xl:text-7xl text-sage-900 leading-[1.1]">
-                    Taxes don't have to feel <em class="text-warm-600 not-italic">scary.</em>
+                    Taxes don't have to feel <em class="text-sage-500 not-italic">scary.</em>
                 </h1>
                 <p class="text-lg text-sage-700 leading-relaxed max-w-lg">
                     We're Grayce and Katie &mdash; your South Ogden neighbors who happen to <em>love</em> tax code. We'll sit with you, explain everything in plain English, and make sure you keep every dollar you've earned. No judgment, no jargon, just good people doing great work.
@@ -110,7 +110,7 @@
                 </div>
             </div>
             <div class="relative hidden lg:block">
-                <div class="absolute inset-0 bg-gradient-to-br from-sage-300/20 to-warm-300/20 rounded-3xl rotate-3"></div>
+                <div class="absolute inset-0 bg-gradient-to-br from-sage-300/20 to-sage-300/20 rounded-3xl rotate-3"></div>
                 <div class="relative bg-white rounded-3xl p-8 shadow-xl shadow-sage-200/30 space-y-6">
                     <div class="flex items-center gap-4">
                         <div class="w-14 h-14 rounded-2xl bg-sage-100 flex items-center justify-center text-2xl">&#128075;</div>
@@ -124,9 +124,9 @@
                             <p class="text-3xl font-bold text-sage-700">15</p>
                             <p class="text-xs text-sage-500 mt-1">Minutes Average</p>
                         </div>
-                        <div class="bg-warm-50 rounded-2xl p-4 text-center">
-                            <p class="text-3xl font-bold text-warm-600">$300+</p>
-                            <p class="text-xs text-warm-500 mt-1">Avg. Extra Refund</p>
+                        <div class="bg-sage-50 rounded-2xl p-4 text-center">
+                            <p class="text-3xl font-bold text-sage-600">$300+</p>
+                            <p class="text-xs text-sage-500 mt-1">Avg. Extra Refund</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 p-4 bg-green-50 rounded-2xl border border-green-100">
@@ -142,17 +142,18 @@
     <section id="about" class="py-24 bg-white">
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center max-w-2xl mx-auto mb-16 fade-in">
-                <p class="text-warm-600 font-semibold text-sm uppercase tracking-widest mb-3">Meet Your Tax Team</p>
-                <h2 class="font-serif text-4xl lg:text-5xl text-sage-900 mb-6">Real people who <em class="not-italic text-warm-600">genuinely care</em> about your money.</h2>
+                <p class="text-sage-500 font-semibold text-sm uppercase tracking-widest mb-3">Meet Your Tax Team</p>
+                <h2 class="font-serif text-4xl lg:text-5xl text-sage-900 mb-6">Real people who <em class="not-italic text-sage-600">genuinely care</em> about your money.</h2>
+
                 <p class="text-sage-600 text-lg">We're not a giant faceless corporation. We're your neighbors in South Ogden. We'll remember your name, your kids' names, and exactly where we left off last year.</p>
             </div>
 
             <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
                 <!-- Grayce -->
                 <div class="fade-in bg-cream-50 rounded-3xl p-8 border border-sage-100 hover:shadow-xl hover:shadow-sage-100/50 transition-all duration-300">
-                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-warm-300 to-warm-400 flex items-center justify-center text-3xl mb-6">&#129504;</div>
+                    <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-sage-300 to-sage-400 flex items-center justify-center text-3xl mb-6">&#129504;</div>
                     <h3 class="font-serif text-2xl text-sage-900 mb-1">Grayce Anderson, MTax</h3>
-                    <p class="text-warm-600 font-medium text-sm mb-4">Co-Owner &middot; Tax Expert</p>
+                    <p class="text-sage-600 font-medium text-sm mb-4">Co-Owner &middot; Tax Expert</p>
                     <p class="text-sage-600 leading-relaxed">
                         With a Master of Taxation degree, Grayce brings serious expertise wrapped in the friendliest smile you'll meet. She genuinely enjoys finding every deduction and credit you deserve &mdash; and explaining exactly why in words that actually make sense. She's the kind of person who makes you feel like you've known her forever, even on your first visit.
                     </p>
@@ -162,7 +163,7 @@
                 <div class="fade-in bg-cream-50 rounded-3xl p-8 border border-sage-100 hover:shadow-xl hover:shadow-sage-100/50 transition-all duration-300">
                     <div class="w-20 h-20 rounded-2xl bg-gradient-to-br from-sage-300 to-sage-400 flex items-center justify-center text-3xl mb-6">&#128200;</div>
                     <h3 class="font-serif text-2xl text-sage-900 mb-1">Katie Malan</h3>
-                    <p class="text-warm-600 font-medium text-sm mb-4">Co-Owner &middot; 30+ Years Experience</p>
+                    <p class="text-sage-600 font-medium text-sm mb-4">Co-Owner &middot; 30+ Years Experience</p>
                     <p class="text-sage-600 leading-relaxed">
                         Katie brings over 30 years of bookkeeping experience and a meticulous eye for detail that means nothing slips through the cracks. She previously managed Pack Tax's Layton office and now helps lead the South Ogden location with the same warmth and precision that clients love.
                     </p>
@@ -182,8 +183,8 @@
     <section id="services" class="py-24 bg-gradient-to-b from-sage-50 to-cream-50">
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center max-w-2xl mx-auto mb-16 fade-in">
-                <p class="text-warm-600 font-semibold text-sm uppercase tracking-widest mb-3">What We Do</p>
-                <h2 class="font-serif text-4xl lg:text-5xl text-sage-900 mb-6">Everything tax, handled with <em class="not-italic text-warm-600">heart.</em></h2>
+                <p class="text-sage-500 font-semibold text-sm uppercase tracking-widest mb-3">What We Do</p>
+                <h2 class="font-serif text-4xl lg:text-5xl text-sage-900 mb-6">Everything tax, handled with <em class="not-italic text-sage-600">heart.</em></h2>
                 <p class="text-sage-600 text-lg">From your annual return to long-term strategy, we've got you covered &mdash; whether you're an individual, a family, or a growing business.</p>
             </div>
 
@@ -197,8 +198,8 @@
                 </div>
 
                 <div class="fade-in bg-white rounded-3xl p-8 border border-sage-100 hover:shadow-lg transition-all duration-300 group">
-                    <div class="w-14 h-14 rounded-2xl bg-warm-100 group-hover:bg-warm-500 flex items-center justify-center mb-5 transition-colors">
-                        <svg class="w-7 h-7 text-warm-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                    <div class="w-14 h-14 rounded-2xl bg-sage-100 group-hover:bg-sage-500 flex items-center justify-center mb-5 transition-colors">
+                        <svg class="w-7 h-7 text-sage-500 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                     </div>
                     <h3 class="font-serif text-xl text-sage-900 mb-2">Tax Strategy &amp; Planning</h3>
                     <p class="text-sage-600 text-sm leading-relaxed">Don't wait until April. We'll sit down with you and build a year-round plan to minimize what you owe and maximize what you keep. Proactive, personalized, and forward-thinking.</p>
@@ -243,8 +244,8 @@
     <section id="process" class="py-24 bg-white">
         <div class="max-w-3xl mx-auto px-6">
             <div class="text-center mb-16 fade-in">
-                <p class="text-warm-600 font-semibold text-sm uppercase tracking-widest mb-3">How It Works</p>
-                <h2 class="font-serif text-4xl lg:text-5xl text-sage-900 mb-6">Three easy steps. <em class="not-italic text-warm-600">That's it.</em></h2>
+                <p class="text-sage-500 font-semibold text-sm uppercase tracking-widest mb-3">How It Works</p>
+                <h2 class="font-serif text-4xl lg:text-5xl text-sage-900 mb-6">Three easy steps. <em class="not-italic text-sage-600">That's it.</em></h2>
                 <p class="text-sage-600 text-lg">No complicated portals. No confusing paperwork. Just show up (or don't &mdash; we do online too) and let us handle the rest.</p>
             </div>
 
@@ -258,8 +259,8 @@
                 </div>
 
                 <div class="fade-in relative step-line flex gap-6 items-start">
-                    <div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-warm-500 text-white flex items-center justify-center font-bold text-xl">2</div>
-                    <div class="bg-warm-50 rounded-3xl p-8 flex-1 border border-warm-100">
+                    <div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-sage-500 text-white flex items-center justify-center font-bold text-xl">2</div>
+                    <div class="bg-sage-50 rounded-3xl p-8 flex-1 border border-sage-100">
                         <h3 class="font-serif text-xl text-sage-900 mb-2">Meet &amp; Review</h3>
                         <p class="text-sage-600 leading-relaxed">Come to our South Ogden office, hop on a video call, or just drop off your docs. We'll go through everything carefully, ask the right questions, find every credit and deduction, and explain what we're doing in plain language. Most returns take about 15 minutes of your time. You'll leave feeling confident and informed.</p>
                     </div>
@@ -318,14 +319,14 @@
     <section id="reviews" class="py-24 bg-cream-50">
         <div class="max-w-6xl mx-auto px-6">
             <div class="text-center max-w-2xl mx-auto mb-16 fade-in">
-                <p class="text-warm-600 font-semibold text-sm uppercase tracking-widest mb-3">What People Say</p>
+                <p class="text-sage-500 font-semibold text-sm uppercase tracking-widest mb-3">What People Say</p>
                 <h2 class="font-serif text-4xl lg:text-5xl text-sage-900 mb-6">Don't take our word for it.</h2>
                 <p class="text-sage-600 text-lg">Here's what real clients have to say about working with Pack Tax.</p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-6">
                 <div class="fade-in bg-white rounded-3xl p-8 border border-sage-100 shadow-sm">
-                    <div class="flex gap-1 text-warm-400 mb-4">
+                    <div class="flex gap-1 text-sage-400 mb-4">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
@@ -343,7 +344,7 @@
                 </div>
 
                 <div class="fade-in bg-white rounded-3xl p-8 border border-sage-100 shadow-sm">
-                    <div class="flex gap-1 text-warm-400 mb-4">
+                    <div class="flex gap-1 text-sage-400 mb-4">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
@@ -352,7 +353,7 @@
                     </div>
                     <p class="text-sage-700 leading-relaxed mb-6">"We had everything ready to file in about 15 minutes. They were able to get us a bigger refund than the big-box place ever could have. Switching to Pack Tax was the best financial decision we've made."</p>
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-warm-100 flex items-center justify-center text-warm-600 font-bold text-sm">SR</div>
+                        <div class="w-10 h-10 rounded-full bg-sage-100 flex items-center justify-center text-sage-600 font-bold text-sm">SR</div>
                         <div>
                             <p class="font-semibold text-sage-900 text-sm">Loyal Client</p>
                             <p class="text-sage-500 text-xs">South Ogden</p>
@@ -361,7 +362,7 @@
                 </div>
 
                 <div class="fade-in bg-white rounded-3xl p-8 border border-sage-100 shadow-sm">
-                    <div class="flex gap-1 text-warm-400 mb-4">
+                    <div class="flex gap-1 text-sage-400 mb-4">
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                         <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
@@ -385,7 +386,7 @@
     <section class="py-24 bg-white">
         <div class="max-w-3xl mx-auto px-6">
             <div class="text-center mb-16 fade-in">
-                <p class="text-warm-600 font-semibold text-sm uppercase tracking-widest mb-3">Questions?</p>
+                <p class="text-sage-500 font-semibold text-sm uppercase tracking-widest mb-3">Questions?</p>
                 <h2 class="font-serif text-4xl text-sage-900 mb-6">We get asked these a lot.</h2>
             </div>
 
@@ -438,7 +439,7 @@
         <div class="max-w-6xl mx-auto px-6">
             <div class="grid lg:grid-cols-2 gap-12 items-start">
                 <div class="fade-in">
-                    <p class="text-warm-600 font-semibold text-sm uppercase tracking-widest mb-3">Come Say Hi</p>
+                    <p class="text-sage-500 font-semibold text-sm uppercase tracking-widest mb-3">Come Say Hi</p>
                     <h2 class="font-serif text-4xl lg:text-5xl text-sage-900 mb-6">Ready when you are.</h2>
                     <p class="text-sage-600 text-lg mb-8 leading-relaxed">Whether it's tax season or just a Tuesday, we're here. Stop by the office, give us a call, or book online. Your first consultation is on us &mdash; let's chat about how we can help.</p>
 
@@ -455,12 +456,12 @@
                         </div>
 
                         <div class="flex items-start gap-4">
-                            <div class="w-12 h-12 rounded-2xl bg-warm-100 flex items-center justify-center flex-shrink-0">
-                                <svg class="w-6 h-6 text-warm-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                            <div class="w-12 h-12 rounded-2xl bg-sage-100 flex items-center justify-center flex-shrink-0">
+                                <svg class="w-6 h-6 text-sage-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                             </div>
                             <div>
                                 <p class="font-semibold text-sage-900">Call or Text</p>
-                                <a href="tel:8016500600" class="text-warm-600 hover:text-warm-700 font-medium">(801) 650-0600</a>
+                                <a href="tel:8016500600" class="text-sage-600 hover:text-sage-700 font-medium">(801) 650-0600</a>
                                 <p class="text-sage-500 text-sm">We pick up. Really.</p>
                             </div>
                         </div>
