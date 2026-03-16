@@ -4,6 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kara Toone — Utah House District 14</title>
+<meta name="description" content="Kara Toone is running for Utah House District 14. A lifelong Davis County resident, education leader, and Republican committed to growth, housing, schools, and fiscal responsibility.">
+<meta name="keywords" content="Kara Toone, Utah House District 14, Davis County, Clearfield, Syracuse, Republican, Utah Legislature, 2026 election">
+
+<!-- Open Graph / Social Sharing -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Kara Toone for Utah House District 14">
+<meta property="og:description" content="Lifelong Davis County resident. Education leader. Community builder. Running to represent House District 14 in the Utah State Legislature.">
+<meta property="og:url" content="https://kara.fosterlabs.org">
+<meta property="og:image" content="https://kara.fosterlabs.org/images/og-image.jpg">
+<meta property="og:site_name" content="Kara Toone for Utah">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Kara Toone for Utah House District 14">
+<meta name="twitter:description" content="Lifelong Davis County resident. Education leader. Community builder. Running for House District 14.">
+<meta name="twitter:image" content="https://kara.fosterlabs.org/images/og-image.jpg">
+
+<link rel="canonical" href="https://kara.fosterlabs.org">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
@@ -30,22 +48,27 @@ body {
   overflow-x: hidden;
 }
 
-/* ─── CURSOR ─── */
-body { cursor: none; }
-#cursor {
-  position: fixed; width: 12px; height: 12px; border-radius: 50%;
-  background: var(--red); pointer-events: none; z-index: 9999;
-  transform: translate(-50%, -50%); transition: transform 0.1s, width 0.25s, height 0.25s, background 0.25s;
-  mix-blend-mode: multiply;
+/* ─── CURSOR (desktop only) ─── */
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: none; }
+  #cursor {
+    position: fixed; width: 12px; height: 12px; border-radius: 50%;
+    background: var(--red); pointer-events: none; z-index: 9999;
+    transform: translate(-50%, -50%); transition: transform 0.1s, width 0.25s, height 0.25s, background 0.25s;
+    mix-blend-mode: multiply;
+  }
+  #cursor-ring {
+    position: fixed; width: 36px; height: 36px; border-radius: 50%;
+    border: 1.5px solid var(--red); pointer-events: none; z-index: 9998;
+    transform: translate(-50%, -50%); transition: transform 0.18s ease, width 0.3s, height 0.3s, opacity 0.3s;
+    opacity: 0.6;
+  }
+  .cursor-grow #cursor { width: 48px; height: 48px; background: rgba(191,16,32,0.15); }
+  .cursor-grow #cursor-ring { width: 56px; height: 56px; opacity: 0; }
 }
-#cursor-ring {
-  position: fixed; width: 36px; height: 36px; border-radius: 50%;
-  border: 1.5px solid var(--red); pointer-events: none; z-index: 9998;
-  transform: translate(-50%, -50%); transition: transform 0.18s ease, width 0.3s, height 0.3s, opacity 0.3s;
-  opacity: 0.6;
+@media (hover: none), (pointer: coarse) {
+  #cursor, #cursor-ring { display: none !important; }
 }
-.cursor-grow #cursor { width: 48px; height: 48px; background: rgba(191,16,32,0.15); }
-.cursor-grow #cursor-ring { width: 56px; height: 56px; opacity: 0; }
 
 /* ─── NAV ─── */
 nav {
@@ -147,6 +170,12 @@ nav.scrolled {
   background: linear-gradient(160deg, #162845 0%, #0D1F3C 100%);
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
   padding-bottom: 0;
+}
+.hero-photo-placeholder img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center top;
+}
+.about-image-placeholder img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center top;
 }
 
 /* Stars pattern */
@@ -587,6 +616,149 @@ section { position: relative; }
 .form-group select option { background: var(--navy); }
 .form-group input::placeholder { color: rgba(255,255,255,0.3); }
 
+/* ─── ENDORSEMENTS ─── */
+#endorsements {
+  padding: 120px 0;
+  background: var(--navy);
+  position: relative; overflow: hidden;
+}
+#endorsements::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent, transparent 80px, rgba(255,255,255,0.01) 80px, rgba(255,255,255,0.01) 81px),
+    repeating-linear-gradient(90deg, transparent, transparent 80px, rgba(255,255,255,0.01) 80px, rgba(255,255,255,0.01) 81px);
+}
+.endorsements-header {
+  position: relative; z-index: 1;
+  text-align: center; margin-bottom: 64px;
+}
+.endorsements-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 3.5vw, 3rem);
+  font-weight: 900; color: white; margin-bottom: 16px;
+}
+.endorsements-header p {
+  font-size: 1rem; color: rgba(255,255,255,0.5); max-width: 480px; margin: 0 auto;
+  line-height: 1.7; font-weight: 300;
+}
+.endorsements-grid {
+  position: relative; z-index: 1;
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.endorsement-card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 4px; padding: 36px 28px;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.endorsement-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(201,151,59,0.3);
+}
+.endorsement-quote {
+  font-size: 0.95rem; line-height: 1.8; color: rgba(255,255,255,0.7);
+  font-weight: 300; font-style: italic;
+  margin-bottom: 24px; position: relative;
+  padding-left: 20px; border-left: 2px solid var(--gold);
+}
+.endorsement-author {
+  display: flex; align-items: center; gap: 12px;
+}
+.endorsement-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--red), var(--gold));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Bebas Neue', sans-serif;
+  color: white; font-size: 1rem; flex-shrink: 0;
+}
+.endorsement-info strong {
+  display: block; font-size: 0.88rem; color: white; font-weight: 600;
+}
+.endorsement-info span {
+  font-size: 0.75rem; color: rgba(255,255,255,0.4);
+}
+
+@media (max-width: 1024px) {
+  .endorsements-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 768px) {
+  .endorsements-grid { grid-template-columns: 1fr; }
+  #endorsements { padding: 80px 0; }
+}
+
+/* ─── EVENTS ─── */
+#events {
+  padding: 120px 0;
+  background: var(--cream);
+}
+.events-header { margin-bottom: 56px; }
+.events-header h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.2rem, 3.5vw, 3rem);
+  font-weight: 900; color: var(--navy);
+  margin-bottom: 16px;
+}
+.events-header p {
+  font-size: 1rem; color: #6B7A8D; max-width: 480px;
+  line-height: 1.7; font-weight: 300;
+}
+.events-list { display: flex; flex-direction: column; gap: 0; }
+.event-item {
+  display: grid; grid-template-columns: 100px 1fr auto;
+  gap: 32px; align-items: center;
+  padding: 28px 0;
+  border-bottom: 1px solid #E0E8F0;
+  transition: padding-left 0.3s;
+}
+.event-item:first-child { border-top: 1px solid #E0E8F0; }
+.event-item:hover { padding-left: 12px; }
+.event-date {
+  text-align: center;
+}
+.event-date .event-month {
+  font-size: 0.7rem; letter-spacing: 0.15em; text-transform: uppercase;
+  color: var(--red); font-weight: 700;
+}
+.event-date .event-day {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.8rem; color: var(--navy); line-height: 1;
+}
+.event-date .event-weekday {
+  font-size: 0.72rem; color: var(--gray); text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.event-details h3 {
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem; font-weight: 700; color: var(--navy);
+  margin-bottom: 6px;
+}
+.event-details p {
+  font-size: 0.88rem; color: #6B7A8D; line-height: 1.5; font-weight: 300;
+}
+.event-meta {
+  display: flex; gap: 16px; align-items: center; margin-top: 6px;
+}
+.event-meta span {
+  font-size: 0.75rem; color: var(--gray); display: flex; align-items: center; gap: 4px;
+}
+.event-rsvp {
+  display: inline-flex; align-items: center;
+  border: 1.5px solid var(--navy); color: var(--navy);
+  padding: 10px 24px; font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  text-decoration: none; border-radius: 2px;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.event-rsvp:hover { background: var(--navy); color: white; }
+
+@media (max-width: 768px) {
+  .event-item { grid-template-columns: 80px 1fr; gap: 20px; }
+  .event-rsvp { grid-column: 1 / -1; text-align: center; justify-content: center; }
+  #events { padding: 80px 0; }
+}
+
 /* ─── DONATE ─── */
 #donate {
   padding: 120px 0;
@@ -739,6 +911,36 @@ footer {
   font-size: 2rem; cursor: pointer; line-height: 1;
 }
 
+/* ─── SKIP LINK ─── */
+.skip-link {
+  position: absolute; top: -100px; left: 16px;
+  background: var(--red); color: white;
+  padding: 12px 24px; font-size: 0.9rem; font-weight: 600;
+  z-index: 10000; border-radius: 0 0 4px 4px;
+  text-decoration: none; transition: top 0.2s;
+}
+.skip-link:focus { top: 0; }
+
+/* ─── FOCUS STATES ─── */
+a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* ─── BACK TO TOP ─── */
+.back-to-top {
+  position: fixed; bottom: 32px; right: 32px;
+  width: 48px; height: 48px; border-radius: 50%;
+  background: var(--navy); color: white; border: none;
+  font-size: 1.2rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s, transform 0.2s;
+  z-index: 900; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.back-to-top.visible { opacity: 1; visibility: visible; }
+.back-to-top:hover { transform: translateY(-3px); background: var(--red); }
+
 /* ─── ANIMATIONS ─── */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(30px); }
@@ -776,8 +978,11 @@ footer {
   .hero-content { padding: 120px 24px 100px; }
   .section-inner { padding: 0 24px; }
   .priority-item { grid-template-columns: 48px 1fr; }
-  .priority-content-col { display: none; }
+  .priority-content-col { grid-column: 1 / -1; padding: 0 24px 24px; }
+  .priority-content-col .priority-arrow { display: none; }
+  .priority-item:not(.open) .priority-content-col { display: none; }
   .priority-item.open { grid-template-columns: 48px 1fr; }
+  .priority-item.open .priority-text { max-height: 400px; opacity: 1; color: rgba(255,255,255,0.7); }
   .involved-grid { grid-template-columns: 1fr; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .footer-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -802,6 +1007,9 @@ footer {
 </head>
 <body>
 
+<!-- Skip Link -->
+<a href="#about" class="skip-link">Skip to main content</a>
+
 <!-- Custom Cursor -->
 <div id="cursor"></div>
 <div id="cursor-ring"></div>
@@ -811,6 +1019,7 @@ footer {
   <button class="menu-close" id="menuClose" aria-label="Close menu">&#10005;</button>
   <a href="#about">About Kara</a>
   <a href="#priorities">Priorities</a>
+  <a href="#events">Events</a>
   <a href="#involved">Get Involved</a>
   <a href="#donate">Donate</a>
   <a href="mailto:votekaratoone@gmail.com">Contact</a>
@@ -823,6 +1032,7 @@ footer {
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#priorities">Priorities</a></li>
+    <li><a href="#events">Events</a></li>
     <li><a href="#involved">Get Involved</a></li>
     <li><a href="#donate" class="nav-donate">Donate</a></li>
   </ul>
@@ -842,6 +1052,7 @@ footer {
   <!-- Photo column with large silhouette illustration -->
   <div class="hero-photo-col">
     <div class="hero-photo-placeholder">
+      <!-- Replace SVG below with: <img src="images/kara-hero.jpg" alt="Kara Toone"> -->
       <svg viewBox="0 0 400 700" width="320" style="opacity:0.18; filter: blur(0.5px);" fill="white">
         <ellipse cx="200" cy="120" rx="80" ry="90"/>
         <path d="M80 700 Q80 320 200 300 Q320 320 320 700Z"/>
@@ -912,6 +1123,7 @@ footer {
     <div class="about-grid">
       <div class="about-image-wrap reveal">
         <div class="about-image-frame">
+          <!-- Replace text below with: <img src="images/kara-about.jpg" alt="Kara Toone, Executive Director of Davis Education Foundation"> -->
           <div class="about-image-placeholder">KT</div>
           <div class="about-image-label">Executive Director &middot; Davis Education Foundation</div>
         </div>
@@ -1051,6 +1263,110 @@ footer {
           </div>
           <div class="priority-arrow">+</div>
         </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Endorsements -->
+<section id="endorsements">
+  <div class="section-inner">
+    <div class="endorsements-header">
+      <div class="section-eyebrow reveal" style="color: rgba(255,255,255,0.7); justify-content:center"><span style="background:rgba(255,255,255,0.3); width:28px; height:1px; display:inline-block; margin-right:12px;"></span>Endorsements</div>
+      <h2 class="reveal reveal-delay-1">Trusted by community leaders.</h2>
+      <p class="reveal reveal-delay-2">Neighbors, leaders, and organizations who believe in Kara's vision for District 14.</p>
+    </div>
+    <div class="endorsements-grid">
+      <div class="endorsement-card reveal">
+        <p class="endorsement-quote">"Kara brings the rare combination of deep community roots and serious policy expertise. She's exactly the representative District 14 needs."</p>
+        <div class="endorsement-author">
+          <div class="endorsement-avatar">CL</div>
+          <div class="endorsement-info">
+            <strong>Community Leader</strong>
+            <span>Davis County</span>
+          </div>
+        </div>
+      </div>
+      <div class="endorsement-card reveal reveal-delay-1">
+        <p class="endorsement-quote">"As a fellow education advocate, I've watched Kara fight for students year after year. She doesn't just talk about schools &mdash; she's in the trenches every day."</p>
+        <div class="endorsement-author">
+          <div class="endorsement-avatar">EA</div>
+          <div class="endorsement-info">
+            <strong>Education Advocate</strong>
+            <span>Davis School District</span>
+          </div>
+        </div>
+      </div>
+      <div class="endorsement-card reveal reveal-delay-2">
+        <p class="endorsement-quote">"Kara understands the growth challenges facing Clearfield and Syracuse. She's the kind of practical, level-headed leader we need at the state level."</p>
+        <div class="endorsement-author">
+          <div class="endorsement-avatar">NB</div>
+          <div class="endorsement-info">
+            <strong>Neighbor &amp; Business Owner</strong>
+            <span>Clearfield, UT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Upcoming Events -->
+<section id="events">
+  <div class="section-inner">
+    <div class="events-header">
+      <div class="section-eyebrow reveal">Upcoming Events</div>
+      <h2 class="reveal reveal-delay-1">Meet Kara in person.</h2>
+      <p class="reveal reveal-delay-2">Come out, ask questions, and learn how you can help shape the future of District 14.</p>
+    </div>
+    <div class="events-list">
+      <div class="event-item reveal">
+        <div class="event-date">
+          <div class="event-month">Apr</div>
+          <div class="event-day">5</div>
+          <div class="event-weekday">Saturday</div>
+        </div>
+        <div class="event-details">
+          <h3>Neighborhood Meet &amp; Greet</h3>
+          <p>Join Kara for an informal conversation about the issues that matter most to you and your family.</p>
+          <div class="event-meta">
+            <span>&#x1F4CD; Clearfield, UT</span>
+            <span>&#x1F552; 10:00 AM</span>
+          </div>
+        </div>
+        <a href="mailto:votekaratoone@gmail.com?subject=RSVP%3A%20Apr%205%20Meet%20%26%20Greet" class="event-rsvp">RSVP</a>
+      </div>
+      <div class="event-item reveal reveal-delay-1">
+        <div class="event-date">
+          <div class="event-month">Apr</div>
+          <div class="event-day">12</div>
+          <div class="event-weekday">Saturday</div>
+        </div>
+        <div class="event-details">
+          <h3>Door Knocking Kickoff</h3>
+          <p>Join our volunteer team for a morning of canvassing. Training provided &mdash; no experience needed!</p>
+          <div class="event-meta">
+            <span>&#x1F4CD; Syracuse, UT</span>
+            <span>&#x1F552; 9:00 AM</span>
+          </div>
+        </div>
+        <a href="mailto:votekaratoone@gmail.com?subject=RSVP%3A%20Apr%2012%20Door%20Knocking" class="event-rsvp">RSVP</a>
+      </div>
+      <div class="event-item reveal reveal-delay-2">
+        <div class="event-date">
+          <div class="event-month">Apr</div>
+          <div class="event-day">22</div>
+          <div class="event-weekday">Tuesday</div>
+        </div>
+        <div class="event-details">
+          <h3>Cottage Meeting &mdash; Education &amp; Schools</h3>
+          <p>An intimate gathering focused on public education funding, school choice, and what families need from the legislature.</p>
+          <div class="event-meta">
+            <span>&#x1F4CD; Clearfield, UT</span>
+            <span>&#x1F552; 6:30 PM</span>
+          </div>
+        </div>
+        <a href="mailto:votekaratoone@gmail.com?subject=RSVP%3A%20Apr%2022%20Cottage%20Meeting" class="event-rsvp">RSVP</a>
       </div>
     </div>
   </div>
@@ -1203,6 +1519,7 @@ footer {
         <ul>
           <li><a href="#about">About Kara</a></li>
           <li><a href="#priorities">Priorities</a></li>
+          <li><a href="#events">Events</a></li>
           <li><a href="#involved">Get Involved</a></li>
           <li><a href="#donate">Donate</a></li>
         </ul>
@@ -1224,6 +1541,9 @@ footer {
     </div>
   </div>
 </footer>
+
+<!-- Back to Top -->
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
 
 <script>
 // ─── CURSOR ───
@@ -1344,7 +1664,17 @@ document.querySelectorAll('.amount-btn').forEach(btn => {
 // ─── VOLUNTEER FORM ───
 document.getElementById('volunteerForm').addEventListener('submit', e => {
   e.preventDefault();
-  document.getElementById('volunteerForm').style.display = 'none';
+  const form = e.target;
+  const inputs = form.querySelectorAll('input, select');
+  const data = {};
+  inputs.forEach(input => {
+    const label = input.closest('.form-group')?.querySelector('label')?.textContent || input.name || input.type;
+    data[label] = input.value;
+  });
+  const subject = encodeURIComponent('Volunteer Form - ' + (data['First Name'] || '') + ' ' + (data['Last Name'] || ''));
+  const body = encodeURIComponent(Object.entries(data).map(([k, v]) => k + ': ' + v).join('\n'));
+  window.open('mailto:votekaratoone@gmail.com?subject=' + subject + '&body=' + body, '_self');
+  form.style.display = 'none';
   document.getElementById('formSuccess').style.display = 'block';
 });
 
@@ -1354,6 +1684,15 @@ document.querySelectorAll('a[href^="#"]').forEach(a => {
     const target = document.querySelector(a.getAttribute('href'));
     if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
   });
+});
+
+// ─── BACK TO TOP ───
+const backToTop = document.getElementById('backToTop');
+window.addEventListener('scroll', () => {
+  backToTop.classList.toggle('visible', window.scrollY > 600);
+});
+backToTop.addEventListener('click', () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 });
 
 // ─── PARALLAX SUBTLE ───
