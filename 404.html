@@ -11,6 +11,11 @@
 </head>
 <body>
 
+    <!-- Announcement Bar -->
+    <div class="announcement-bar">
+        <p>Free shipping on orders over $75</p>
+    </div>
+
     <!-- Header -->
     <header class="site-header">
         <div class="container">
@@ -20,38 +25,84 @@
             </button>
             <nav class="main-nav">
                 <ul>
-                    <li><a href="/shop.html">Shop</a></li>
-                    <li><a href="/about.html">About</a></li>
-                    <li><a href="/contact.html">Contact</a></li>
-                    <li><a href="/blog.html">Blog</a></li>
+                    <li><a href="/shop.html#gift-tags">Gift Tags</a></li>
+                    <li><a href="/shop.html#grand-tags">Grand Tags</a></li>
+                    <li><a href="/shop.html#petite-cards">Petite Cards</a></li>
+                    <li><a href="/shop.html#stationery">Stationery</a></li>
+                    <li>
+                        <a href="/shop.html">Collections</a>
+                        <ul class="dropdown">
+                            <li><a href="/shop.html#sympathy">Sympathy &amp; Support</a></li>
+                            <li><a href="/shop.html#gratitude">Thank You &amp; Gratitude</a></li>
+                            <li><a href="/shop.html#celebration">Celebration</a></li>
+                            <li><a href="/shop.html#baby">Baby</a></li>
+                            <li><a href="/shop.html#holiday">Holiday</a></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <a href="#">Connect</a>
+                        <ul class="dropdown">
+                            <li><a href="/about.html">About</a></li>
+                            <li><a href="/letterpress.html">Art of Letterpress</a></li>
+                            <li><a href="/contact.html">Contact</a></li>
+                            <li><a href="/blog.html">Blog</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </nav>
             <div class="header-utils">
-                <a href="/" style="font-size:0.8rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:500;">Home</a>
+                <a href="/">Home</a>
             </div>
         </div>
     </header>
 
-    <!-- 404 Content -->
-    <div class="section error-page">
-        <div class="container">
-            <div class="featured-text" style="padding-bottom:0;">
-                <div class="error-page__code">404</div>
-                <h2>Page Not Found</h2>
-                <p>The page you are looking for may have been moved or no longer exists. Let us help you find your way.</p>
-                <div class="error-page__actions">
-                    <a href="/" class="btn btn--primary">Return Home</a>
-                    <a href="/shop.html" class="btn btn--outline-dark">Browse Shop</a>
-                </div>
+    <!-- 404 -->
+    <section class="section section--cream error-page">
+        <div class="container" style="text-align:center;">
+            <div class="error-page__code">404</div>
+            <h1>Page Not Found</h1>
+            <p style="color:var(--color-text-light);margin-top:var(--spacing-sm);">The page you're looking for seems to have wandered off. Perhaps it's penning a letter.</p>
+            <div class="error-page__actions">
+                <a href="/" class="btn btn--primary">Return Home</a>
+                <a href="/shop.html" class="btn btn--outline-dark">Browse Shop</a>
             </div>
         </div>
-    </div>
+    </section>
 
     <!-- Footer -->
     <footer class="site-footer">
         <div class="container">
-            <div class="footer-bottom" style="border-top:none;">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <h3>Longbourn Papers</h3>
+                    <p>Letterpress stationery with intention and charm. Hand-pressed heirloom paper goods created using traditional techniques on rich cotton paper.</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Shop</h4>
+                    <ul>
+                        <li><a href="/shop.html">All Products</a></li>
+                        <li><a href="/shop.html#gift-tags">Gift Tags</a></li>
+                        <li><a href="/shop.html#grand-tags">Grand Tags</a></li>
+                        <li><a href="/shop.html#petite-cards">Petite Cards</a></li>
+                        <li><a href="/shop.html#stationery">Stationery</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Connect</h4>
+                    <ul>
+                        <li><a href="/about.html">About</a></li>
+                        <li><a href="/letterpress.html">Art of Letterpress</a></li>
+                        <li><a href="/contact.html">Contact</a></li>
+                        <li><a href="/blog.html">Blog</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
                 <p>&copy; 2026 Longbourn Papers. All rights reserved.</p>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/longbournpapers/" target="_blank" rel="noopener noreferrer">Instagram</a>
+                    <a href="https://www.pinterest.com/longbournpapers/" target="_blank" rel="noopener noreferrer">Pinterest</a>
+                </div>
             </div>
         </div>
     </footer>

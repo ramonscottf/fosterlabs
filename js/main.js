@@ -36,9 +36,9 @@
         });
     }
 
-    // Shop page category filter
+    // Shop page: product section filter
     var filterBtns = document.querySelectorAll('.filter-btn');
-    var productCards = document.querySelectorAll('.product-card[data-category]');
+    var productSections = document.querySelectorAll('.product-section[data-category]');
 
     filterBtns.forEach(function (btn) {
         btn.addEventListener('click', function () {
@@ -47,22 +47,131 @@
             filterBtns.forEach(function (b) { b.classList.remove('active'); });
             this.classList.add('active');
 
-            productCards.forEach(function (card) {
-                if (category === 'all' || card.getAttribute('data-category') === category) {
-                    card.style.display = '';
+            productSections.forEach(function (section) {
+                if (category === 'all' || section.getAttribute('data-category') === category) {
+                    section.style.display = '';
                 } else {
-                    card.style.display = 'none';
+                    section.style.display = 'none';
                 }
             });
+        });
+    });
 
-            // Update count
-            var visible = document.querySelectorAll('.product-card[data-category]:not([style*="display: none"])');
-            var countEl = document.querySelector('.filter-bar__count');
-            if (countEl) {
-                countEl.textContent = visible.length + ' product' + (visible.length !== 1 ? 's' : '');
+    // Variant selector: update product image and Snipcart button
+    document.querySelectorAll('.variant-select').forEach(function (select) {
+        select.addEventListener('change', function () {
+            var selectedOption = this.options[this.selectedIndex];
+            var productType = this.getAttribute('data-product');
+
+            // Update image if data-img exists
+            var imgUrl = selectedOption.getAttribute('data-img');
+            if (imgUrl) {
+                var section = this.closest('.product-section') || this.closest('.product-detail');
+                if (section) {
+                    var galleryImg = section.querySelector('.product-detail__gallery img');
+                    if (galleryImg) {
+                        galleryImg.src = imgUrl;
+                        galleryImg.alt = selectedOption.textContent.trim();
+                    }
+                }
+            }
+
+            // Update Snipcart button attributes
+            var container = this.closest('.product-detail__info');
+            if (!container) return;
+
+            var addBtn = container.querySelector('.snipcart-add-item');
+            if (!addBtn) return;
+
+            var designName = selectedOption.textContent.trim();
+            var variantValue = selectedOption.value;
+
+            // Handle petite card size selector
+            if (productType === 'petite-cards-size') {
+                var price = selectedOption.getAttribute('data-price');
+                var priceEl = document.getElementById('petite-price');
+                if (priceEl && price) {
+                    priceEl.textContent = '$' + parseFloat(price).toFixed(2);
+                }
+                addBtn.setAttribute('data-item-price', price);
+                var sizeLabel = selectedOption.textContent.split('—')[0].trim();
+                addBtn.setAttribute('data-item-custom2-value', sizeLabel);
+
+                // Also update item ID and name with current design
+                var designSelect = container.querySelector('[data-product="petite-cards"]');
+                if (designSelect) {
+                    var design = designSelect.options[designSelect.selectedIndex].textContent.trim();
+                    var sizeSuffix = variantValue === '6-pack' ? '6pk' : 'single';
+                    addBtn.setAttribute('data-item-id', 'petite-' + designSelect.value + '-' + sizeSuffix);
+                    addBtn.setAttribute('data-item-name', 'Petite Letterpress Note Cards — ' + design + ' (' + sizeLabel + ')');
+                }
+                return;
+            }
+
+            // Handle petite card design selector
+            if (productType === 'petite-cards') {
+                addBtn.setAttribute('data-item-custom1-value', designName);
+                if (imgUrl) {
+                    addBtn.setAttribute('data-item-image', imgUrl.replace('width=800', 'width=400'));
+                }
+                // Update item ID with current size
+                var sizeSelect = container.querySelector('[data-product="petite-cards-size"]');
+                if (sizeSelect) {
+                    var sizeSuffix2 = sizeSelect.value === '6-pack' ? '6pk' : 'single';
+                    var sizeLabel2 = sizeSelect.options[sizeSelect.selectedIndex].textContent.split('—')[0].trim();
+                    addBtn.setAttribute('data-item-id', 'petite-' + variantValue + '-' + sizeSuffix2);
+                    addBtn.setAttribute('data-item-name', 'Petite Letterpress Note Cards — ' + designName + ' (' + sizeLabel2 + ')');
+                }
+                return;
+            }
+
+            // Standard variant selectors (gift tags, grand tags, stationery)
+            var productNames = {
+                'gift-tags': 'Letterpress Gift Tags',
+                'grand-tags': 'Letterpress Grand Tags',
+                'stationery': 'Letterpress Note Card & Envelope Set'
+            };
+
+            var baseName = productNames[productType] || 'Product';
+            addBtn.setAttribute('data-item-id', productType.replace('-', '-') + '-' + variantValue);
+            addBtn.setAttribute('data-item-name', baseName + ' — ' + designName);
+            addBtn.setAttribute('data-item-custom1-value', designName);
+            if (imgUrl) {
+                addBtn.setAttribute('data-item-image', imgUrl.replace('width=800', 'width=400'));
             }
         });
     });
+
+    // Hash-based scrolling and filtering
+    function handleHash() {
+        var hash = window.location.hash.substring(1);
+        if (!hash) return;
+
+        // Map hash to filter category
+        var filterMap = {
+            'gift-tags': 'gift-tags',
+            'grand-tags': 'grand-tags',
+            'petite-cards': 'petite-cards',
+            'stationery': 'stationery'
+        };
+
+        if (filterMap[hash]) {
+            // Click the corresponding filter button
+            var btn = document.querySelector('.filter-btn[data-filter="' + filterMap[hash] + '"]');
+            if (btn) btn.click();
+        }
+
+        // Scroll to the element
+        var target = document.getElementById(hash);
+        if (target) {
+            setTimeout(function () {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        }
+    }
+
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
 
     // Web3Forms submission handler
     document.querySelectorAll('.web3form').forEach(function (form) {
