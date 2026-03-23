@@ -60,7 +60,7 @@ const DEFAULT_DATA = {
   persons: [
     { id: "p1", name: "Mark R. Hale", role: "Manager/Co-Owner", status: "absentee", notes: "Ali's dad. Don Hale's son. Just returned from Mormon mission. Recently divorced. 'Acting like an 18 year old.' Co-owner with brother Jon. Signed earn-in as Manager of Shirley Hale Operations, LLC." },
     { id: "p2", name: "Jon M. Hale", role: "Manager/Co-Owner", status: "absentee", notes: "Mark's brother. Don Hale's son. On Mormon mission. Co-owner. Signed earn-in as Manager. Did Small Lake City Podcast episode about Hires — mentioned 'Allie stepping up to carry the torch.'" },
-    { id: "p3", name: "Christian [LAST NAME TBD]", role: "General Manager", status: "suspect", notes: "Started as dishwasher. Promoted by Mark. BLOCKING Ali's financial access at every turn. Drives 2022 F-250 Tremor (~$70K+) for 2-3 catering jobs/year. Just bought NEW Tesla (~$40K). Both company-paid, titled in HIS name 'for mileage.' Responsible for commissary permitting failure → $500K loss + 8-month shutdown. Sucks up to Mark & Jon, ices Ali out. Classic gatekeeper behavior." },
+    { id: "p3", name: "Christian Reinhard Franz", role: "General Manager", status: "suspect", notes: "FULL NAME: Christian Reinhard Franz. Age 45, born December 1980. Lives at 6074 N Spring St, Tooele, UT 84074. Phone: (801) 968-7619. Property: $607K home, 4,574 sq ft, built 2015, Tooele County (Jan 2015 - present). CONFIRMED as GM in KSL TV articles (Feb 2023 price increase story, Apr 2023 WVC reopening). Quoted saying beef went from $2/lb to $7.25/lb during COVID. Started as dishwasher. Promoted by Mark. BLOCKING Ali's financial access. Drives 2022 F-250 Tremor (~$70K+) for 2-3 catering jobs/year. Just bought NEW Tesla (~$40K). Both company-paid, titled in HIS name. Responsible for commissary permitting failure → $500K loss + 8-month shutdown. Facebook profiles: christian.franz.718, christian.franz.7140. NEEDS: Utah court records check, DMV title search on both vehicles, OpenCorporates search for any businesses in his name, Tooele County property records (mortgage/lien check)." },
     { id: "p4", name: "Alexandra 'Ali' Foster", role: "New Member (2% vesting) / Company Lawyer & Financial Agent", status: "ally", notes: "JD, lawyer. Ex-Goldman Sachs VP. Brought in to fix things after years of mismanagement. Earn-in agreement Jan 1, 2026. At-will employee with for-cause clawback risk ($1 redemption). Phone: 801-205-6642. HAS ACCESS to Zions Bank accounts and SpotOn POS as company financial agent." },
     { id: "p5", name: "Pattie [LAST NAME TBD]", role: "Possibly registered agent / admin / attorney", status: "unknown", notes: "Ali mentioned Pattie may have been sent the earn-in agreement to register with the state. Need to identify full name and role." },
     { id: "p6", name: "Family Accountants [FIRM TBD]", role: "External CPA/Accountants", status: "suspect", notes: "Old family friends of grandfather Don Hale. Do NOT specialize in restaurants. Actively beg not to do work — too small-time for them. Rubber stamps. Providing zero real financial oversight. Need to identify the firm." },
@@ -82,15 +82,15 @@ const DEFAULT_DATA = {
     { id: "c4", phase: "phase1", task: "Search all DBAs registered under Hale family names", done: false, notes: "Use executive name search" },
     { id: "c5", phase: "phase1", task: "Get copy of Operating Agreement for Shirley Hale Operations, LLC", done: false, notes: "Ali should have signed this per Earn-In §2.1" },
     { id: "c6", phase: "phase1", task: "Verify earn-in agreement was filed with state (ask Pattie)", done: false, notes: "" },
-    { id: "c7", phase: "phase1", task: "Get Christian's full legal name", done: false, notes: "Need for DMV, court, and background searches" },
+    { id: "c7", phase: "phase1", task: "Christian's full name CONFIRMED: Christian Reinhard Franz", done: true, notes: "Need for DMV, court, and background searches" },
     { id: "c8", phase: "phase1", task: "Identify the accounting firm (name, partners)", done: false, notes: "" },
-    { id: "c9", phase: "phase2", task: "Utah DMV title search — 2022 F-250 Tremor", done: false, notes: "Need VIN or Christian's full name" },
+    { id: "c9", phase: "phase2", task: "Utah DMV title search — 2022 F-250 Tremor", done: false, notes: "Christian Reinhard Franz, 6074 N Spring St, Tooele UT 84074" },
     { id: "c10", phase: "phase2", task: "Utah DMV title search — Tesla (new)", done: false, notes: "" },
     { id: "c11", phase: "phase2", task: "Pull building permits for commissary project", done: false, notes: "Check SLC and relevant county" },
     { id: "c12", phase: "phase2", task: "Pull health dept inspection records — all Hires locations", done: false, notes: "" },
     { id: "c13", phase: "phase2", task: "Search Utah court records for litigation involving all entities", done: false, notes: "utcourts.gov/xchange" },
     { id: "c14", phase: "phase2", task: "Search UCC filings and liens against all entities", done: false, notes: "" },
-    { id: "c15", phase: "phase2", task: "Run Christian through Utah court records (civil + criminal)", done: false, notes: "Need full legal name" },
+    { id: "c15", phase: "phase2", task: "Run Christian Reinhard Franz through Utah court records (civil + criminal)", done: false, notes: "Christian Reinhard Franz, DOB Dec 1980, Tooele UT" },
     { id: "c16", phase: "phase2", task: "Check Utah unclaimed property for all entity names", done: false, notes: "mycash.utah.gov" },
     { id: "c17", phase: "phase3", task: "ZIONS BANK: Download 24 months statements — ALL accounts", done: false, notes: "Ali has access as financial agent. CSV + PDF." },
     { id: "c18", phase: "phase3", task: "SPOTON POS: Export daily sales summaries — 24 months, all locations", done: false, notes: "Dashboard → Reports → Sales Summary → Export" },
@@ -218,6 +218,8 @@ const SNOOPING_TOOLS = [
     { name: "Salt Lake County Assessor/Recorder", url: "https://slco.org/assessor/new/valuationsearch.cfm", desc: "Property ownership, values, tax records in SL County" },
     { name: "Salt Lake County Recorder", url: "https://slco.org/recorder/", desc: "Deeds, liens, mortgages in SL County" },
     { name: "Utah DMV", url: "https://dmv.utah.gov/", desc: "Vehicle title verification (may need VIN or visit in person)" },
+    { name: "Tooele County GIS/Parcels", url: "https://geodata.tooelecountyonline.org/", desc: "Tooele County property search — Christian's home at 6074 N Spring St" },
+    { name: "Tooele County Recorder", url: "https://erecording.tooeleco.gov/eaglesoftware/web/", desc: "Tooele County deeds, mortgages, liens since 1995" },
     { name: "NHTSA VIN Decoder", url: "https://www.nhtsa.gov/vin-decoder", desc: "Decode VIN for vehicle year/make/model" },
     { name: "VINCheck (NICB)", url: "https://www.nicb.org/vincheck", desc: "Free VIN check for theft/salvage/flood" },
   ]},
@@ -227,6 +229,8 @@ const SNOOPING_TOOLS = [
     { name: "Midvale City Building", url: "https://www.midvalecity.org/", desc: "Midvale building permits (commissary may be here)" },
     { name: "Utah DOPL License Lookup", url: "https://dopl.utah.gov/license-lookup/", desc: "Professional and business license verification" },
     { name: "Utah State Tax Commission", url: "https://tax.utah.gov/", desc: "Business tax registration and compliance" },
+    { name: "KSL: Franz Price Story (2023)", url: "https://ksltv.com/local-news/hires-big-h-declines-to-pass-on-price-increases-to-customers/518145/", desc: "Feb 2023 — Christian Franz quoted as GM on food costs" },
+    { name: "KSL: WVC Reopening (2023)", url: "https://ksltv.com/events_holidays/hires-big-h-litzas-pizza-will-reopen-remodeled-west-valley-location/544234/", desc: "Apr 2023 — Franz quoted on WVC reopening" },
   ]},
   { category: "People & Background", links: [
     { name: "LinkedIn", url: "https://www.linkedin.com/", desc: "Check Christian's profile — undisclosed businesses or side gigs?" },
@@ -336,7 +340,7 @@ function App() {
           <span style={S.pulse}/><span style={{fontSize:11,fontWeight:700,color:"#ff1744",letterSpacing:2}}>ACTIVE INVESTIGATION</span>
         </div>
         <div style={{fontSize:13,color:"#e0e0e0",lineHeight:1.7}}>
-          <strong>TARGET:</strong> Christian [Last Name TBD] — GM — Suspected embezzlement, expense fraud, self-dealing<br/>
+          <strong>TARGET:</strong> Christian Reinhard Franz — GM — Suspected embezzlement, expense fraud, self-dealing<br/>
           <strong>ENTITY:</strong> Shirley Hale Operations, LLC / Hires Enterprises Inc. dba Hires Big H<br/>
           <strong>PRINCIPAL:</strong> Alexandra Foster — 2% member, company lawyer & financial agent<br/>
           <strong>BANK:</strong> Zions Bank — Ali has access as financial agent<br/>
