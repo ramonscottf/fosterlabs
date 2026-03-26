@@ -60,7 +60,7 @@ const DEFAULT_DATA = {
   persons: [
     { id: "p1", name: "Mark R. Hale", role: "Manager/Co-Owner", status: "absentee", notes: "Ali's dad. Don Hale's son. Just returned from Mormon mission. Recently divorced. 'Acting like an 18 year old.' Co-owner with brother Jon. Signed earn-in as Manager of Shirley Hale Operations, LLC." },
     { id: "p2", name: "Jon M. Hale", role: "Manager/Co-Owner", status: "absentee", notes: "Mark's brother. Don Hale's son. On Mormon mission. Co-owner. Signed earn-in as Manager. Did Small Lake City Podcast episode about Hires — mentioned 'Allie stepping up to carry the torch.'" },
-    { id: "p3", name: "Christian Reinhard Franz", role: "General Manager", status: "suspect", notes: "FULL NAME: Christian Reinhard Franz. Age 45, born December 1980. Lives at 6074 N Spring St, Tooele, UT 84074. Phone: (801) 968-7619. Property: $607K home, 4,574 sq ft, built 2015, Tooele County (Jan 2015 - present). CONFIRMED as GM in KSL TV articles (Feb 2023 price increase story, Apr 2023 WVC reopening). Quoted saying beef went from $2/lb to $7.25/lb during COVID. Started as dishwasher. Promoted by Mark. BLOCKING Ali's financial access. Drives 2022 F-250 Tremor (~$70K+) for 2-3 catering jobs/year. Just bought NEW Tesla (~$40K). Both company-paid, titled in HIS name. Responsible for commissary permitting failure → $500K loss + 8-month shutdown. Facebook profiles: christian.franz.718, christian.franz.7140. NEEDS: Utah court records check, DMV title search on both vehicles, OpenCorporates search for any businesses in his name, Tooele County property records (mortgage/lien check)." },
+    { id: "p3", name: "Christian Reinhard Franz", role: "General Manager", status: "suspect", notes: "FULL NAME: Christian Reinhard Franz. Age 45, born December 1980. Lives at 6074 N Spring St, Tooele, UT 84074. Phone: (801) 968-7619. Property: $607K home, 4,574 sq ft, built 2015, Tooele County (Jan 2015 - present). CONFIRMED as GM in KSL TV articles (Feb 2023 price increase story, Apr 2023 WVC reopening). Quoted saying beef went from $2/lb to $7.25/lb during COVID. Started as dishwasher. Promoted by Mark. BLOCKING Ali's financial access. Drives 2022 F-250 Tremor (~$70K+) for 2-3 catering jobs/year. Just bought NEW Tesla (~$40K). Both company-paid, titled in HIS name. Responsible for commissary permitting failure → $500K loss + 8-month shutdown. Facebook profiles: christian.franz.718, christian.franz.7140. NEEDS: Utah court records check, DMV title search on both vehicles, OpenCorporates search for any businesses in his name, Tooele County property records (mortgage/lien check). CONFIRMED FROM PAYROLL: Christian draws $84K salary + $2,909 bonus + manager hourly/OT = ~$96K+ total. THREE additional Franz family members on payroll: Ashlee N Franz, Addison O Franz, Aiden C Franz. His SON-IN-LAW \'Joe\' is second-highest-paid person in company — no college, 3 years off Mormon mission, makes MORE than Ali (a lawyer/Goldman VP). When Ali demanded a raise, they gave Joe one too so he still earns more. FIVE Franz family members potentially on Hires payroll., DMV title search on both vehicles, OpenCorporates search for any businesses in his name, Tooele County property records (mortgage/lien check)." },
     { id: "p4", name: "Alexandra 'Ali' Foster", role: "New Member (2% vesting) / Company Lawyer & Financial Agent", status: "ally", notes: "JD, lawyer. Ex-Goldman Sachs VP. Brought in to fix things after years of mismanagement. Earn-in agreement Jan 1, 2026. At-will employee with for-cause clawback risk ($1 redemption). Phone: 801-205-6642. HAS ACCESS to Zions Bank accounts and SpotOn POS as company financial agent." },
     { id: "p5", name: "Pattie [LAST NAME TBD]", role: "Possibly registered agent / admin / attorney", status: "unknown", notes: "Ali mentioned Pattie may have been sent the earn-in agreement to register with the state. Need to identify full name and role." },
     { id: "p6", name: "Family Accountants [FIRM TBD]", role: "External CPA/Accountants", status: "suspect", notes: "Old family friends of grandfather Don Hale. Do NOT specialize in restaurants. Actively beg not to do work — too small-time for them. Rubber stamps. Providing zero real financial oversight. Need to identify the firm." },
@@ -73,6 +73,12 @@ const DEFAULT_DATA = {
     { id: "r3", category: "financial", title: "Persistent Monthly Losses — No Explanation", severity: "critical", detail: "Business has lost money every month for approximately TWO YEARS. Nobody — not Christian, not the accountants — can explain where the money goes or make the numbers reconcile. An iconic burger chain with 3+ locations, massive brand recognition, and loyal customer base should NOT be losing money every month for 2 years straight. This screams either systematic theft, gross mismanagement, or both.", evidence: "Ali's statements. Need: 24 months P&L, bank statements, POS daily sales reports, food cost reports.", actionable: true },
     { id: "r4", category: "access", title: "GM Actively Blocking Owner/Member Financial Access", severity: "critical", detail: "Christian actively blocks Ali — who is both a legal LLC member AND the designated company lawyer and financial agent — from accessing financial records, bank accounts, and business systems. The ONLY reason a GM blocks the person in charge of finances from seeing the finances is because the finances would show something he doesn't want seen.", evidence: "Ali's statements, text message screenshots showing Verizon account access blocked. Need: documented instances of access denial.", actionable: true },
     { id: "r5", category: "governance", title: "Captured/Incompetent Accountants", severity: "high", detail: "The external accountants are old family friends of grandfather Don Hale (deceased 2011). They do NOT specialize in restaurant accounting. They actively beg not to do the work — Hires is too small-time for them. They are providing zero meaningful oversight, no fraud detection, no internal controls. They are rubber-stamping whatever Christian gives them.", evidence: "Ali's statements. Need: identify the accounting firm, review their work product, determine if they're even performing basic reconciliations.", actionable: true },
+    { id: "r7", category: "financial", title: "FRANZ CLAN: 5 Family Members on Payroll", severity: "critical", detail: "Christian Franz ($96K+), Ashlee N Franz, Addison O Franz, Aiden C Franz, and son-in-law Joe (second highest paid — more than Ali). FIVE members of one family drawing paychecks from a restaurant that loses money every month. Need to verify all actually work real shifts.", evidence: "Total_Hires_Intermountain_Hours___Pay_2025.xlsx — payroll data", actionable: true },
+    { id: "r8", category: "financial", title: "Cash Deposit Gap — Potential $100-140K Missing", severity: "critical", detail: "Only $159K in cash deposited to Zions Bank in 2025 vs $2.17M in SpotOn card deposits. Cash ratio is ~8% — industry norm is 15-20%. At 15% cash ratio, expected deposits would be ~$299K. GAP: $100-140K in cash potentially not making it to the bank.", evidence: "HSL_bank_Transactions_2025.csv — 632 cash deposits totaling $158,797", actionable: true },
+    { id: "r9", category: "financial", title: "Labor Cost 38.6% — WAY Over Industry Benchmark", severity: "high", detail: "Total labor at Hires SLC: $769K on $1.99M revenue = 38.6%. Industry benchmark for casual dining: 25-35%. Bloated by Franz family payroll, two absent owners drawing $92K combined, and $53K in overtime. Excess labor cost vs 30% benchmark: ~$171K.", evidence: "Accountants FY P&L — Profit & Loss by Class Dec 2025", actionable: true },
+    { id: "r10", category: "financial", title: "Son-in-Law Pay Exceeds Company Lawyer", severity: "high", detail: "Joe (Christian\'s son-in-law) — no college, 3 years off Mormon mission — is the second highest paid person and makes more than Ali (JD, ex-Goldman Sachs VP, company lawyer and financial agent). When Ali got a raise, they immediately gave Joe one to maintain the gap. This is deliberate.", evidence: "Scott/Ali direct statements + payroll data", actionable: true },
+    { id: "r11", category: "financial", title: "Litzas Subsidizing Hires SLC by $120K+/yr", severity: "high", detail: "Litzas (pizza side) transferred $120K+ into Hires SLC bank account during 2025. Litzas made $16K profit while Hires SLC lost $9K. Without the subsidy, Hires SLC true loss is ~$130K. The profitable business is being drained to cover losses at Christian\'s home location.", evidence: "HSL_bank_Transactions_2025.csv — transfers from LSL", actionable: true },
+    { id: "r12", category: "governance", title: "Verizon Plan Hidden from Owner/Member", severity: "high", detail: "Christian controls the Verizon business account (#0470505636-00001 under Hires Enterprises Inc) and refuses to let Ali see the plan details. Likely has Franz family members on company phone lines. Ali doesn\'t even know what the monthly cost is.", evidence: "Text message screenshots, Ali statements", actionable: true },
     { id: "r6", category: "governance", title: "Completely Absentee Owners", severity: "high", detail: "Both Mark and Jon Hale are effectively absent. Jon is on a Mormon mission (out of country/unavailable). Mark just returned from his own mission, got divorced, and is 'acting like an 18-year-old.' Neither exercises any oversight over Christian or the business finances. They are shallow, ego-driven men who resent Ali for calling them out. They may actively side with Christian over their own family member because confrontation is uncomfortable.", evidence: "Ali and Scott's direct observations. Pattern confirmed by business performance.", actionable: false },
   ],
   checklist: [
@@ -112,6 +118,13 @@ const DEFAULT_DATA = {
     { id: "c34", phase: "phase4", task: "PERSONAL EXPENSE AUDIT: Flag all non-restaurant charges on company accounts", done: false, notes: "Amazon, retail, personal subscriptions, travel, etc." },
     { id: "c35", phase: "phase4", task: "VOID/COMP PATTERN ANALYSIS: Look for unusual patterns", done: false, notes: "High voids near close = skimming. Excessive comps = giving away product." },
     { id: "c36", phase: "phase4", task: "Compile findings into forensic report with documentation", done: false, notes: "" },
+    { id: "c37", phase: "phase4", task: "EXTRACT: Individual pay for each Franz family member (Ashlee, Addison, Aiden)", done: false, notes: "From payroll spreadsheet — need exact dollar amounts" },
+    { id: "c38", phase: "phase4", task: "IDENTIFY: Joe\'s full last name and exact total compensation", done: false, notes: "Son-in-law, second highest paid. Need payroll records." },
+    { id: "c39", phase: "phase4", task: "VERIFY: Do all Franz family members actually work regular shifts?", done: false, notes: "Ask trusted staff — do Ashlee, Addison, Aiden show up?" },
+    { id: "c40", phase: "phase4", task: "IDENTIFY: Who are the 79 large checks ($614K total) going to?", done: false, notes: "Check numbers only in bank data — need check images or payee records from Zions" },
+    { id: "c41", phase: "phase4", task: "DAILY CASH ANALYSIS: Match SpotOn daily cash totals to Zions daily deposits", done: false, notes: "Need SpotOn payment breakdown report by day" },
+    { id: "c42", phase: "phase4", task: "Calculate total Franz clan compensation (all 5 members)", done: false, notes: "" },
+    { id: "c43", phase: "phase3", task: "GET: Verizon business plan details — how many lines, who is on them, monthly cost", done: false, notes: "Ali calls Verizon Business 1-800-922-0204 as owner/member" },
   ],
   dataExtractionGuide: {
     zions: {
@@ -166,6 +179,10 @@ const DEFAULT_DATA = {
     { id: "t15", date: "2026-01-07", event: "Earn-In Agreement document dated/scanned. PDF created.", source: "Document filename date" },
     { id: "t16", date: "2026-03", event: "Christian still blocking Ali's access to financials. Verizon biz account access denied. Text messages document blocking behavior.", source: "Scott/Ali — IMG_2215.jpeg text screenshots" },
     { id: "t17", date: "2026-03", event: "Scott initiates investigation planning. Skippy War Room created.", source: "This conversation" },
+    { id: "t18", date: "2026-03-25", event: "FORENSIC DATA RECEIVED: FY2025 P&L, bank transactions (HSL + LSL), payroll data, rent schedule, sales by item. Initial analysis reveals: Hires SLC lost $9K (true loss ~$130K after removing $120K Litzas subsidy). Franz clan: 5 family members on payroll. Cash deposit gap of $100-140K. Labor at 38.6% vs 25-35% benchmark.", source: "Financial documents from Ali via Google Drive" },
+    { id: "t19", date: "2026-03-25", event: "DISCOVERY: Son-in-law Joe (Christian\'s) is second-highest-paid person. No college, 3 yrs off mission. Makes more than Ali. When Ali got a raise, Joe got one too to stay ahead. Deliberate pattern of favoring Franz family over qualified ownership.", source: "Scott direct report" },
+    { id: "t20", date: "2026-03-25", event: "SpotOn dashboard accessed. Confirmed entity name \'Hires Big Group\' (5th entity name). Only 2 dashboard users: Ali and Christian. Owners Mark/Jon have ZERO access to POS data. YoY sales down 78.3%.", source: "SpotOn dashboard — direct access" },
+    { id: "t21", date: "2026-03-25", event: "BUILDING OWNERSHIP CONFIRMED: Don Hale left each child 25% of 4th South buildings. One deceased daughter\'s share supports her severely disabled children. If downtown Hires fails, those vulnerable people lose their support.", source: "Scott direct report" },
   ],
   notes: `MASTER THEORY
 =============
@@ -203,6 +220,57 @@ RISK:
 The earn-in agreement has a for-cause clawback clause — they can redeem all her interests for $1 if she violates company rules or is terminated for cause. She needs to be careful not to give them ammunition. Everything she does should be within her stated role as company lawyer and financial agent. Pulling bank statements and POS reports IS her job.
 
 KEY QUESTION:
+What is the relationship between Shirley Hale Operations, LLC and Hires Enterprises Inc.? Which entity holds which bank accounts? Which entity runs payroll? Which entity is on the SpotOn system? The corporate structure may be hiding money flows.
+
+=== FORENSIC ANALYSIS — HIRES DOWNTOWN (SLC) FY 2025 ===
+Entity on P&L: Hires Intermountain Drive Ins
+Entity on SpotOn: Hires Big Group
+Entity on Verizon: Hires Enterprises Inc.
+Entity on Earn-In: Shirley Hale Operations, LLC
+
+REVENUE: $1,991,441 total ($1.845M dining room, $98K DoorDash, $28K Uber)
+FOOD COST: $678,689 (38.3% — high end but not insane)
+GROSS PROFIT: $1,312,752 (61.7% margin)
+NET INCOME: -$9,048 (LOSS)
+
+BUT: Litzas transferred $120,000+ INTO Hires SLC during 2025. Without subsidies, TRUE LOSS = ~$130K.
+
+=== THE FRANZ CLAN ON PAYROLL ===
+1. Christian Franz — Manager Salary $84,000 + $2,909 bonus + hourly/OT = ~$96K+
+2. Ashlee N Franz — on payroll (wife?)
+3. Addison O Franz — on payroll (child?)
+4. Aiden C Franz — on payroll (child?)
+5. Joe [Last Name TBD] — Son-in-law. Second highest paid. No college. 3 yrs off mission. Makes MORE than Ali.
+TOTAL FRANZ CLAN PAYROLL: UNKNOWN — NEED TO EXTRACT INDIVIDUAL AMOUNTS
+
+=== RED FLAGS FROM FINANCIAL DATA ===
+1. LABOR AT 38.6% of revenue ($769K) — industry benchmark 25-35%. Bloated by Franz family + absent owners drawing $92K.
+2. CASH DEPOSIT GAP: Only $159K cash deposited vs $2.17M in SpotOn card deposits. Cash ratio ~8% vs industry 15-20%. POTENTIAL MISSING CASH: $100-140K+
+3. EQUIPMENT REPAIR: $43,195 — extremely high for one burger restaurant location
+4. OFFICERS SALARIES: Mark $45,929 + Jon $45,929 = $91,858 for TWO ABSENT OWNERS on missions
+5. AUTO & DELIVERY: $10,036 — the F-250 Tremor nobody needs
+6. MONEY FLOWS BETWEEN 6+ ENTITIES — transfers to Don C Hale Investment, SHO, Hires Enterprises, Hires Big H DB
+7. Christian controls Verizon business account — won\'t let Ali see the plan. Likely has Franz family members on company phone plan.
+8. RENT: 5.5% of gross profit paid to building owners (the Hale siblings). One deceased sister\'s disabled children depend on this income. Franz clan bleeding the restaurant = bleeding those vulnerable people.
+
+=== BUILDING OWNERSHIP (4th South) ===
+Don Hale left each of his children 25% of the buildings. One daughter is deceased — her share supports her severely disabled children. If Hires downtown fails, those people lose their support. Christian is bleeding the restaurant that pays their rent.
+
+=== BANK ACCOUNT SUMMARY ===
+HSL (Hires SL): Zions Bank. 2,590 transactions in 2025.
+- Total deposits: $2,590,647 (SpotOn: $2.17M, Cash: $159K, Transfers in: $148K)
+- Total withdrawals: $2,642,380
+- NET CASH FLOW: -$51,733
+- 79 large checks over $5,000 totaling $614,210 (payees UNKNOWN — checks only show numbers)
+LSL (Litzas SL): Zions Bank. 1,355 transactions.
+
+=== NEXT STEPS ===
+1. Extract individual Franz family payroll amounts from the spreadsheet
+2. Identify Joe\'s full name and total compensation
+3. Get check payee information — who are the 79 large checks going to?
+4. Run cash skim analysis — compare daily SpotOn cash sales to daily bank cash deposits
+5. Get Verizon business account records — how many lines, who is on them
+6. Identify all vendor payments — look for kickback patterns
 What is the relationship between Shirley Hale Operations, LLC and Hires Enterprises Inc.? Which entity holds which bank accounts? Which entity runs payroll? Which entity is on the SpotOn system? The corporate structure may be hiding things.`
 };
 
