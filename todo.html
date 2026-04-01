@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Skippy Tasks</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0a0a0a;--fg:#f0ede8;--muted:#555;--border:rgba(255,255,255,.06);--red:#d9514b;--gold:#D4A847;--blue:#5B8FB9;--green:#2D7F46;--purple:#8B5CF6}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display',sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.4}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px 120px}
+h1{font-size:28px;font-weight:800;letter-spacing:-1px;margin-bottom:4px}
+h1 span{color:var(--blue)}
+.sub{font-size:12px;color:var(--muted);letter-spacing:1px;margin-bottom:24px}
+.section{margin-bottom:32px}
+.section-head{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:8px 0;border-bottom:1px solid var(--border);margin-bottom:8px;display:flex;align-items:center;gap:8px}
+.section-head .dot{width:8px;height:8px;border-radius:4px}
+.task{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-bottom:1px solid var(--border);transition:opacity .3s}
+.task.done{opacity:.35}
+.cb{width:22px;height:22px;min-width:22px;border-radius:11px;border:2px solid var(--muted);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .2s}
+.cb:hover{border-color:var(--green)}
+.task.done .cb{border-color:var(--green);background:var(--green)}
+.cb .check{display:none;color:#fff;font-size:13px;font-weight:700}
+.task.done .cb .check{display:block}
+.task-content{flex:1;cursor:pointer}
+.task-title{font-size:15px;font-weight:500;line-height:1.4;margin-bottom:3px}
+.task.done .task-title{text-decoration:line-through;color:var(--muted)}
+.task-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.task-meta .pri{width:6px;height:6px;border-radius:3px;flex-shrink:0}
+.task-meta .due{font-size:11px;font-weight:600}
+.task-meta .label{font-size:10px;font-weight:600;letter-spacing:.3px}
+.task-desc{display:none;margin-top:10px;padding:14px;background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:10px;font-size:13px;line-height:1.7;color:rgba(240,237,232,.6);font-weight:300}
+.task.expanded .task-desc{display:block}
+.footer{text-align:center;padding:32px 0;font-size:11px;color:#333;letter-spacing:1px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div style="display:flex;align-items:center;justify-content:space-between">
+<h1><span>Skippy</span> Tasks</h1>
+<span style="font-size:22px">🐒</span>
+</div>
+<p class="sub" id="counts"></p>
+
+<div class="section">
+<div class="section-head"><div class="dot" style="background:var(--red)"></div> TODAY — DO NOW</div>
+<div id="today"></div>
+</div>
+
+<div class="section">
+<div class="section-head"><div class="dot" style="background:var(--gold)"></div> TOMORROW</div>
+<div id="tomorrow"></div>
+</div>
+
+<div class="section">
+<div class="section-head"><div class="dot" style="background:var(--blue)"></div> THIS WEEK</div>
+<div id="week"></div>
+</div>
+
+<div class="section">
+<div class="section-head"><div class="dot" style="background:var(--purple)"></div> NEXT WEEK</div>
+<div id="next"></div>
+</div>
+
+<div class="footer">Skippy Tasks · Built for Joe by Skippy · March 31, 2026</div>
+</div>
+
+<script>
+var LABELS = {hires:"#d9514b",seo:"#5B8FB9",infrastructure:"#8B5CF6",security:"#EF4444",ali:"#EC4899",warroom:"#F59E0B",urgent:"#DC2626"};
+var PRI = {p1:{c:"#d9514b"},p2:{c:"#D4A847"},p3:{c:"#5B8FB9"},p4:{c:"#949494"}};
+
+var tasks = [
+  // TODAY
+  {s:"today",t:"Submit sitemap in Google Search Console",d:"You're already verified! In Search Console: left sidebar → Sitemaps → type sitemap.xml → hit Submit. Then go to URL Inspection → paste https://hiresbigh.com/ → click Request Indexing. Do the same for /menu, /about, /shop, /locations/salt-lake-city.",p:"p1",l:["hires","seo"]},
+  {s:"today",t:"Upgrade Cloudflare to $5/mo Workers Paid plan",d:"dash.cloudflare.com → Workers & Pages → Plans → Upgrade. $5/mo = 10M reads, 1M writes. Hit free limit today from all the deploys.",p:"p1",l:["infrastructure"]},
+  {s:"today",t:"STOP Daybreak server incentive program",d:"Staff get paid when their names appear in Google reviews. This is review gating and violates Google Business policy. Could get ALL 3 locations delisted. Ali must stop this immediately — talk to Eddy.",p:"p1",l:["hires","urgent"]},
+  {s:"today",t:"Update Google Business Profile URLs (all 3 locations)",d:"Change website URL to hiresbigh.com on SLC, Midvale, and Daybreak Google Business listings. If Christian 'can't log in' to SLC, Ali claims it herself at business.google.com → search for the listing → Claim.",p:"p1",l:["hires","seo"]},
+  {s:"today",t:"Rotate GitHub PAT and Cloudflare API tokens",d:"Both were exposed in chat history. Go to github.com → Settings → Developer Settings → Personal Access Tokens → generate new one. Cloudflare: dash.cloudflare.com → My Profile → API Tokens → roll/regenerate.",p:"p1",l:["security"]},
+  {s:"today",t:"Update Facebook + Instagram bio links to hiresbigh.com",d:"Change from old Shopify URL to hiresbigh.com on all social profiles.",p:"p2",l:["hires"]},
+
+  // TOMORROW
+  {s:"tomorrow",t:"Fix Resend SPF/DKIM on wickowaypoint.com DNS",d:"Login to resend.com → Domains → wickowaypoint.com → copy the SPF and DKIM records it shows → add them in Cloudflare DNS for wickowaypoint.com zone. This fixes email delivery to Ali through Proofpoint.",p:"p1",l:["hires","infrastructure"]},
+  {s:"tomorrow",t:"Validate rich results + screenshot for Ali",d:"Go to search.google.com/test/rich-results and paste these one at a time:\n• hiresbigh.com/about — should show 7 FAQ items\n• hiresbigh.com/menu — should show Menu schema\n• hiresbigh.com/shop — should show Product schema\n• hiresbigh.com/locations/salt-lake-city — should show Restaurant\nScreenshot the green checkmarks. Text to Ali. That's the proof.",p:"p2",l:["hires","seo"]},
+
+  // THIS WEEK
+  {s:"week",t:"Confirm menu prices with Ali",d:"47 prices filled from POS FY2025 sales data averages. Ali needs to verify they match the register. Key question: combo add-on is $4.30 (her doc) or $8.30 (on site)?",p:"p2",l:["hires","ali"]},
+  {s:"week",t:"Get Ali's list of missing menu items",d:"Her content review doc says 'several menu items are missing' on the menu page but didn't specify which ones. Need her list.",p:"p2",l:["hires","ali"]},
+  {s:"week",t:"Google Workspace admin recovery (War Room)",d:"The big play. With Ali present: use Cloudflare DNS TXT record to verify domain ownership → recover Google Workspace super admin access for Ali → remove Proofpoint MX records → terminate Intuitive IT. No advance notice to Christian. Any contact risks evidence deletion.",p:"p1",l:["hires","warroom"]},
+  {s:"week",t:"Family approval: Melvin Wedgies brownie name",d:"The brownie's family nickname 'Melvin Wedgies' is on the About page and brownie blog post. Is the Hale family comfortable with this being public?",p:"p3",l:["hires","ali"]},
+  {s:"week",t:"Fix blog #9 limeade image",d:"Ali flagged: 'Wrong image, this is our cherry syrup.' Need correct limeade/lime photo to replace it.",p:"p3",l:["hires"]},
+  {s:"week",t:"Remove email-test diagnostic endpoint",d:"functions/api/email-test.js — temporary diagnostic file. Delete it and push.",p:"p3",l:["hires"]},
+  {s:"week",t:"Refresh Todoist API token",d:"Settings → Integrations → reauthorize Claude connector. Or just use Skippy Tasks forever. Your call, monkey.",p:"p3",l:["infrastructure"]},
+
+  // NEXT WEEK
+  {s:"next",t:"Beer Can: review aggregation + AggregateRating schema",d:"Set up Outscraper account → pull Google/Yelp reviews for all 3 locations → build /reviews page on hiresbigh.com → add AggregateRating schema. This gets star ratings showing in Google search results. The sneaky play no agency does.",p:"p2",l:["hires","seo"]},
+  {s:"next",t:"Build menu category landing pages",d:"/menu/burgers, /menu/shakes, /menu/sides, /menu/drinks. Each targets long-tail searches like 'best milkshake in utah' or 'fresh cut fries near me salt lake city'. More entry points = more traffic.",p:"p3",l:["hires","seo"]},
+  {s:"next",t:"Gift cards — waiting on Netmasons + Ali images",d:"Jason Hamilton at Netmasons removing 'SLC' from storefront URL. Ali needs to provide card images (500x315px). Once ready, embed on shop page and kill 'Coming Soon' placeholder.",p:"p3",l:["hires","ali"]},
+  {s:"next",t:"Hero video edit — cut Litzas content",d:"Ali wants Litzas menu and fry sauce removed from the homepage banner video. Need video editing or a new cut.",p:"p3",l:["hires","ali"]},
+];
+
+function render(){
+  var sections = {today:'today',tomorrow:'tomorrow',week:'week',next:'next'};
+  var active=0,done=0;
+  
+  Object.values(sections).forEach(function(id){document.getElementById(id).innerHTML=''});
+  
+  tasks.forEach(function(tk,i){
+    if(tk.done) done++; else active++;
+    var div = document.createElement('div');
+    div.className = 'task' + (tk.done?' done':'');
+    div.setAttribute('data-idx',i);
+    
+    var labels = (tk.l||[]).map(function(l){return '<span class="label" style="color:'+(LABELS[l]||'#666')+'">'+l+'</span>'}).join('');
+    var pri = PRI[tk.p]||PRI.p4;
+    
+    div.innerHTML = '<button class="cb" onclick="toggle('+i+',event)"><span class="check">✓</span></button>'
+      +'<div class="task-content" onclick="expand('+i+')">'
+      +'<div class="task-title">'+tk.t+'</div>'
+      +'<div class="task-meta"><span class="pri" style="background:'+pri.c+'"></span>'+labels+'</div>'
+      +(tk.d?'<div class="task-desc">'+tk.d.replace(/\n/g,'<br>')+'</div>':'')
+      +'</div>';
+    
+    document.getElementById(tk.s).appendChild(div);
+  });
+  
+  document.getElementById('counts').textContent = active+' active · '+done+' done';
+}
+
+function toggle(i,e){
+  e.stopPropagation();
+  tasks[i].done = !tasks[i].done;
+  try{localStorage.setItem('skippy-tasks',JSON.stringify(tasks.map(function(t){return{i:tasks.indexOf(t),d:!!t.done}}).filter(function(t){return t.d})))}catch(e){}
+  render();
+}
+
+function expand(i){
+  var els = document.querySelectorAll('.task[data-idx="'+i+'"]');
+  els.forEach(function(el){el.classList.toggle('expanded')});
+}
+
+// Restore done states
+try{
+  var saved = JSON.parse(localStorage.getItem('skippy-tasks')||'[]');
+  saved.forEach(function(s){if(tasks[s.i])tasks[s.i].done=s.d});
+}catch(e){}
+
+render();
+</script>
+</body>
+</html>
