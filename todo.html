@@ -73,12 +73,12 @@ var PRI = {p1:{c:"#d9514b"},p2:{c:"#D4A847"},p3:{c:"#5B8FB9"},p4:{c:"#949494"}};
 
 var tasks = [
   // TODAY
-  {s:"today",t:"Submit sitemap in Google Search Console",d:"You're already verified! In Search Console: left sidebar → Sitemaps → type sitemap.xml → hit Submit. Then go to URL Inspection → paste https://hiresbigh.com/ → click Request Indexing. Do the same for /menu, /about, /shop, /locations/salt-lake-city.",p:"p1",l:["hires","seo"]},
+  {s:"today",t:"✅ Submit sitemap in Google Search Console",d:"DONE 3/31 — 21 pages discovered, sitemap processed successfully.",p:"p1",l:["hires","seo"],done:true},
   {s:"today",t:"Upgrade Cloudflare to $5/mo Workers Paid plan",d:"dash.cloudflare.com → Workers & Pages → Plans → Upgrade. $5/mo = 10M reads, 1M writes. Hit free limit today from all the deploys.",p:"p1",l:["infrastructure"]},
   {s:"today",t:"STOP Daybreak server incentive program",d:"Staff get paid when their names appear in Google reviews. This is review gating and violates Google Business policy. Could get ALL 3 locations delisted. Ali must stop this immediately — talk to Eddy.",p:"p1",l:["hires","urgent"]},
   {s:"today",t:"Update Google Business Profile URLs (all 3 locations)",d:"Change website URL to hiresbigh.com on SLC, Midvale, and Daybreak Google Business listings. If Christian 'can't log in' to SLC, Ali claims it herself at business.google.com → search for the listing → Claim.",p:"p1",l:["hires","seo"]},
   {s:"today",t:"Rotate GitHub PAT and Cloudflare API tokens",d:"Both were exposed in chat history. Go to github.com → Settings → Developer Settings → Personal Access Tokens → generate new one. Cloudflare: dash.cloudflare.com → My Profile → API Tokens → roll/regenerate.",p:"p1",l:["security"]},
-  {s:"today",t:"Update Facebook + Instagram bio links to hiresbigh.com",d:"Change from old Shopify URL to hiresbigh.com on all social profiles.",p:"p2",l:["hires"]},
+  // REMOVED — URL was always hiresbigh.com
 
   // TOMORROW
   {s:"tomorrow",t:"Fix Resend SPF/DKIM on wickowaypoint.com DNS",d:"Login to resend.com → Domains → wickowaypoint.com → copy the SPF and DKIM records it shows → add them in Cloudflare DNS for wickowaypoint.com zone. This fixes email delivery to Ali through Proofpoint.",p:"p1",l:["hires","infrastructure"]},
@@ -93,6 +93,7 @@ var tasks = [
   {s:"week",t:"Remove email-test diagnostic endpoint",d:"functions/api/email-test.js — temporary diagnostic file. Delete it and push.",p:"p3",l:["hires"]},
   {s:"week",t:"Refresh Todoist API token",d:"Settings → Integrations → reauthorize Claude connector. Or just use Skippy Tasks forever. Your call, monkey.",p:"p3",l:["infrastructure"]},
 
+  // NOTE: Scroll's dev site (never went live): hiresbigh.webstaginglabs.com — $14K for lorem ipsum
   // NEXT WEEK
   {s:"next",t:"Beer Can: review aggregation + AggregateRating schema",d:"Set up Outscraper account → pull Google/Yelp reviews for all 3 locations → build /reviews page on hiresbigh.com → add AggregateRating schema. This gets star ratings showing in Google search results. The sneaky play no agency does.",p:"p2",l:["hires","seo"]},
   {s:"next",t:"Build menu category landing pages",d:"/menu/burgers, /menu/shakes, /menu/sides, /menu/drinks. Each targets long-tail searches like 'best milkshake in utah' or 'fresh cut fries near me salt lake city'. More entry points = more traffic.",p:"p3",l:["hires","seo"]},
