@@ -291,7 +291,7 @@
       </div>
 
       <div class="alert-banner">
-        <div class="title">REQUIRES IMMEDIATE ACTION</div>
+        <div id="dynamic-alerts-container" style="margin:16px 0"><div style="color:#888;font-size:12px;padding:8px 0">⟳ Loading analysis...</div></div>
         <div class="item">● Google Cloud Platform billing is PAST DUE — fix payment at console.cloud.google.com</div>
         <div class="item">● Prime Video changing to "Ultra" April 10 — likely price increase</div>
         <div class="item">● PayPal Credit Card — unknown balance, paid $75 Mar 12</div>
@@ -769,5 +769,71 @@ function renderActionPlan() {
   document.getElementById('plan-content').innerHTML = html;
 }
 </script>
+
+<script>
+// SKIPPY FINANCE — Dynamic Recommendations Engine
+async function loadRecommendations() {
+  const container = document.getElementById('dynamic-alerts-container');
+  const actionPlan = document.getElementById('action-plan-content');
+  
+  try {
+    const res = await fetch('/api/recommendations');
+    const data = await res.json();
+    
+    // Render alerts
+    if (container) {
+      if (data.alerts && data.alerts.length > 0) {
+        const alertColors = { critical: '#ff4444', warning: '#ffaa00', info: '#4488ff' };
+        const alertEmoji = { critical: '🚨', warning: '⚠️', info: 'ℹ️' };
+        container.innerHTML = data.alerts.map(a => `
+          <div style="padding:10px 14px;margin:6px 0;border-left:3px solid ${alertColors[a.level] || '#888'};background:rgba(255,255,255,0.03);border-radius:0 4px 4px 0">
+            <span style="color:${alertColors[a.level] || '#888'};font-weight:700;font-size:12px">${alertEmoji[a.level] || '●'} ${a.title}</span>
+            <div style="color:#aaa;font-size:12px;margin-top:3px">${a.message}</div>
+          </div>
+        `).join('');
+      } else {
+        container.innerHTML = '<div style="color:#4caf50;font-size:12px;padding:8px 0">✓ No urgent issues detected</div>';
+      }
+    }
+    
+    // Render health score
+    const healthEl = document.getElementById('health-score');
+    if (healthEl && data.health_score) {
+      const color = data.health_score >= 80 ? '#4caf50' : data.health_score >= 60 ? '#ffaa00' : '#ff4444';
+      healthEl.innerHTML = `<span style="font-size:28px;font-weight:700;color:${color}">${data.health_score}</span><span style="color:#666;font-size:11px;margin-left:4px">${data.health_label}</span>`;
+    }
+    
+    // Render recommendations in action plan tab
+    if (actionPlan && data.recommendations && data.recommendations.length > 0) {
+      actionPlan.innerHTML = '<div style="margin-bottom:8px;color:#666;font-size:11px">Last updated: ' + new Date(data.generated_at).toLocaleTimeString() + ' · ' + data.snapshot?.transactions_analyzed + ' transactions analyzed</div>' +
+        data.recommendations.map((r, i) => `
+          <div style="padding:14px;margin:8px 0;background:rgba(255,255,255,0.03);border-radius:6px;border:1px solid #1a1a2e">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start">
+              <span style="font-weight:700;font-size:13px;color:#e0e0e0">${i+1}. ${r.title}</span>
+              ${r.savings ? `<span style="font-size:11px;color:#4caf50;white-space:nowrap;margin-left:8px">${r.savings}</span>` : ''}
+            </div>
+            <div style="color:#888;font-size:12px;margin-top:6px;line-height:1.5">${r.detail}</div>
+          </div>
+        `).join('');
+      
+      if (data.summary) {
+        actionPlan.innerHTML += `<div style="margin-top:16px;padding:12px;background:rgba(68,136,255,0.08);border-radius:6px;color:#aaa;font-size:12px;font-style:italic">${data.summary}</div>`;
+      }
+    }
+    
+  } catch(e) {
+    console.error('Recommendations error:', e);
+    if (container) container.innerHTML = '<div style="color:#666;font-size:12px">Analysis unavailable</div>';
+  }
+}
+
+// Add health score placeholder near the stats if it doesn't exist
+document.addEventListener('DOMContentLoaded', function() {
+  loadRecommendations();
+  // Refresh every 4 hours
+  setInterval(loadRecommendations, 4 * 60 * 60 * 1000);
+});
+</script>
+
 </body>
 </html>
