@@ -77,12 +77,17 @@
                 <h1 class="text-2xl font-black bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-500 tracking-tight">
                     VICIOUS GIN
                 </h1>
-                <button onclick="resetGame()" class="p-2 rounded-full bg-white/5 hover:bg-white/10">
-                    <i data-lucide="rotate-ccw" class="w-5 h-5 text-slate-400"></i>
-                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="openPlayerSettings()" class="p-2 rounded-full bg-white/5 hover:bg-white/10" title="Manage Players">
+                        <i data-lucide="users" class="w-5 h-5 text-slate-400"></i>
+                    </button>
+                    <button onclick="resetGame()" class="p-2 rounded-full bg-white/5 hover:bg-white/10" title="Reset Scores">
+                        <i data-lucide="rotate-ccw" class="w-5 h-5 text-slate-400"></i>
+                    </button>
+                </div>
             </div>
             
-            <div id="score-banner" class="grid grid-cols-3 gap-3">
+            <div id="score-banner" class="grid gap-3">
                 <!-- Scores injected here -->
             </div>
         </header>
@@ -96,9 +101,7 @@
                         <div class="flex flex-col gap-1">
                             <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Player</span>
                             <select id="input-player" onchange="syncUI()" class="bg-transparent text-xl font-black text-white outline-none border-b-2 border-purple-500/30 focus:border-purple-500 transition-all">
-                                <option value="Sasha" class="bg-slate-900">Sasha</option>
-                                <option value="Scott" class="bg-slate-900">Scott</option>
-                                <option value="Charles" class="bg-slate-900">Charles</option>
+                                <!-- Player options injected -->
                             </select>
                         </div>
                         <div class="flex flex-col gap-1 text-right max-w-[50%]">
@@ -173,6 +176,30 @@
             </section>
         </main>
 
+        <!-- Player Settings Modal -->
+        <div id="player-modal" class="hidden fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-black/70 backdrop-blur-sm" onclick="if(event.target===this)closePlayerSettings()">
+            <div class="glass-card w-full max-w-md p-6 space-y-5 max-h-[85vh] overflow-y-auto">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-black tracking-tight">Players</h2>
+                    <button onclick="closePlayerSettings()" class="p-2 rounded-full bg-white/5 hover:bg-white/10">
+                        <i data-lucide="x" class="w-4 h-4 text-slate-400"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-slate-500 leading-relaxed">
+                    Edit names, add or remove players. Changes save automatically. Existing scores stay with each name; removed players lose their scores.
+                </p>
+                <div id="player-list" class="space-y-2">
+                    <!-- Player rows injected -->
+                </div>
+                <button onclick="addPlayer()" class="w-full flex items-center justify-center gap-2 py-3 rounded-2xl font-bold transition-all active:scale-95 bg-white/5 border border-dashed border-white/20 hover:bg-white/10 hover:border-purple-500/50">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i> Add Player
+                </button>
+                <button onclick="closePlayerSettings()" class="w-full py-4 rounded-2xl font-bold transition-all active:scale-95 gem-gradient text-white shadow-xl shadow-purple-900/40">
+                    Done
+                </button>
+            </div>
+        </div>
+
         <!-- Nav Dock -->
         <nav class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-sm h-20 bg-[#151525]/80 backdrop-blur-2xl border border-white/10 rounded-3xl flex items-center justify-around px-2 shadow-2xl z-50">
             <button onclick="setTab('guide')" id="nav-guide" class="flex flex-col items-center gap-1.5 p-3 transition-all text-slate-500">
@@ -202,20 +229,70 @@
             '3-9': 5, '10-K': 10, 'Ace': 15, '2': 25, 'Joker': 50, 'Other': 25
         };
 
-        let state = {
-            players: ['Sasha', 'Scott', 'Charles'],
-            gameData: HAND_REQUIREMENTS.map(h => ({ name: h, scores: { Sasha: null, Scott: null, Charles: null } })),
-            currentHandIdx: 0,
-            currentPlayer: 'Sasha',
-            manualScore: 0,
-            isScanning: false
-        };
+        const STORAGE_KEY = 'viciousGinState_v1';
+        const DEFAULT_PLAYERS = ['Sasha', 'Scott', 'Charles'];
+
+        function buildEmptyGameData(players) {
+            return HAND_REQUIREMENTS.map(h => ({
+                name: h,
+                scores: Object.fromEntries(players.map(p => [p, null]))
+            }));
+        }
+
+        function loadState() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                if (saved && Array.isArray(saved.players) && saved.players.length >= 2 && Array.isArray(saved.gameData)) {
+                    return {
+                        players: saved.players,
+                        gameData: saved.gameData,
+                        currentHandIdx: saved.currentHandIdx ?? 0,
+                        currentPlayer: saved.players.includes(saved.currentPlayer) ? saved.currentPlayer : saved.players[0],
+                        manualScore: 0,
+                        isScanning: false
+                    };
+                }
+            } catch (e) { /* fall through to default */ }
+            return {
+                players: [...DEFAULT_PLAYERS],
+                gameData: buildEmptyGameData(DEFAULT_PLAYERS),
+                currentHandIdx: 0,
+                currentPlayer: DEFAULT_PLAYERS[0],
+                manualScore: 0,
+                isScanning: false
+            };
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    players: state.players,
+                    gameData: state.gameData,
+                    currentHandIdx: state.currentHandIdx,
+                    currentPlayer: state.currentPlayer
+                }));
+            } catch (e) { /* quota or privacy mode, no-op */ }
+        }
+
+        let state = loadState();
 
         const apiKey = ""; // Runtime provided
 
+        function renderPlayerSelect() {
+            const select = document.getElementById('input-player');
+            const prev = state.currentPlayer;
+            select.innerHTML = state.players.map(p =>
+                `<option value="${p.replace(/"/g, '&quot;')}" class="bg-slate-900">${p}</option>`
+            ).join('');
+            select.value = state.players.includes(prev) ? prev : state.players[0];
+            state.currentPlayer = select.value;
+        }
+
         function init() {
             lucide.createIcons();
-            
+
+            renderPlayerSelect();
+
             // Populate Hand Selection
             const select = document.getElementById('input-hand-idx');
             HAND_REQUIREMENTS.forEach((h, i) => {
@@ -225,6 +302,7 @@
                 opt.textContent = `${i + 1}. ${h}`;
                 select.appendChild(opt);
             });
+            select.value = state.currentHandIdx;
 
             // Populate Point Buttons
             const btnContainer = document.getElementById('point-buttons');
@@ -248,6 +326,7 @@
             renderGuide();
             renderBoard();
             updateNav();
+            saveState();
         }
 
         function updateScoreBanner() {
@@ -261,6 +340,7 @@
             const loser = sorted[sorted.length-1].total > 0 ? sorted[sorted.length-1].name : null;
 
             const banner = document.getElementById('score-banner');
+            banner.style.gridTemplateColumns = `repeat(${Math.min(state.players.length, 3)}, minmax(0, 1fr))`;
             banner.innerHTML = totals.map(t => `
                 <div class="relative p-3 rounded-2xl border transition-all duration-700 ${t.name === winner ? 'winner-glow' : t.name === loser ? 'loser-glow' : 'bg-white/5 border-white/10'}">
                     <div class="text-[10px] uppercase font-black tracking-widest opacity-50 mb-1">${t.name}</div>
@@ -424,8 +504,113 @@
                     state.players.forEach(p => h.scores[p] = null);
                 });
                 state.manualScore = 0;
+                state.currentHandIdx = 0;
+                document.getElementById('input-hand-idx').value = 0;
+                saveState();
                 syncUI();
             }
+        }
+
+        // ---------- Player management ----------
+
+        function openPlayerSettings() {
+            document.getElementById('player-modal').classList.remove('hidden');
+            renderPlayerSettings();
+        }
+
+        function closePlayerSettings() {
+            document.getElementById('player-modal').classList.add('hidden');
+        }
+
+        function renderPlayerSettings() {
+            const list = document.getElementById('player-list');
+            list.innerHTML = state.players.map((p, i) => `
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black text-slate-400 flex-shrink-0">${i + 1}</div>
+                    <input
+                        type="text"
+                        value="${p.replace(/"/g, '&quot;')}"
+                        data-idx="${i}"
+                        oninput="handlePlayerRename(${i}, this.value)"
+                        class="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm font-bold text-white outline-none focus:border-purple-500 transition-all"
+                        placeholder="Player name"
+                        maxlength="20"
+                    >
+                    <button
+                        onclick="removePlayer(${i})"
+                        class="w-10 h-10 flex items-center justify-center rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 hover:bg-rose-500/20 transition-all active:scale-90 flex-shrink-0 ${state.players.length <= 2 ? 'opacity-30 pointer-events-none' : ''}"
+                        title="Remove player"
+                    >
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function handlePlayerRename(idx, raw) {
+            const newName = raw.trim();
+            if (!newName) return; // don't commit empty; wait for non-empty
+            const oldName = state.players[idx];
+            if (newName === oldName) return;
+            // disallow duplicates
+            if (state.players.some((p, j) => j !== idx && p.toLowerCase() === newName.toLowerCase())) return;
+
+            state.players[idx] = newName;
+            if (state.currentPlayer === oldName) state.currentPlayer = newName;
+
+            // Rekey scores in gameData
+            state.gameData.forEach(h => {
+                h.scores[newName] = h.scores[oldName] ?? null;
+                delete h.scores[oldName];
+            });
+
+            saveState();
+            renderPlayerSelect();
+            updateScoreBanner();
+            renderBoard();
+        }
+
+        function addPlayer() {
+            if (state.players.length >= 6) {
+                alert("Max 6 players.");
+                return;
+            }
+            let name = prompt("New player name:", "");
+            if (!name) return;
+            name = name.trim();
+            if (!name) return;
+            if (state.players.some(p => p.toLowerCase() === name.toLowerCase())) {
+                alert("That name is already taken.");
+                return;
+            }
+            state.players.push(name);
+            state.gameData.forEach(h => { h.scores[name] = null; });
+            saveState();
+            renderPlayerSelect();
+            renderPlayerSettings();
+            updateScoreBanner();
+            renderBoard();
+        }
+
+        function removePlayer(idx) {
+            if (state.players.length <= 2) return;
+            const name = state.players[idx];
+            const hasScores = state.gameData.some(h => h.scores[name] != null);
+            const msg = hasScores
+                ? `Remove ${name}? Their scores will be deleted.`
+                : `Remove ${name}?`;
+            if (!confirm(msg)) return;
+
+            state.players.splice(idx, 1);
+            state.gameData.forEach(h => { delete h.scores[name]; });
+            if (state.currentPlayer === name) state.currentPlayer = state.players[0];
+
+            saveState();
+            renderPlayerSelect();
+            renderPlayerSettings();
+            updateScoreBanner();
+            renderBoard();
         }
 
         window.onload = init;
