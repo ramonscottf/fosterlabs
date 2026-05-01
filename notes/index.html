@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Notes — Skippy</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0a0a;
+  --fg:#f0ede8;
+  --muted:#666;
+  --dim:#999;
+  --border:rgba(255,255,255,.07);
+  --border-bright:rgba(255,255,255,.15);
+  --card:rgba(255,255,255,.03);
+  --card-hover:rgba(255,255,255,.05);
+  --red:#d9514b;
+  --gold:#D4A847;
+  --blue:#5B8FB9;
+  --green:#2D7F46;
+  --green-bright:#3fa15a;
+}
+html,body{background:var(--bg);color:var(--fg);min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display',sans-serif;-webkit-font-smoothing:antialiased;font-feature-settings:"ss01","ss02"}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:9999;opacity:.5}
+
+.wrap{max-width:680px;margin:0 auto;padding:24px 18px 140px}
+
+/* Header */
+.head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:6px;gap:12px}
+h1{font-size:32px;font-weight:800;letter-spacing:-1.2px;line-height:1}
+h1 span{color:var(--blue)}
+.head-meta{font-size:11px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;text-align:right;line-height:1.4}
+.head-meta b{color:var(--fg);font-weight:700}
+.sub{font-size:12px;color:var(--muted);letter-spacing:1.4px;text-transform:uppercase;margin-bottom:24px;font-weight:600}
+
+/* Add new */
+.add-bar{display:flex;gap:8px;margin-bottom:20px;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:12px}
+.add-bar input{flex:1;background:transparent;border:none;color:var(--fg);font-size:15px;font-family:inherit;outline:none;padding:6px 4px}
+.add-bar input::placeholder{color:var(--muted)}
+.add-bar button{background:var(--blue);color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.3px;transition:filter .15s,transform .1s}
+.add-bar button:hover{filter:brightness(1.1)}
+.add-bar button:active{transform:scale(.97)}
+.add-bar button:disabled{opacity:.4;cursor:not-allowed}
+
+/* List */
+.list{display:flex;flex-direction:column;gap:10px}
+
+.item{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  transition:border-color .2s,opacity .25s;
+}
+.item:hover{border-color:var(--border-bright)}
+.item.done{opacity:.45}
+
+.row{display:flex;align-items:center;gap:14px;padding:16px}
+
+/* Checkbox */
+.cb{
+  width:26px;height:26px;min-width:26px;
+  border:2px solid var(--muted);
+  border-radius:13px;
+  background:transparent;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .18s;
+  position:relative;
+}
+.cb:hover{border-color:var(--green-bright)}
+.item.done .cb{border-color:var(--green-bright);background:var(--green-bright)}
+.cb svg{width:14px;height:14px;stroke:#fff;stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0;transform:scale(.6);transition:all .18s}
+.item.done .cb svg{opacity:1;transform:scale(1)}
+
+/* Title area */
+.body{flex:1;cursor:pointer;min-width:0;user-select:none}
+.title{font-size:15.5px;font-weight:500;line-height:1.4;word-wrap:break-word}
+.item.done .title{text-decoration:line-through;color:var(--muted)}
+.preview{font-size:12.5px;color:var(--dim);margin-top:3px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item.expanded .preview{display:none}
+
+/* Chevron */
+.chev{
+  width:24px;height:24px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--muted);
+  transition:transform .25s ease,color .15s;
+  flex-shrink:0;
+}
+.chev:hover{color:var(--fg)}
+.item.expanded .chev{transform:rotate(180deg);color:var(--fg)}
+
+/* Expanded content */
+.detail{
+  max-height:0;
+  overflow:hidden;
+  transition:max-height .3s ease;
+  border-top:1px solid transparent;
+}
+.item.expanded .detail{
+  max-height:1200px;
+  border-top-color:var(--border);
+}
+.detail-inner{padding:14px 16px 16px}
+.notes{
+  width:100%;
+  background:transparent;
+  border:none;
+  color:var(--fg);
+  font-family:inherit;
+  font-size:14px;
+  line-height:1.55;
+  resize:none;
+  outline:none;
+  min-height:80px;
+  padding:0;
+}
+.notes::placeholder{color:var(--muted);font-style:italic}
+
+.actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
+.timestamp{font-size:11px;color:var(--muted);letter-spacing:.5px}
+.del{
+  background:transparent;
+  border:1px solid var(--border-bright);
+  color:var(--red);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:1px;
+  text-transform:uppercase;
+  padding:6px 12px;
+  border-radius:6px;
+  cursor:pointer;
+  transition:all .15s;
+}
+.del:hover{background:var(--red);color:#fff;border-color:var(--red)}
+
+/* Empty state */
+.empty{
+  text-align:center;
+  padding:60px 20px;
+  color:var(--muted);
+}
+.empty .big{font-size:48px;margin-bottom:12px;opacity:.3}
+.empty .msg{font-size:14px;line-height:1.6}
+
+/* Footer counter */
+.foot{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:linear-gradient(180deg,transparent,rgba(10,10,10,.95) 30%);
+  padding:24px 18px 24px;
+  padding-bottom:max(24px,env(safe-area-inset-bottom));
+  text-align:center;
+  font-size:11px;
+  color:var(--muted);
+  letter-spacing:1.5px;
+  text-transform:uppercase;
+  font-weight:600;
+  pointer-events:none;
+}
+.foot b{color:var(--fg);font-weight:700}
+
+/* Animations */
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.item.new{animation:slideIn .25s ease}
+
+@media (max-width:480px){
+  .wrap{padding:18px 14px 140px}
+  h1{font-size:26px}
+  .row{padding:14px}
+  .title{font-size:14.5px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <h1>n<span>o</span>tes</h1>
+    <div class="head-meta">
+      <b id="open-count">0</b> open<br>
+      <span id="done-count">0</span> done
+    </div>
+  </div>
+  <div class="sub">Skippy · live checklist</div>
+
+  <div class="add-bar">
+    <input id="new-input" type="text" placeholder="Add an item…" autocomplete="off" maxlength="200">
+    <button id="add-btn">Add</button>
+  </div>
+
+  <div class="list" id="list"></div>
+</div>
+
+<div class="foot"><b id="foot-total">0</b> total · stored locally</div>
+
+<script>
+const KEY = 'skippy_notes_v1';
+const list = document.getElementById('list');
+const newInput = document.getElementById('new-input');
+const addBtn = document.getElementById('add-btn');
+const openCount = document.getElementById('open-count');
+const doneCount = document.getElementById('done-count');
+const footTotal = document.getElementById('foot-total');
+
+let items = load();
+
+function load(){
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e){}
+  // Seed first-time visit with the Kara conversation items so they sync with the Reminders Scott already has
+  return [
+    {
+      id: id(),
+      title: 'Kara: Summer Mondays + overtime',
+      notes: 'Need to confirm Mondays off still happens in the summer (always done this since I started here).\n\nAlso: I haven\'t been tracking all my overtime hours. Need to either start logging properly or have a conversation about how to handle that going forward.',
+      done: false,
+      ts: Date.now(),
+      expanded: false
+    },
+    {
+      id: id(),
+      title: 'Kara: Build unified event platform',
+      notes: 'DEF runs a LOT of events — varying sizes throughout the year, plus things for Crosby. They\'re unusual enough that one-off planning is killing time.\n\nProposal: sit down and nail out a unified event platform/system. Will save massive time if I structure this properly. Need to get her buy-in on me spending dedicated time building it.',
+      done: false,
+      ts: Date.now() + 1,
+      expanded: false
+    },
+    {
+      id: id(),
+      title: 'Kara: Redesign 49ers drawing',
+      notes: 'Can change how we run the 49ers drawing — make it far more slick AND more profitable for the foundation.\n\nHave optimization ideas ready to walk through.',
+      done: false,
+      ts: Date.now() + 2,
+      expanded: false
+    },
+    {
+      id: id(),
+      title: 'Kara: Gala messaging update',
+      notes: 'Heads up — I changed all the messaging for the Gala. Built a 49ers-themed website ready to send out.\n\nSitting on it until we figure out the rollout / next steps. Want her eyes on it before anything goes live.',
+      done: false,
+      ts: Date.now() + 3,
+      expanded: false
+    }
+  ];
+}
+
+function save(){
+  localStorage.setItem(KEY, JSON.stringify(items));
+}
+
+function id(){
+  return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+}
+
+function fmtTime(ts){
+  const d = new Date(ts);
+  const now = new Date();
+  const sameDay = d.toDateString() === now.toDateString();
+  if (sameDay) return d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+  return d.toLocaleDateString([], {month:'short', day:'numeric'}) + ' · ' +
+         d.toLocaleTimeString([], {hour:'numeric', minute:'2-digit'});
+}
+
+function preview(notes){
+  if (!notes) return 'No notes yet';
+  const first = notes.split('\n').find(l => l.trim());
+  return first || 'No notes yet';
+}
+
+function render(){
+  // Sort: open first (newest first), then done (most recent done first)
+  const sorted = [...items].sort((a,b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    return b.ts - a.ts;
+  });
+
+  const open = items.filter(i => !i.done).length;
+  const done = items.filter(i => i.done).length;
+  openCount.textContent = open;
+  doneCount.textContent = done;
+  footTotal.textContent = items.length;
+
+  if (items.length === 0){
+    list.innerHTML = '<div class="empty"><div class="big">∅</div><div class="msg">No items yet.<br>Add one above to get started.</div></div>';
+    return;
+  }
+
+  list.innerHTML = sorted.map(item => `
+    <div class="item ${item.done ? 'done':''} ${item.expanded ? 'expanded':''}" data-id="${item.id}">
+      <div class="row">
+        <button class="cb" data-action="toggle" aria-label="Mark done">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+        <div class="body" data-action="expand">
+          <div class="title">${escapeHtml(item.title)}</div>
+          <div class="preview">${escapeHtml(preview(item.notes))}</div>
+        </div>
+        <div class="chev" data-action="expand">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="detail">
+        <div class="detail-inner">
+          <textarea class="notes" placeholder="Notes, context, anything you want to remember…" data-action="notes">${escapeHtml(item.notes || '')}</textarea>
+          <div class="actions">
+            <span class="timestamp">${fmtTime(item.ts)}</span>
+            <button class="del" data-action="delete">Delete</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+  // Auto-resize textareas to fit content
+  list.querySelectorAll('.notes').forEach(t => {
+    autoSize(t);
+    t.addEventListener('input', () => autoSize(t));
+  });
+}
+
+function autoSize(t){
+  t.style.height = 'auto';
+  t.style.height = Math.max(80, t.scrollHeight) + 'px';
+}
+
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+// Event delegation
+list.addEventListener('click', e => {
+  const item = e.target.closest('.item');
+  if (!item) return;
+  const id = item.dataset.id;
+  const obj = items.find(i => i.id === id);
+  if (!obj) return;
+
+  const action = e.target.closest('[data-action]')?.dataset.action;
+
+  if (action === 'toggle'){
+    obj.done = !obj.done;
+    if (obj.done) obj.expanded = false;
+    save();
+    render();
+  } else if (action === 'expand'){
+    obj.expanded = !obj.expanded;
+    save();
+    render();
+  } else if (action === 'delete'){
+    if (confirm('Delete this item?')){
+      items = items.filter(i => i.id !== id);
+      save();
+      render();
+    }
+  }
+});
+
+// Notes editing (no re-render so cursor stays put)
+list.addEventListener('input', e => {
+  if (e.target.matches('.notes')){
+    const item = e.target.closest('.item');
+    const id = item.dataset.id;
+    const obj = items.find(i => i.id === id);
+    if (obj){
+      obj.notes = e.target.value;
+      save();
+      // Update preview without full re-render
+      const prev = item.querySelector('.preview');
+      if (prev) prev.textContent = preview(obj.notes);
+    }
+  }
+});
+
+// Add new
+function add(){
+  const v = newInput.value.trim();
+  if (!v) return;
+  items.unshift({
+    id: id(),
+    title: v,
+    notes: '',
+    done: false,
+    ts: Date.now(),
+    expanded: true
+  });
+  newInput.value = '';
+  save();
+  render();
+  // Focus the new item's notes
+  setTimeout(() => {
+    const first = list.querySelector('.item .notes');
+    if (first) first.focus();
+  }, 50);
+}
+
+addBtn.addEventListener('click', add);
+newInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter'){ e.preventDefault(); add(); }
+});
+
+render();
+</script>
+</body>
+</html>
