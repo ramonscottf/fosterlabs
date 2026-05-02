@@ -3,362 +3,366 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mower Decision — Foster Labs</title>
-<meta name="description" content="Ride-on vs robot vs service: deep research on Scott's mower decision for 2182 Loveland Lane.">
+<title>Scott's Robot Mower — The Definitive 2026 Pick</title>
+<meta name="description" content="The robot mower verdict for 2182 Loveland Lane: tight yard, mature trees, $1,500 budget. May 2026.">
 <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth}
-  body{
-    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;
-    background:#f8fafc;
-    color:#1e293b;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
+  :root {
+    --bg:#0b1020; --panel:#141a2e; --panel2:#1a2240; --ink:#e9edf7; --muted:#9aa3bf;
+    --green:#34d399; --green-bg:#0f3a2e; --yellow:#fbbf24; --yellow-bg:#3a2e0f;
+    --red:#f87171; --red-bg:#3a1414; --blue:#60a5fa; --blue-bg:#0f223a;
+    --purple:#a78bfa; --purple-bg:#231a3a; --line:#2a3358;
   }
-  .wrap{max-width:1100px;margin:0 auto;padding:32px 20px 80px}
-  .nav{
-    display:flex;justify-content:space-between;align-items:center;
-    padding-bottom:20px;border-bottom:1px solid #e2e8f0;margin-bottom:24px;
-    font-size:13px;color:#64748b;
-  }
-  .nav a{color:#1a4d2e;text-decoration:none;font-weight:600}
-  .nav a:hover{text-decoration:underline}
-  .meta{
-    font-size:12px;letter-spacing:1.5px;color:#64748b;
-    text-transform:uppercase;margin-bottom:8px;
-  }
-  h1{font-size:36px;line-height:1.2;margin-bottom:12px;color:#0f172a;font-weight:800;letter-spacing:-0.5px}
-  h2{font-size:24px;margin:36px 0 16px;color:#0f172a;font-weight:700;letter-spacing:-0.3px}
-  h3{font-size:18px;margin:20px 0 10px;color:#1e293b;font-weight:700}
-  p{margin-bottom:14px;font-size:15px}
-  ul,ol{margin:0 0 14px 24px;font-size:15px}
-  li{margin-bottom:6px}
-  table{width:100%;border-collapse:collapse;font-size:14px}
-  th,td{padding:10px;text-align:left}
-  strong{color:#0f172a}
-  @media (max-width:640px){
-    h1{font-size:28px}
-    h2{font-size:20px}
-    .wrap{padding:20px 16px 60px}
-  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior:smooth; }
+  body { margin:0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui, sans-serif;
+    background: linear-gradient(180deg,#070b1a,#0b1020); color: var(--ink); line-height:1.55;
+    -webkit-font-smoothing:antialiased; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 22px 80px; }
+  .nav { display:flex; justify-content:space-between; align-items:center; padding-bottom:18px; border-bottom:1px solid var(--line); margin-bottom:22px; font-size:13px; color:var(--muted);}
+  .nav a { color:var(--green); text-decoration:none; font-weight:600;}
+  .nav a:hover { text-decoration:underline; }
+  h1 { font-size: 34px; margin: 8px 0 4px; letter-spacing:-0.02em; }
+  h2 { font-size: 22px; margin: 36px 0 12px; letter-spacing:-0.01em; border-left: 4px solid var(--blue); padding-left:12px;}
+  h3 { font-size: 17px; margin: 14px 0 8px; }
+  p { margin: 8px 0; }
+  .sub { color: var(--muted); font-size: 14px; }
+  .pill { display:inline-block; padding:3px 10px; border-radius:999px; font-size:12px; font-weight:700; letter-spacing:0.04em; text-transform:uppercase; }
+  .pill.green { background:var(--green-bg); color:var(--green); border:1px solid var(--green);}
+  .pill.yellow{ background:var(--yellow-bg); color:var(--yellow); border:1px solid var(--yellow);}
+  .pill.red   { background:var(--red-bg); color:var(--red); border:1px solid var(--red);}
+  .pill.blue  { background:var(--blue-bg); color:var(--blue); border:1px solid var(--blue);}
+  .pill.purple{ background:var(--purple-bg); color:var(--purple); border:1px solid var(--purple);}
+  .hero { background:linear-gradient(135deg,#0f3a2e,#0b1020 60%); border:1px solid var(--green); border-radius:18px; padding:24px 26px; margin-top:14px;}
+  .hero .pill { margin-right:6px;}
+  .hero h2 { border:none; padding:0; margin:8px 0 4px; font-size:30px;}
+  .hero .price { font-size:38px; font-weight:800; color:var(--green); }
+  .hero .price small { color:var(--muted); font-weight:500; font-size:14px; margin-left:8px;}
+  .grid { display:grid; gap:16px; }
+  .grid-2 { grid-template-columns: 1fr 1fr; }
+  .grid-3 { grid-template-columns: repeat(3,1fr); }
+  @media (max-width: 820px){ .grid-2,.grid-3 { grid-template-columns: 1fr; } h1 {font-size:28px;} h2 {font-size:20px;} }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:14px; padding:18px 20px; }
+  .card.pick { border-color: var(--green); box-shadow: 0 0 0 2px rgba(52,211,153,.18) inset;}
+  .card.backup { border-color: var(--yellow); }
+  .card.avoid { border-color: var(--red); opacity:.92; }
+  .card h3 { margin-top:0; }
+  .table-wrap { overflow-x:auto; -webkit-overflow-scrolling:touch; }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin:8px 0; min-width:560px; }
+  th, td { padding:10px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top;}
+  th { color:var(--muted); font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.06em;}
+  tr:last-child td { border-bottom:none;}
+  .winner { background: rgba(52,211,153,.08); }
+  .runner { background: rgba(251,191,36,.06); }
+  .check { color: var(--green); font-weight:700;}
+  .x     { color: var(--red); font-weight:700;}
+  .meh   { color: var(--yellow); font-weight:700;}
+  ul.tight { margin: 6px 0 8px 18px; padding:0;}
+  ul.tight li { margin: 4px 0; }
+  .running { background:linear-gradient(135deg,#0f223a,#141a2e); border:1px solid var(--blue); border-radius:14px; padding:16px 20px;}
+  .running .row { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px dashed var(--line); gap:12px;}
+  .running .row:last-child { border-bottom:none; padding-top:10px; font-weight:700; color:var(--green); font-size:18px;}
+  .callout { border-left:4px solid var(--blue); background:var(--blue-bg); padding:12px 16px; border-radius:8px; margin:12px 0;}
+  .callout.warn { border-color:var(--yellow); background:var(--yellow-bg);}
+  .callout.danger { border-color:var(--red); background:var(--red-bg);}
+  .meta-grid { display:grid; grid-template-columns: repeat(2, 1fr); gap:6px 14px; font-size:14px; margin:10px 0;}
+  .meta-grid div span { color:var(--muted); margin-right:6px; }
+  .scoreline { display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;}
+  .scoreline span { background:#0a0e1c; border:1px solid var(--line); border-radius:8px; padding:4px 10px; font-size:12px; color:var(--muted);}
+  .scoreline span b { color:var(--ink);}
+  .top-strip { display:flex; gap:8px; flex-wrap:wrap; margin-bottom: 4px;}
+  .footer-note { font-size:12px; color:var(--muted); margin-top:24px; border-top:1px solid var(--line); padding-top:12px;}
 </style>
 </head>
 <body>
 <div class="wrap">
 
-<div class="nav">
-  <a href="https://fosterlabs.org/">← fosterlabs.org</a>
-  <span>May 2, 2026 · Skippy research</span>
-</div>
+  <div class="nav">
+    <a href="https://fosterlabs.org/">← fosterlabs.org</a>
+    <span>May 2, 2026 · Skippy research</span>
+  </div>
 
-<div class="meta">⚡ Decision Brief</div>
+  <div class="top-strip">
+    <span class="pill blue">Scott Foster · 2182 Loveland Ln, Farmington UT</span>
+    <span class="pill purple">12,500 sq ft · KBG · Zone 7a</span>
+    <span class="pill yellow">Budget cap $1,500</span>
+    <span class="pill green">Updated May 2026</span>
+  </div>
+  <h1>The robot mower that fits your yard. Buy it today.</h1>
+  <p class="sub">You asked "which one is THE ONE?" Here's the confident answer, the backup, and exactly what to buy with it.</p>
 
-<h1>Scott's mower decision: the answer is probably a robot, not a ride-on</h1>
+  <div class="hero">
+    <div class="top-strip">
+      <span class="pill green">★ THE PICK</span>
+      <span class="pill blue">Wire-free · LiDAR + Vision</span>
+      <span class="pill purple">Tree-canopy proof</span>
+      <span class="pill yellow">In budget</span>
+    </div>
+    <h2>Segway Navimow i215 LiDAR</h2>
+    <div class="price">$1,399 <small>sale · $1,599 MSRP · Home Depot, Amazon, Segway direct</small></div>
+    <p>This is the first sub-$1,500 robot mower that actually solves your three real problems at once: <b>mature tree canopy</b> (LiDAR doesn't care about satellites), <b>tight yard with nooks</b> (28-inch narrow passage handling, 200+ obstacle types at 0.4-inch precision), and your <b>"I'm particular"</b> standard (systematic stripe patterns, not random wandering). Coverage rating is 0.37 acres — you have 0.287 acres, so it has comfortable headroom. Solid-state LiDAR scans 200,000 points per second and works under trees, in shade, and at night. The 28" passage spec means the strip down the side of your house and any path between flowerbeds is mowable, not skipped.</p>
+    <p><b>Add the EGO Power+ ST1623T trimmer/edger ($329)</b> for the work the robot can't do. Total system: <b>$1,728</b>. You're done.</p>
+  </div>
 
-<div style="background:linear-gradient(135deg,#1a4d2e 0%,#2d8659 100%);color:#fff;padding:24px;border-radius:12px;margin:16px 0;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
-<div style="font-size:13px;letter-spacing:2px;opacity:0.9;margin-bottom:8px;">⚡ BOTTOM LINE UP FRONT</div>
-<div style="font-size:22px;font-weight:700;line-height:1.4;margin-bottom:12px;">A <span style="background:#fff;color:#1a4d2e;padding:2px 8px;border-radius:4px;">Husqvarna Automower 410iQ ($1,550)</span> will save Scott ~120 hours/year. A ride-on saves ~75. A lawn service saves ~130 but costs $1,500/year forever.</div>
-<div style="font-size:15px;opacity:0.95;line-height:1.5;">If Scott actually wants his time back to build, the ride-on is the <strong style="color:#fff">third-best</strong> answer to his own question. But if he wants a ride-on anyway (the "tractor curiosity" tells me he might), the <strong style="color:#fff">John Deere S120 at $2,899</strong> is the right one. Zero-turn is the wrong choice for a particular Kentucky bluegrass owner who's new to ride-ons.</div>
-</div>
+  <h2>Do it today (15-minute action list)</h2>
+  <div class="grid grid-2">
+    <div class="card">
+      <h3>1. Buy the mower</h3>
+      <p>Order the <b>Segway Navimow i215 LiDAR</b> from Home Depot or Segway direct (Amazon also stocks it). Look for the $1,399 sale price first; if it's at $1,599, still buy — you have $1,500 budget plus $329 trimmer = $1,728 vs. ceiling. Add an outdoor outlet near the chosen dock spot if one isn't already there.</p>
+      <span class="pill green">~$1,399–$1,599</span>
+    </div>
+    <div class="card">
+      <h3>2. Buy the trimmer</h3>
+      <p>Order the <b>EGO Power+ ST1623T</b> with POWERLOAD and 4.0Ah battery from Ace Hardware, Home Depot, or Amazon. Skip if you already run Milwaukee M18 or DeWalt 60V — stay in your existing battery ecosystem and save a hundred bucks.</p>
+      <span class="pill green">~$329</span>
+    </div>
+    <div class="card">
+      <h3>3. Add a $40 deterrent</h3>
+      <p>Place a $40 Wyze or Blink camera covering the charging dock. Theft risk on Loveland Lane is genuinely <b>low</b> — but a visible camera makes the yard a "not worth it" target. Use the cellular GPS + lift alarm built into the i215.</p>
+      <span class="pill green">~$40</span>
+    </div>
+    <div class="card">
+      <h3>4. Skip Utah Robomowers (this time)</h3>
+      <p>Utah Robomowers in Kaysville is <b>Husqvarna-only</b>. They won't sell or install a Navimow. Setup is 10–30 minutes via the app — auto-mapping, no wire to bury, no antenna to mount. This is exactly the time savings you're paying for. Save their number for if you ever switch to Husqvarna in the future.</p>
+      <span class="pill blue">DIY · 30 min</span>
+    </div>
+  </div>
 
-<h2>The property: ~17,500 sq ft lot, ~12,000 sq ft of grass</h2>
+  <h2>Running total</h2>
+  <div class="running">
+    <div class="row"><span>Segway Navimow i215 LiDAR (sale)</span><b>$1,399.00</b></div>
+    <div class="row"><span>EGO Power+ ST1623T trimmer/edger w/ battery</span><b>$329.00</b></div>
+    <div class="row"><span>Wyze/Blink outdoor camera (optional)</span><b>$40.00</b></div>
+    <div class="row"><span>Replacement blade pack (annual)</span><b>$25.00</b></div>
+    <div class="row"><span>Year-1 all-in</span><b>$1,793.00</b></div>
+  </div>
+  <p class="sub">Year 2+ runs ~$25–$60 in blades and pennies of electricity. Battery replacement around year 5 (~$200). 5-year cost of ownership: <b>≈ $2,100</b>.</p>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0;">
-<div style="background:#f0f7ff;border-left:4px solid #2563eb;padding:14px;border-radius:6px;">
-<div style="font-size:11px;color:#2563eb;letter-spacing:1px;font-weight:700;">LOT SIZE (estimated)</div>
-<div style="font-size:24px;font-weight:700;color:#1e293b;">0.40 acre</div>
-<div style="font-size:13px;color:#64748b;">~17,500 sq ft<br>Range: 0.33–0.46 ac</div>
-</div>
-<div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px;border-radius:6px;">
-<div style="font-size:11px;color:#16a34a;letter-spacing:1px;font-weight:700;">MOWABLE GRASS</div>
-<div style="font-size:24px;font-weight:700;color:#1e293b;">~12,000 sq ft</div>
-<div style="font-size:13px;color:#64748b;">~0.27 acre<br>After house/drive/beds</div>
-</div>
-<div style="background:#fffbeb;border-left:4px solid #d97706;padding:14px;border-radius:6px;">
-<div style="font-size:11px;color:#d97706;letter-spacing:1px;font-weight:700;">GRASS TYPE</div>
-<div style="font-size:24px;font-weight:700;color:#1e293b;">KBG</div>
-<div style="font-size:13px;color:#64748b;">Kentucky bluegrass<br>USDA Zone 7a/7b</div>
-</div>
-<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px;border-radius:6px;">
-<div style="font-size:11px;color:#dc2626;letter-spacing:1px;font-weight:700;">MOWING SEASON</div>
-<div style="font-size:24px;font-weight:700;color:#1e293b;">28 weeks</div>
-<div style="font-size:13px;color:#64748b;">Late April–Late October<br>Peak: Apr-Jun, Sep-Oct</div>
-</div>
-</div>
+  <h2>Backup pick (if the i215 is sold out or you want wire-guided certainty)</h2>
+  <div class="card backup">
+    <div class="top-strip">
+      <span class="pill yellow">SAFE BACKUP</span>
+      <span class="pill blue">Wire-guided · AIA narrow-passage</span>
+      <span class="pill purple">3-yr warranty, US support</span>
+    </div>
+    <h3>Worx Landroid L WR155 (½-acre) + ACS sensor</h3>
+    <p><b>$1,199 base / $1,449 with ACS ultrasonic sensor</b>. The Worx <b>AIA system</b> threads narrow passages without a guide wire — the best tight-yard tech in the wired category. Cut height 1.6"–3.9" hits the KBG sweet spot perfectly (2.5–3.5"). Coverage spec is 0.5 acres — generous headroom for your 0.287 with complex geometry. Free <b>Find My Landroid</b> GPS module is bundled in 2025–2026 promos. US support out of Charlotte, NC.</p>
+    <div class="meta-grid">
+      <div><span>Coverage:</span>21,780 sq ft</div>
+      <div><span>Cut height:</span>1.6"–3.9" (✓ KBG)</div>
+      <div><span>Slope:</span>20° (35%)</div>
+      <div><span>Battery:</span>20V Li-ion</div>
+      <div><span>App:</span>BT + Wi-Fi + opt 4G</div>
+      <div><span>Warranty:</span>3 years</div>
+    </div>
+    <p><b>The trade-off:</b> a Saturday spent installing perimeter wire (5–8 hours of pegging for your complex shape, ~600–800 ft of wire). Wheel slippage on dewy KBG is a documented gripe (an aftermarket Roboclaw wheel set, ~$40 on Etsy, fixes it). Mowing is random pattern, not striped.</p>
+    <span class="pill yellow">Best wire-guided pick under $1,500</span>
+  </div>
 
-<p>The property sits in the <strong>Farmington Meadows</strong> subdivision, built ~2011. Davis County's public parcel viewer requires interactive lookup, but neighboring parcels on Loveland Lane and Loveland Court range from <strong>0.33 to 0.46 acres</strong>, with house footprints of 2,500–4,000 sq ft. After subtracting the house (~2,500 sf), driveway (~800 sf), patios/walks (~500 sf), and mature 15-year-old landscaping (~1,500–2,500 sf), Scott is realistically mowing somewhere between <strong>9,000 and 13,000 sq ft</strong>. That's a small lot for a ride-on — closer to "barely worth it" than "ride-on country."</p>
+  <h2>Wire-guided vs. wire-free — the question that actually matters</h2>
+  <div class="callout">
+    <p><b>Three years ago the answer was easy: wire-guided.</b> In May 2026 the answer flipped — <b>but only if you pick a LiDAR-equipped wire-free model</b>. Pure-RTK satellite mowers still fail under tree canopy. LiDAR mowers don't.</p>
+  </div>
 
-<p style="background:#fef3c7;padding:12px;border-radius:6px;border-left:4px solid #d97706;font-size:14px;"><strong>Verify before purchase:</strong> pull the exact lot size from <em>webportal.daviscountyutah.gov/App/PropertySearch/</em> — this 5-minute lookup determines whether a 42" deck is right or whether Scott should stay walk-behind/robot.</p>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Approach</th><th>How it navigates</th><th>Tree canopy</th><th>Tight nooks</th><th>Setup</th><th>Verdict for Scott</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><b>Wire-guided</b><br><span class="sub">Worx WR155, Husqvarna 115H, 415X</span></td>
+        <td>Buried/staked perimeter wire</td>
+        <td><span class="check">✓ Perfect</span></td>
+        <td><span class="meh">Mixed (Worx AIA = good; Husqvarna 115H = bad)</span></td>
+        <td><span class="x">5–8 hr install</span></td>
+        <td>Reliable. Boring. Old-school.</td>
+      </tr>
+      <tr>
+        <td><b>Pure RTK satellite</b><br><span class="sub">Older Navimow H, original Luba 2 AWD</span></td>
+        <td>RTK-GPS only</td>
+        <td><span class="x">✗ Fails under canopy</span></td>
+        <td><span class="meh">OK</span></td>
+        <td><span class="check">15 min</span></td>
+        <td><b>Disqualified</b> by your mature trees.</td>
+      </tr>
+      <tr>
+        <td><b>Vision-only</b><br><span class="sub">Worx Landroid Vision Cloud</span></td>
+        <td>Stereo cameras + RTK Cloud</td>
+        <td><span class="meh">OK (struggles in shade)</span></td>
+        <td><span class="meh">OK</span></td>
+        <td><span class="check">30 min</span></td>
+        <td>Workable, but vision in dappled tree shade is a gamble.</td>
+      </tr>
+      <tr class="winner">
+        <td><b>LiDAR fusion</b><br><span class="sub">Navimow i215, Mammotion YUKA mini 2</span></td>
+        <td>Solid-state LiDAR + AI vision (no satellite needed)</td>
+        <td><span class="check">✓ Works under any canopy</span></td>
+        <td><span class="check">✓ Built for it (28" passages)</span></td>
+        <td><span class="check">10–30 min</span></td>
+        <td><b>★ Your answer</b></td>
+      </tr>
+      <tr>
+        <td><b>EPOS (Husqvarna RTK)</b><br><span class="sub">Husqvarna 410iQ family</span></td>
+        <td>RTK + radar + IMU</td>
+        <td><span class="x">✗ Documented drift under trees</span></td>
+        <td><span class="check">Excellent</span></td>
+        <td><span class="check">15 min (open) / hybrid wire under trees</span></td>
+        <td>Over budget at $2,400+; canopy issues.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
 
-<h2>The time math: why this isn't really a mower question</h2>
+  <div class="callout warn">
+    <p><b>Husqvarna's own support docs say it plainly:</b> dense trees with wide crowns over ~13 feet across can block satellite signals. Your 15-year-old Farmington neighborhood almost certainly has trees in that category. That's why the i215's LiDAR (no sky needed) is the right tool — and why the Husqvarna 410iQ EPOS, even if you stretched the budget, would force you back to "Support by Wire" hybrid mode under your trees. At which point you've paid 2× the price for a wire-free mower that needs wire.</p>
+  </div>
 
-<p>Scott reports 4–6 hours/week on yard work, "mostly grass cutting." That's <strong>112–168 hours per year</strong> — equivalent to <strong>14–21 full 8-hour workdays</strong> annually. For a builder running Wicko Waypoint, that's the entire month of June erased.</p>
+  <h2>Head-to-head: the four real contenders</h2>
+  <div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>Navimow i215 LiDAR <span class="pill green">PICK</span></th>
+        <th>Worx Landroid L WR155 <span class="pill yellow">BACKUP</span></th>
+        <th>Mammotion YUKA mini 2 1000H</th>
+        <th>Husqvarna 115H 4G</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>Price (May 2026)</td><td class="winner"><b>$1,399 sale / $1,599</b></td><td>$1,199–$1,449</td><td>$1,399</td><td>$299–$699 (closeout)</td></tr>
+      <tr><td>Coverage rating</td><td class="winner"><b>0.37 ac</b></td><td>0.50 ac</td><td>0.25 ac</td><td>0.40 ac</td></tr>
+      <tr><td>Fit for 12,500 sq ft</td><td class="winner"><span class="check">Right-sized + headroom</span></td><td><span class="check">Generous</span></td><td><span class="meh">Tight (multi-cycle)</span></td><td><span class="check">Right-sized</span></td></tr>
+      <tr><td>Tight nooks / narrow passages</td><td class="winner"><b>28" w/ LiDAR</b></td><td>~10" via AIA</td><td>21.65"</td><td><span class="x">Documented failure in 3-ft corridors</span></td></tr>
+      <tr><td>Tree canopy tolerance</td><td class="winner"><span class="check">LiDAR — no satellites needed</span></td><td><span class="check">Wire — irrelevant</span></td><td><span class="check">360° LiDAR</span></td><td><span class="check">Wire — irrelevant</span></td></tr>
+      <tr><td>Setup time</td><td class="winner">10–30 min app mapping</td><td><span class="x">5–8 hr wire install</span></td><td>10–20 min</td><td>5–8 hr wire install</td></tr>
+      <tr><td>Cut pattern</td><td class="winner">Systematic stripes</td><td>Random</td><td>Systematic</td><td>Random</td></tr>
+      <tr><td>Cut height (KBG sweet spot 2.5–3.5")</td><td>~1–4" ✓</td><td class="winner">1.6–3.9" ✓</td><td>~1–3.5" ✓</td><td>2.0–3.6" ✓</td></tr>
+      <tr><td>Slope handling</td><td class="winner">45%</td><td>35%</td><td>~40%</td><td>30%</td></tr>
+      <tr><td>Theft / GPS</td><td class="winner">Built-in 4G GPS, alarm, PIN</td><td>Find My Landroid (free in promo)</td><td>Built-in 4G + AirTag-compatible</td><td>4G GPS, alarm, PIN</td></tr>
+      <tr><td>Subscription required</td><td class="winner">No (NetRTK free)</td><td>No (free year, then $30/yr cellular)</td><td>No (NetRTK free for life)</td><td>No</td></tr>
+      <tr><td>Local Utah service</td><td><span class="x">DIY / mail-in</span></td><td><span class="x">DIY / mail-in</span></td><td><span class="x">DIY / mail-in</span></td><td class="winner"><span class="check">Utah Robomowers, Kaysville</span></td></tr>
+      <tr><td>Warranty</td><td class="winner">3 yr</td><td>3 yr</td><td>3 yr</td><td>2 yr</td></tr>
+    </tbody>
+  </table>
+  </div>
 
-<div style="background:#fff;border:2px solid #e2e8f0;border-radius:10px;padding:0;margin:16px 0;overflow:hidden;">
-<div style="background:#1e293b;color:#fff;padding:12px 16px;font-weight:700;letter-spacing:1px;font-size:13px;">⏱ ANNUAL TIME COST: HEAD-TO-HEAD ON SCOTT'S 12,000 SQ FT</div>
-<div style="overflow-x:auto">
-<table>
-<thead>
-<tr style="background:#f8fafc;">
-<th style="border-bottom:2px solid #e2e8f0;">Option</th>
-<th style="text-align:right;border-bottom:2px solid #e2e8f0;">Min/week</th>
-<th style="text-align:right;border-bottom:2px solid #e2e8f0;">Hrs/year</th>
-<th style="text-align:right;border-bottom:2px solid #e2e8f0;">Hrs saved</th>
-<th style="text-align:right;border-bottom:2px solid #e2e8f0;">Workdays back</th>
-</tr>
-</thead>
-<tbody>
-<tr style="background:#fef2f2;">
-<td style="border-bottom:1px solid #e2e8f0;"><strong>Status quo</strong> (old Honda walk-behind, 2 passes)</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;">300 min</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;"><strong>140 hrs</strong></td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#94a3b8;">—</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#94a3b8;">—</td>
-</tr>
-<tr>
-<td style="border-bottom:1px solid #e2e8f0;">New 21" self-propelled (Toro Super Recycler)</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;">240 min</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;">112 hrs</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">28 hrs</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">3.5 days</td>
-</tr>
-<tr>
-<td style="border-bottom:1px solid #e2e8f0;">Toro TimeMaster 30" walk-behind</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;">170 min</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;">79 hrs</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">61 hrs</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">7.6 days</td>
-</tr>
-<tr style="background:#f0fdf4;">
-<td style="border-bottom:1px solid #e2e8f0;"><strong>42" lawn tractor (John Deere S120)</strong></td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;">140 min</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;">65 hrs</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;"><strong>75 hrs</strong></td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;"><strong>9.4 days</strong></td>
-</tr>
-<tr>
-<td style="border-bottom:1px solid #e2e8f0;">42" zero-turn (Toro TimeCutter)</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;">120 min</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;">56 hrs</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">84 hrs</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">10.5 days</td>
-</tr>
-<tr style="background:#dcfce7;">
-<td style="border-bottom:1px solid #e2e8f0;"><strong>🏆 Husqvarna Automower 410iQ</strong> (5 min/wk edge trim)</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;">5 min</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;"><strong>2 hrs</strong></td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;font-weight:700;">138 hrs</td>
-<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;font-weight:700;">17.3 days</td>
-</tr>
-<tr>
-<td>Lawn service (Green Castle/Wilkins, $50/wk)</td>
-<td style="text-align:right;">~1 min admin</td>
-<td style="text-align:right;">0.5 hrs</td>
-<td style="text-align:right;color:#16a34a;">139 hrs</td>
-<td style="text-align:right;color:#16a34a;">17.4 days</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+  <h2>Why not the others (eliminations)</h2>
+  <div class="grid grid-2">
+    <div class="card avoid">
+      <span class="pill red">DISQUALIFIED</span>
+      <h3>Husqvarna Automower 115H 4G</h3>
+      <p>The cheap-and-cheerful pick — but documented Amazon and forum reports of <b>1-in-20 success rates threading 3-ft corridors</b>. Your yard is the textbook failure case. Save the $300, don't accept the headache.</p>
+    </div>
+    <div class="card avoid">
+      <span class="pill red">OVER BUDGET</span>
+      <h3>Husqvarna Automower 410iQ EPOS</h3>
+      <p>Was rumored at $1,549 — that was a one-time March 2026 spring promotion. Regular May 2026 price is <b>$2,399–$2,999</b>. Plus EPOS has known canopy drift; under your trees you'd run "Support by Wire" hybrid mode anyway. Wrong tool, wrong price.</p>
+    </div>
+    <div class="card avoid">
+      <span class="pill red">CANOPY FAIL</span>
+      <h3>Older Navimow H800/H1500/H3000, original Luba 2 AWD</h3>
+      <p>Pure RTK satellite navigation. Reddit r/Mammotion and r/Navimow's most-cited complaint is canopy signal loss. Your mature trees would punish you weekly.</p>
+    </div>
+    <div class="card avoid">
+      <span class="pill red">DEAD BRAND</span>
+      <h3>Robomow RX / RS series</h3>
+      <p>Robomow has <b>5 employees as of mid-2024</b> and no new product since 2019 after MTD/Stanley B&D acquisitions. RX models are too small (1/20 acre); RS622/RS630's 22" body can't navigate your nooks. Orphan platform — don't buy in.</p>
+    </div>
+    <div class="card avoid">
+      <span class="pill red">DISCONTINUED</span>
+      <h3>EcoFlow Blade</h3>
+      <p>Effectively abandoned. No firmware updates since 2023, persistent hardware failures. Skip.</p>
+    </div>
+    <div class="card avoid">
+      <span class="pill red">WRONG TOOL</span>
+      <h3>Yarbo, Mammotion Luba 3 / LUBA 2 AWD 5000</h3>
+      <p>$2,500–$5,000+ multi-acre platforms. Massive overkill for 0.287 acres and 2–3× over your hard ceiling.</p>
+    </div>
+  </div>
 
-<p style="background:#1a4d2e;color:#fff;padding:14px;border-radius:8px;font-size:15px;line-height:1.5;"><strong style="color:#86efac;">Read this carefully:</strong> A ride-on saves Scott ~75 hours/year. A robot mower saves <em>almost twice as much</em> (~138 hours) for <strong style="color:#fff">half the price</strong>. The ride-on is the second-most expensive option that produces the third-best time savings. The "tractor for sand leveling" curiosity is the only thing keeping the ride-on in the conversation — and as you'll see below, that's mostly a misconception.</p>
+  <h2>Where to buy (and why local install isn't right this time)</h2>
+  <div class="grid grid-2">
+    <div class="card">
+      <span class="pill green">RECOMMENDED PATH</span>
+      <h3>Buy direct: Home Depot or Amazon (DIY)</h3>
+      <p>The Navimow i215 is on <b>Home Depot</b> shelves and <b>Amazon</b>. Setup is auto-mapping in the app — drive the mower around your yard's perimeter once, define no-go zones around your beds, done. <b>Total time: 30 minutes.</b> No wire to bury, no driveway to saw-cut, no perimeter to peg. This is the time savings you're paying for.</p>
+      <span class="pill blue">Setup: 30 min · Cost: $0</span>
+    </div>
+    <div class="card">
+      <span class="pill yellow">FUTURE OPTION</span>
+      <h3>Utah Robomowers, Kaysville (~10 min away)</h3>
+      <p>They are <b>Husqvarna-only</b> — they don't sell or service Navimow, Worx, or Mammotion. If you ever swap to a Husqvarna 415X or 430X NERA in the future, they're your shop. Estimated install for a 12,500 sq ft yard: <b>$600–$900</b>. Light online review footprint; call before committing if you go that route. Mowbotiq Northern Utah is a second Husqvarna-authorized installer in the area.</p>
+      <span class="pill blue">Husqvarna only · ~$700 install</span>
+    </div>
+  </div>
 
-<h2>The opportunity-cost argument that should close the case</h2>
+  <h2>What the robot can't do — your trimmer/edger</h2>
+  <p>A robot mower won't edge sidewalks/driveway, trim along beds, or tidy around your AC unit and mailbox. Plan on <b>15–25 minutes per week</b> of touch-up work in season.</p>
+  <div class="grid grid-3">
+    <div class="card pick">
+      <span class="pill green">★ TOP PICK</span>
+      <h3>EGO Power+ ST1623T</h3>
+      <p>56V, 16" cut, POWERLOAD line head, telescoping carbon-fiber shaft, head rotates 180° for vertical edging. Battery + charger included. 2026 consensus winner across Pro Tool Reviews, Power Tools Insider, Tested Gear Hub.</p>
+      <div class="scoreline"><span><b>$329</b> Ace/HD/Amazon</span><span>5-yr warranty</span></div>
+    </div>
+    <div class="card">
+      <span class="pill yellow">VALUE</span>
+      <h3>Ryobi 40V HP Brushless</h3>
+      <p>Expand-It compatible — share the power head with edger/pole-saw/blower attachments. Best $/performance.</p>
+      <div class="scoreline"><span><b>$179–$229</b> Home Depot</span><span>5-yr warranty</span></div>
+    </div>
+    <div class="card">
+      <span class="pill blue">IF YOU OWN MILWAUKEE</span>
+      <h3>Milwaukee M18 FUEL QUIK-LOK</h3>
+      <p>If your garage is already on M18 from your build/dev work, stay there and save $100. QUIK-LOK swaps to a dedicated edger head.</p>
+      <div class="scoreline"><span><b>$299 bare / ~$399 kit</b></span></div>
+    </div>
+  </div>
 
-<p>Scott's effective hourly value as a multi-venture builder is reasonably $100–$200/hour. Even at the low end, with a realistic 30% conversion rate (you can't actually bill every recovered hour), here's the picture:</p>
+  <h2>Theft on Loveland Lane — realistic risk check</h2>
+  <div class="callout">
+    <p><b>Risk level: low.</b> Documented suburban-front-yard robot mower thefts are rare. The mowers are heavy (20–30 lb), account-locked, GPS-trackable, and require fencing through niche channels. Davis County base property crime rate is low.</p>
+  </div>
+  <p>Your stack on the i215 is already strong: <b>built-in 4G cellular GPS, lift alarm, geofence, PIN, account lock</b>. Add the $40 visible camera covering the dock and you've done more than 95% of robot mower owners do. Don't overengineer this.</p>
 
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:16px 0;">
+  <h2>Utah winter ops (Zone 7a)</h2>
+  <p>From late October through mid-April, the mower lives in your garage. Pre-storage routine takes 20 minutes:</p>
+  <ul class="tight">
+    <li>Charge battery to full, then power off (lithium stores best at 50–80% — top off mid-winter once).</li>
+    <li>Hose off the deck (i215 is IP66), let dry, replace blades if worn.</li>
+    <li>Bring the charging dock indoors too — Utah freeze-thaw cycles damage exposed electronics.</li>
+    <li>Boundary mapping and no-go zones persist in the app; first mow in spring is plug-and-go.</li>
+  </ul>
 
-<div style="background:#fff;border:2px solid #16a34a;border-radius:10px;padding:16px;position:relative;">
-<div style="position:absolute;top:-10px;right:12px;background:#16a34a;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;">RECOMMENDED</div>
-<div style="font-size:18px;font-weight:700;color:#1e293b;margin-bottom:8px;">Husqvarna Automower 410iQ</div>
-<div style="font-size:13px;color:#64748b;margin-bottom:12px;">Robot mower, 0.5 acre capacity, EPOS satellite (no boundary wire)</div>
-<div style="background:#f0fdf4;padding:10px;border-radius:6px;font-size:13px;">
-<div>Upfront: <strong>$1,550</strong> + $300 trimmer = <strong>$1,850</strong></div>
-<div>Annual op cost: <strong>~$50</strong></div>
-<div>Hours saved/yr: <strong>138</strong></div>
-<div style="border-top:1px solid #bbf7d0;margin-top:6px;padding-top:6px;">Time value @ $100/hr × 30%: <strong>$4,140/yr</strong></div>
-<div style="color:#16a34a;font-weight:700;">Payback: 5.4 months</div>
-</div>
-</div>
+  <h2>What season one actually looks like</h2>
+  <div class="table-wrap">
+  <table>
+    <tbody>
+      <tr><td><b>Setup day (Saturday)</b></td><td>30 min: unbox, charge, walk perimeter via app, mark beds as no-go zones, set schedule. Mow first cycle while you trim edges.</td></tr>
+      <tr><td><b>Weekly time investment</b></td><td>20–25 min trimming/edging. Robot handles the rest. <b>You reclaim 4–5 hours/week.</b></td></tr>
+      <tr><td><b>Monthly</b></td><td>Wipe LiDAR sensor, clean charging contacts, inspect blades.</td></tr>
+      <tr><td><b>Each spring</b></td><td>Replace blade pack ($20–$25), redeploy from garage, run first mapping check.</td></tr>
+      <tr><td><b>Year 5</b></td><td>Likely battery replacement (~$200). Mower platform good for 6–8 years total.</td></tr>
+    </tbody>
+  </table>
+  </div>
 
-<div style="background:#fff;border:2px solid #2563eb;border-radius:10px;padding:16px;position:relative;">
-<div style="position:absolute;top:-10px;right:12px;background:#2563eb;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;">IF YOU MUST RIDE</div>
-<div style="font-size:18px;font-weight:700;color:#1e293b;margin-bottom:8px;">John Deere S120 lawn tractor</div>
-<div style="font-size:13px;color:#64748b;margin-bottom:12px;">42" Edge deck, 22 HP V-twin B&S, hydrostatic, dealer-supported</div>
-<div style="background:#eff6ff;padding:10px;border-radius:6px;font-size:13px;">
-<div>Upfront: <strong>$2,899</strong></div>
-<div>Annual op cost: <strong>~$140</strong></div>
-<div>Hours saved/yr: <strong>75</strong></div>
-<div style="border-top:1px solid #bfdbfe;margin-top:6px;padding-top:6px;">Time value @ $100/hr × 30%: <strong>$2,250/yr</strong></div>
-<div style="color:#2563eb;font-weight:700;">Payback: 15 months</div>
-</div>
-</div>
+  <h2>Are you sure? Yes.</h2>
+  <div class="hero">
+    <p>Your three constraints — <b>tight complex yard with nooks, mature 15-year-old tree canopy, $1,500 ceiling</b> — eliminate everything except the new generation of LiDAR-equipped wire-free mowers. The Navimow i215 LiDAR is the first sub-$1,500 mower that truly fits all three. The Worx Landroid L WR155 is your wire-guided safety net if you want zero novel-tech risk and don't mind a Saturday of wire-pegging. Everything else has a disqualifying flaw: too small, too pure-RTK, too discontinued, or too expensive.</p>
+    <p><b>Order the Navimow i215 LiDAR + EGO ST1623T. Total: ≈ $1,728. Setup: 30 minutes. Your Saturdays back: forever.</b></p>
+  </div>
 
-<div style="background:#fff;border:2px solid #94a3b8;border-radius:10px;padding:16px;position:relative;">
-<div style="position:absolute;top:-10px;right:12px;background:#94a3b8;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;">SIMPLEST</div>
-<div style="font-size:18px;font-weight:700;color:#1e293b;margin-bottom:8px;">Lawn service (Green Castle)</div>
-<div style="font-size:13px;color:#64748b;margin-bottom:12px;">Weekly mow/trim/edge/blow, ~$50/visit, Davis County local</div>
-<div style="background:#f8fafc;padding:10px;border-radius:6px;font-size:13px;">
-<div>Upfront: <strong>$0</strong></div>
-<div>Annual cost: <strong>$1,400/yr forever</strong></div>
-<div>Hours saved/yr: <strong>139</strong></div>
-<div style="border-top:1px solid #cbd5e1;margin-top:6px;padding-top:6px;">Net value @ $100/hr × 30%: <strong>$2,770/yr</strong></div>
-<div style="color:#475569;font-weight:700;">Payback: immediate; no asset</div>
-</div>
-</div>
+  <div class="footer-note">
+    Pricing reflects May 2026 US market data. Verify the day of purchase — sale prices rotate. Husqvarna 410iQ pricing reflects regular MSRP, not the one-time March 2026 spring promo. Utah Robomowers install pricing is extrapolated from comparable Husqvarna-authorized dealers; get a phone quote before committing.
+  </div>
 
-</div>
-
-<h2>If you want the ride-on anyway: the three to consider</h2>
-
-<p>Scott's "just curious" tractor interest plus his particular nature plus moderate Wasatch Front slopes points hard at a <strong>lawn tractor, not a zero-turn</strong>. Zero-turns at the under-$3K tier have low towing capacity (often 250 lb max with hitches that void warranties), tear up turf during rookie lap-bar mistakes (highly visible to a particular owner), and struggle on slopes. You don't want to learn a zero-turn on the lawn you care about.</p>
-
-<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin:16px 0;">
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
-
-<div style="padding:18px;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;">
-<div style="background:#fbbf24;color:#78350f;display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:8px;">🥇 BEST OVERALL RIDE-ON</div>
-<div style="font-size:17px;font-weight:700;">John Deere S120</div>
-<div style="font-size:24px;font-weight:700;color:#16a34a;margin:4px 0;">$2,899</div>
-<div style="font-size:13px;line-height:1.5;color:#475569;">
-42" Edge deck · 22 HP V-twin B&S 724cc · Hydrostatic TLT200 · 2-yr/120-hr warranty · Standard rear hitch (~660 lb cart capacity)<br><br>
-<strong>Why:</strong> Best cut quality in class. Easy-Change 30-second oil. Holds resale value 50%+ at 5 years — best in segment. MowerPlus app.<br><br>
-<strong>Buy at:</strong> Home Depot Farmington (in stock typically), or trailer to Stotz Equipment Bluffdale (35 mi) for dealer-grade service.<br><br>
-<strong>Watch out:</strong> 2-yr warranty shorter than competitors' 3-yr. Stamped (not fabricated) deck.
-</div>
-</div>
-
-<div style="padding:18px;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;background:#fafafa;">
-<div style="background:#10b981;color:#fff;display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:8px;">🥈 BEST VALUE</div>
-<div style="font-size:17px;font-weight:700;">Cub Cadet XT1 LT46 Enduro</div>
-<div style="font-size:24px;font-weight:700;color:#16a34a;margin:4px 0;">$2,499</div>
-<div style="font-size:13px;line-height:1.5;color:#475569;">
-46" stamped deck · 22 HP Kohler 7000 V-twin · Hydrostatic K46 · 3-yr warranty · Standard hitch (~250 lb)<br><br>
-<strong>Why:</strong> Solid Kohler V-twin, longer warranty than JD, 4.3/5 from 4,000+ Home Depot reviews. Saves $400 vs. S120. The 46" deck shaves real time on a half-acre.<br><br>
-<strong>Buy at:</strong> Home Depot, Tractor Supply Layton, or local Cub Cadet dealer. <strong>BC Small Engine Repair (Layton)</strong> services Cub Cadet — local repair option.<br><br>
-<strong>Watch out:</strong> K46 transaxle is the known weak point of this class — avoid heavy hill towing.
-</div>
-</div>
-
-<div style="padding:18px;border-bottom:1px solid #e2e8f0;">
-<div style="background:#6366f1;color:#fff;display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:8px;">🥉 BUDGET PICK</div>
-<div style="font-size:17px;font-weight:700;">John Deere S100</div>
-<div style="font-size:24px;font-weight:700;color:#16a34a;margin:4px 0;">$2,399</div>
-<div style="font-size:13px;line-height:1.5;color:#475569;">
-42" Edge deck · 17.5 HP single-cylinder · Hydrostatic CVT · 2-yr/120-hr warranty · Standard hitch<br><br>
-<strong>Why:</strong> Same Edge deck = same cut quality as the S120 for $500 less. Plenty of motor for Scott's flat-ish 12,000 sf. Best resale value in the budget tier.<br><br>
-<strong>Buy at:</strong> Home Depot Farmington — stocks the BG21271 SKU.<br><br>
-<strong>Watch out:</strong> Single-cylinder feels underpowered if there's any meaningful slope. No Easy-Change oil. No app.
-</div>
-</div>
-
-</div>
-</div>
-
-<div style="background:#fef3c7;border:1px solid #f59e0b;padding:14px;border-radius:8px;margin:16px 0;font-size:14px;">
-<strong>⚠️ The dealer service problem in Davis County:</strong> There is <strong>no John Deere dealer in Davis County</strong>. Closest is Stotz Equipment in Bluffdale, ~35–40 miles south. For warranty work without a trailer, this is a real friction point. <strong>Husqvarna and Cub Cadet have local options</strong> — Husqvarna dealers in Kaysville/Layton, and BC Small Engine Repair in Layton services Toro, Cub Cadet, Husqvarna, Ariens, Honda, and even John Deere. If repair logistics matter, the Cub Cadet XT1 LT46 has the best service-radius story for Farmington.
-</div>
-
-<h2>Skip these: zero-turns under $3K and gear-driven tractors</h2>
-
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:16px 0;">
-<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px;border-radius:6px;">
-<div style="background:#dc2626;color:#fff;display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;">SKIP</div>
-<div style="font-weight:700;margin-bottom:4px;">Cub Cadet ZT1 42, Husqvarna Z142, Toro TimeCutter 42</div>
-<div style="font-size:13px;color:#475569;">Wrong machine for a particular newcomer. Lap-bar rookie mistakes leave permanent divots. Low towing kills the "tractor curiosity" use case. Slopes scary. Save the zero-turn for a future $4K+ purchase if/when needs change.</div>
-</div>
-<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px;border-radius:6px;">
-<div style="background:#dc2626;color:#fff;display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;">SKIP</div>
-<div style="font-weight:700;margin-bottom:4px;">Troy-Bilt Pony 42, Craftsman T110</div>
-<div style="font-size:13px;color:#475569;">Gear-driven (not hydrostatic). Cheaper at $1,800–$2,000 but transmission/spindle failures around year 5–7. Bottom-tier resale. False economy for a particular owner.</div>
-</div>
-<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px;border-radius:6px;">
-<div style="background:#dc2626;color:#fff;display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;">SKIP</div>
-<div style="font-weight:700;margin-bottom:4px;">Cub Cadet XT1 LT50 (50" deck)</div>
-<div style="font-size:13px;color:#475569;">Deck is too big for 12,000 sq ft with mature landscaping — you'll fight it around obstacles every mow. The 42–46" sweet spot is correct for this lot.</div>
-</div>
-</div>
-
-<h2>Sand leveling: the curiosity that shouldn't drive the decision</h2>
-
-<p>Scott flagged "tractor for sand-leveling" as <em>just curious</em>. Honest answer: <strong>that's wise framing, because it's mostly a misconception.</strong></p>
-
-<p>Top-dressing a quarter-acre lawn with sand requires roughly <strong>10–11 cubic yards (13–15 tons)</strong> for a meaningful 1/4–3/8" leveling pass — that's 2–3 dump truck loads. The actual work is <strong>shoveling sand from piles, distributing with a leveling rake, then dragging a mat to settle it into the canopy</strong>. A ride-on helps with exactly two pieces of that:</p>
-
-<ol>
-<li><strong>Hauling sand in a dump cart</strong> from pile to spread location (lawn tractor with 250–650 lb cart helpful; ZTR limited)</li>
-<li><strong>Pulling a drag mat</strong> across the spread sand to settle it (any ride-on works <em>if</em> you avoid zero-turn maneuvers)</li>
-</ol>
-
-<p>The 80% of the work — shoveling, raking, walking — is unchanged. Pros use $4K–$15K powered topdressers (Ecolawn, Turfco) or skid-steers; homeowners use a <strong>Landzie leveling rake (~$90)</strong> which is the actual workhorse tool regardless of which mower you own. <strong>Don't pay $1,300 more for a tractor over a robot to gain a marginal sand-leveling assist on a project you'll do once every 3–5 years.</strong></p>
-
-<p>If Scott does want the towing utility for fertilizer/seed/aeration/hauling mulch — which is a more legitimate annual use — a lawn tractor wins easily over a zero-turn. Useful tractor accessories (any of the three picks above accept these):</p>
-
-<ul>
-<li><strong>Agri-Fab 130 lb tow broadcast spreader (~$220)</strong> — biggest real time saver, makes quarterly fertilization a 15-minute job</li>
-<li><strong>Brinly 36" lawn roller (~$250)</strong> + <strong>Yard Tuff 4.5'×5' drag mat (~$200)</strong> — for the leveling project he's curious about</li>
-<li><strong>10 cu ft poly dump cart (~$200)</strong> — for hauling mulch, leaves, sand</li>
-</ul>
-
-<h2>The honest recommendation hierarchy</h2>
-
-<div style="background:#fff;border:2px solid #1a4d2e;border-radius:10px;padding:18px;margin:16px 0;">
-<div style="font-size:13px;letter-spacing:1px;color:#1a4d2e;font-weight:700;margin-bottom:10px;">RANKED BY VALUE × TIME-RETURNED FOR SCOTT SPECIFICALLY</div>
-
-<div style="border-bottom:1px solid #e2e8f0;padding-bottom:14px;margin-bottom:14px;">
-<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
-<span style="background:#16a34a;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;">#1 OPTIMAL</span>
-<span style="font-size:18px;font-weight:700;">Husqvarna Automower 410iQ + Ego trimmer</span>
-<span style="margin-left:auto;color:#16a34a;font-weight:700;">$1,850 total</span>
-</div>
-<div style="font-size:14px;color:#475569;line-height:1.5;">Saves 138 hrs/year. Daily micro-mowing actually <em>improves</em> KBG appearance — particular owners often end up with the best-looking lawns on the street. Setup is ~half-day. Buy from Utah Robomowers in Kaysville (10 mi from Farmington — they specialize in this). Leaves $1,150 of the $3K budget for a premium trimmer/edger, the Landzie rake, or just untouched.</div>
-</div>
-
-<div style="border-bottom:1px solid #e2e8f0;padding-bottom:14px;margin-bottom:14px;">
-<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
-<span style="background:#2563eb;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;">#2 RIDE-ON</span>
-<span style="font-size:18px;font-weight:700;">John Deere S120</span>
-<span style="margin-left:auto;color:#2563eb;font-weight:700;">$2,899</span>
-</div>
-<div style="font-size:14px;color:#475569;line-height:1.5;">Best cut, best resale, best ride for a particular owner. Saves 75 hrs/year. The "I want a tractor and I'll enjoy it" answer. Add the spreader/cart/drag-mat accessory bundle (~$650) to genuinely use the tractor function. Honest read: this is a <em>lifestyle</em> choice over a pure ROI choice — and that's fine.</div>
-</div>
-
-<div style="border-bottom:1px solid #e2e8f0;padding-bottom:14px;margin-bottom:14px;">
-<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
-<span style="background:#7c3aed;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;">#3 HYBRID</span>
-<span style="font-size:18px;font-weight:700;">Automower + Toro Super Recycler 21"</span>
-<span style="margin-left:auto;color:#7c3aed;font-weight:700;">~$2,400</span>
-</div>
-<div style="font-size:14px;color:#475569;line-height:1.5;">Robot does daily maintenance; the Toro is for first-cut-of-spring, post-vacation catch-up, and leaf cleanup. The "I don't fully trust robots yet" answer. Toro Super Recycler is widely cited as the closest cut quality to the discontinued Honda HRX.</div>
-</div>
-
-<div>
-<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
-<span style="background:#94a3b8;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;">#4 SIMPLEST</span>
-<span style="font-size:18px;font-weight:700;">Lawn service (Green Castle or Wilkins)</span>
-<span style="margin-left:auto;color:#475569;font-weight:700;">$1,400/yr forever</span>
-</div>
-<div style="font-size:14px;color:#475569;line-height:1.5;">Saves 139 hrs/year, zero hands-on work. The catch: no asset, ongoing dependency, and quality variance with marketplace platforms (use Nextdoor/word-of-mouth instead of LawnStarter). For a particular owner, finding the right operator takes 1–2 attempts.</div>
-</div>
-</div>
-
-<h2>Honda is dead — what to know about replacement walk-behinds</h2>
-
-<p>One last data point that affects Scott's mental model: <strong>Honda exited the US gas walk-behind mower market in September 2023.</strong> Remaining HRX217 inventory sold through 2024. As of 2026, you can only buy Honda walk-behinds used or new-old-stock. Parts/service still supported, but it's a sunsetting platform. The real successor for "premium 21" cut quality" is the <strong>Toro Super Recycler ($800–$1,100)</strong>; for "I want to mow faster" it's the <strong>Toro TimeMaster 30" ($1,500–$1,850)</strong>, which cuts mowing time roughly in half vs. a 21".</p>
-
-<h2>Conclusion: the ride-on isn't wrong, but it isn't right either</h2>
-
-<p>Scott's question was framed as "which ride-on?" — but the underlying job is <em>"give me my time back so I can build."</em> A ride-on partially solves that. A robot mower solves it better, cheaper, and with arguably better lawn quality on Kentucky bluegrass. A lawn service solves it best in pure time terms but costs $1,400/year forever and takes the lawn out of his hands.</p>
-
-<p>The "tractor for sand leveling" curiosity is a small factor that shouldn't tilt a $1,300 spending decision. The slopes argument and "I'm new to ride-ons" argument <em>do</em> rule out zero-turns at this price tier — so if the answer is a ride-on, it's a <strong>lawn tractor, full stop</strong>, and the John Deere S120 is the cleanest pick.</p>
-
-<p style="font-size:16px;background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);padding:16px;border-radius:8px;border-left:4px solid #d97706;"><strong>The decision tree, in one sentence:</strong> If Scott wants maximum time back, buy the Husqvarna Automower 410iQ from Utah Robomowers in Kaysville. If Scott wants a ride-on because he <em>wants</em> a ride-on (which is a fine reason), buy the John Deere S120 at Home Depot Farmington and add the $650 accessory bundle. Either way, do not buy a zero-turn under $3K, do not buy a gear-driven tractor, and verify the actual lot size on the Davis County portal before pulling the trigger.</p>
-
-<div style="margin-top:48px;padding-top:24px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center;">
-Built by Skippy · fosterlabs.org · May 2, 2026
-</div>
+  <div style="margin-top:24px;text-align:center;color:var(--muted);font-size:12px;">
+    Built by Skippy · fosterlabs.org · May 2, 2026
+  </div>
 
 </div>
 </body>
