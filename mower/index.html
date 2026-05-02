@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mower Decision — Foster Labs</title>
+<meta name="description" content="Ride-on vs robot vs service: deep research on Scott's mower decision for 2182 Loveland Lane.">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,sans-serif;
+    background:#f8fafc;
+    color:#1e293b;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:32px 20px 80px}
+  .nav{
+    display:flex;justify-content:space-between;align-items:center;
+    padding-bottom:20px;border-bottom:1px solid #e2e8f0;margin-bottom:24px;
+    font-size:13px;color:#64748b;
+  }
+  .nav a{color:#1a4d2e;text-decoration:none;font-weight:600}
+  .nav a:hover{text-decoration:underline}
+  .meta{
+    font-size:12px;letter-spacing:1.5px;color:#64748b;
+    text-transform:uppercase;margin-bottom:8px;
+  }
+  h1{font-size:36px;line-height:1.2;margin-bottom:12px;color:#0f172a;font-weight:800;letter-spacing:-0.5px}
+  h2{font-size:24px;margin:36px 0 16px;color:#0f172a;font-weight:700;letter-spacing:-0.3px}
+  h3{font-size:18px;margin:20px 0 10px;color:#1e293b;font-weight:700}
+  p{margin-bottom:14px;font-size:15px}
+  ul,ol{margin:0 0 14px 24px;font-size:15px}
+  li{margin-bottom:6px}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th,td{padding:10px;text-align:left}
+  strong{color:#0f172a}
+  @media (max-width:640px){
+    h1{font-size:28px}
+    h2{font-size:20px}
+    .wrap{padding:20px 16px 60px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="nav">
+  <a href="https://fosterlabs.org/">← fosterlabs.org</a>
+  <span>May 2, 2026 · Skippy research</span>
+</div>
+
+<div class="meta">⚡ Decision Brief</div>
+
+<h1>Scott's mower decision: the answer is probably a robot, not a ride-on</h1>
+
+<div style="background:linear-gradient(135deg,#1a4d2e 0%,#2d8659 100%);color:#fff;padding:24px;border-radius:12px;margin:16px 0;box-shadow:0 4px 12px rgba(0,0,0,0.15);">
+<div style="font-size:13px;letter-spacing:2px;opacity:0.9;margin-bottom:8px;">⚡ BOTTOM LINE UP FRONT</div>
+<div style="font-size:22px;font-weight:700;line-height:1.4;margin-bottom:12px;">A <span style="background:#fff;color:#1a4d2e;padding:2px 8px;border-radius:4px;">Husqvarna Automower 410iQ ($1,550)</span> will save Scott ~120 hours/year. A ride-on saves ~75. A lawn service saves ~130 but costs $1,500/year forever.</div>
+<div style="font-size:15px;opacity:0.95;line-height:1.5;">If Scott actually wants his time back to build, the ride-on is the <strong style="color:#fff">third-best</strong> answer to his own question. But if he wants a ride-on anyway (the "tractor curiosity" tells me he might), the <strong style="color:#fff">John Deere S120 at $2,899</strong> is the right one. Zero-turn is the wrong choice for a particular Kentucky bluegrass owner who's new to ride-ons.</div>
+</div>
+
+<h2>The property: ~17,500 sq ft lot, ~12,000 sq ft of grass</h2>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0;">
+<div style="background:#f0f7ff;border-left:4px solid #2563eb;padding:14px;border-radius:6px;">
+<div style="font-size:11px;color:#2563eb;letter-spacing:1px;font-weight:700;">LOT SIZE (estimated)</div>
+<div style="font-size:24px;font-weight:700;color:#1e293b;">0.40 acre</div>
+<div style="font-size:13px;color:#64748b;">~17,500 sq ft<br>Range: 0.33–0.46 ac</div>
+</div>
+<div style="background:#f0fdf4;border-left:4px solid #16a34a;padding:14px;border-radius:6px;">
+<div style="font-size:11px;color:#16a34a;letter-spacing:1px;font-weight:700;">MOWABLE GRASS</div>
+<div style="font-size:24px;font-weight:700;color:#1e293b;">~12,000 sq ft</div>
+<div style="font-size:13px;color:#64748b;">~0.27 acre<br>After house/drive/beds</div>
+</div>
+<div style="background:#fffbeb;border-left:4px solid #d97706;padding:14px;border-radius:6px;">
+<div style="font-size:11px;color:#d97706;letter-spacing:1px;font-weight:700;">GRASS TYPE</div>
+<div style="font-size:24px;font-weight:700;color:#1e293b;">KBG</div>
+<div style="font-size:13px;color:#64748b;">Kentucky bluegrass<br>USDA Zone 7a/7b</div>
+</div>
+<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px;border-radius:6px;">
+<div style="font-size:11px;color:#dc2626;letter-spacing:1px;font-weight:700;">MOWING SEASON</div>
+<div style="font-size:24px;font-weight:700;color:#1e293b;">28 weeks</div>
+<div style="font-size:13px;color:#64748b;">Late April–Late October<br>Peak: Apr-Jun, Sep-Oct</div>
+</div>
+</div>
+
+<p>The property sits in the <strong>Farmington Meadows</strong> subdivision, built ~2011. Davis County's public parcel viewer requires interactive lookup, but neighboring parcels on Loveland Lane and Loveland Court range from <strong>0.33 to 0.46 acres</strong>, with house footprints of 2,500–4,000 sq ft. After subtracting the house (~2,500 sf), driveway (~800 sf), patios/walks (~500 sf), and mature 15-year-old landscaping (~1,500–2,500 sf), Scott is realistically mowing somewhere between <strong>9,000 and 13,000 sq ft</strong>. That's a small lot for a ride-on — closer to "barely worth it" than "ride-on country."</p>
+
+<p style="background:#fef3c7;padding:12px;border-radius:6px;border-left:4px solid #d97706;font-size:14px;"><strong>Verify before purchase:</strong> pull the exact lot size from <em>webportal.daviscountyutah.gov/App/PropertySearch/</em> — this 5-minute lookup determines whether a 42" deck is right or whether Scott should stay walk-behind/robot.</p>
+
+<h2>The time math: why this isn't really a mower question</h2>
+
+<p>Scott reports 4–6 hours/week on yard work, "mostly grass cutting." That's <strong>112–168 hours per year</strong> — equivalent to <strong>14–21 full 8-hour workdays</strong> annually. For a builder running Wicko Waypoint, that's the entire month of June erased.</p>
+
+<div style="background:#fff;border:2px solid #e2e8f0;border-radius:10px;padding:0;margin:16px 0;overflow:hidden;">
+<div style="background:#1e293b;color:#fff;padding:12px 16px;font-weight:700;letter-spacing:1px;font-size:13px;">⏱ ANNUAL TIME COST: HEAD-TO-HEAD ON SCOTT'S 12,000 SQ FT</div>
+<div style="overflow-x:auto">
+<table>
+<thead>
+<tr style="background:#f8fafc;">
+<th style="border-bottom:2px solid #e2e8f0;">Option</th>
+<th style="text-align:right;border-bottom:2px solid #e2e8f0;">Min/week</th>
+<th style="text-align:right;border-bottom:2px solid #e2e8f0;">Hrs/year</th>
+<th style="text-align:right;border-bottom:2px solid #e2e8f0;">Hrs saved</th>
+<th style="text-align:right;border-bottom:2px solid #e2e8f0;">Workdays back</th>
+</tr>
+</thead>
+<tbody>
+<tr style="background:#fef2f2;">
+<td style="border-bottom:1px solid #e2e8f0;"><strong>Status quo</strong> (old Honda walk-behind, 2 passes)</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;">300 min</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;"><strong>140 hrs</strong></td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#94a3b8;">—</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#94a3b8;">—</td>
+</tr>
+<tr>
+<td style="border-bottom:1px solid #e2e8f0;">New 21" self-propelled (Toro Super Recycler)</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;">240 min</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;">112 hrs</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">28 hrs</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">3.5 days</td>
+</tr>
+<tr>
+<td style="border-bottom:1px solid #e2e8f0;">Toro TimeMaster 30" walk-behind</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;">170 min</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;">79 hrs</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">61 hrs</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">7.6 days</td>
+</tr>
+<tr style="background:#f0fdf4;">
+<td style="border-bottom:1px solid #e2e8f0;"><strong>42" lawn tractor (John Deere S120)</strong></td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;">140 min</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;">65 hrs</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;"><strong>75 hrs</strong></td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;"><strong>9.4 days</strong></td>
+</tr>
+<tr>
+<td style="border-bottom:1px solid #e2e8f0;">42" zero-turn (Toro TimeCutter)</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;">120 min</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;">56 hrs</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">84 hrs</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;">10.5 days</td>
+</tr>
+<tr style="background:#dcfce7;">
+<td style="border-bottom:1px solid #e2e8f0;"><strong>🏆 Husqvarna Automower 410iQ</strong> (5 min/wk edge trim)</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;">5 min</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;"><strong>2 hrs</strong></td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;font-weight:700;">138 hrs</td>
+<td style="text-align:right;border-bottom:1px solid #e2e8f0;color:#16a34a;font-weight:700;">17.3 days</td>
+</tr>
+<tr>
+<td>Lawn service (Green Castle/Wilkins, $50/wk)</td>
+<td style="text-align:right;">~1 min admin</td>
+<td style="text-align:right;">0.5 hrs</td>
+<td style="text-align:right;color:#16a34a;">139 hrs</td>
+<td style="text-align:right;color:#16a34a;">17.4 days</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<p style="background:#1a4d2e;color:#fff;padding:14px;border-radius:8px;font-size:15px;line-height:1.5;"><strong style="color:#86efac;">Read this carefully:</strong> A ride-on saves Scott ~75 hours/year. A robot mower saves <em>almost twice as much</em> (~138 hours) for <strong style="color:#fff">half the price</strong>. The ride-on is the second-most expensive option that produces the third-best time savings. The "tractor for sand leveling" curiosity is the only thing keeping the ride-on in the conversation — and as you'll see below, that's mostly a misconception.</p>
+
+<h2>The opportunity-cost argument that should close the case</h2>
+
+<p>Scott's effective hourly value as a multi-venture builder is reasonably $100–$200/hour. Even at the low end, with a realistic 30% conversion rate (you can't actually bill every recovered hour), here's the picture:</p>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin:16px 0;">
+
+<div style="background:#fff;border:2px solid #16a34a;border-radius:10px;padding:16px;position:relative;">
+<div style="position:absolute;top:-10px;right:12px;background:#16a34a;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;">RECOMMENDED</div>
+<div style="font-size:18px;font-weight:700;color:#1e293b;margin-bottom:8px;">Husqvarna Automower 410iQ</div>
+<div style="font-size:13px;color:#64748b;margin-bottom:12px;">Robot mower, 0.5 acre capacity, EPOS satellite (no boundary wire)</div>
+<div style="background:#f0fdf4;padding:10px;border-radius:6px;font-size:13px;">
+<div>Upfront: <strong>$1,550</strong> + $300 trimmer = <strong>$1,850</strong></div>
+<div>Annual op cost: <strong>~$50</strong></div>
+<div>Hours saved/yr: <strong>138</strong></div>
+<div style="border-top:1px solid #bbf7d0;margin-top:6px;padding-top:6px;">Time value @ $100/hr × 30%: <strong>$4,140/yr</strong></div>
+<div style="color:#16a34a;font-weight:700;">Payback: 5.4 months</div>
+</div>
+</div>
+
+<div style="background:#fff;border:2px solid #2563eb;border-radius:10px;padding:16px;position:relative;">
+<div style="position:absolute;top:-10px;right:12px;background:#2563eb;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;">IF YOU MUST RIDE</div>
+<div style="font-size:18px;font-weight:700;color:#1e293b;margin-bottom:8px;">John Deere S120 lawn tractor</div>
+<div style="font-size:13px;color:#64748b;margin-bottom:12px;">42" Edge deck, 22 HP V-twin B&S, hydrostatic, dealer-supported</div>
+<div style="background:#eff6ff;padding:10px;border-radius:6px;font-size:13px;">
+<div>Upfront: <strong>$2,899</strong></div>
+<div>Annual op cost: <strong>~$140</strong></div>
+<div>Hours saved/yr: <strong>75</strong></div>
+<div style="border-top:1px solid #bfdbfe;margin-top:6px;padding-top:6px;">Time value @ $100/hr × 30%: <strong>$2,250/yr</strong></div>
+<div style="color:#2563eb;font-weight:700;">Payback: 15 months</div>
+</div>
+</div>
+
+<div style="background:#fff;border:2px solid #94a3b8;border-radius:10px;padding:16px;position:relative;">
+<div style="position:absolute;top:-10px;right:12px;background:#94a3b8;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;letter-spacing:1px;">SIMPLEST</div>
+<div style="font-size:18px;font-weight:700;color:#1e293b;margin-bottom:8px;">Lawn service (Green Castle)</div>
+<div style="font-size:13px;color:#64748b;margin-bottom:12px;">Weekly mow/trim/edge/blow, ~$50/visit, Davis County local</div>
+<div style="background:#f8fafc;padding:10px;border-radius:6px;font-size:13px;">
+<div>Upfront: <strong>$0</strong></div>
+<div>Annual cost: <strong>$1,400/yr forever</strong></div>
+<div>Hours saved/yr: <strong>139</strong></div>
+<div style="border-top:1px solid #cbd5e1;margin-top:6px;padding-top:6px;">Net value @ $100/hr × 30%: <strong>$2,770/yr</strong></div>
+<div style="color:#475569;font-weight:700;">Payback: immediate; no asset</div>
+</div>
+</div>
+
+</div>
+
+<h2>If you want the ride-on anyway: the three to consider</h2>
+
+<p>Scott's "just curious" tractor interest plus his particular nature plus moderate Wasatch Front slopes points hard at a <strong>lawn tractor, not a zero-turn</strong>. Zero-turns at the under-$3K tier have low towing capacity (often 250 lb max with hitches that void warranties), tear up turf during rookie lap-bar mistakes (highly visible to a particular owner), and struggle on slopes. You don't want to learn a zero-turn on the lawn you care about.</p>
+
+<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden;margin:16px 0;">
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+
+<div style="padding:18px;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;">
+<div style="background:#fbbf24;color:#78350f;display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:8px;">🥇 BEST OVERALL RIDE-ON</div>
+<div style="font-size:17px;font-weight:700;">John Deere S120</div>
+<div style="font-size:24px;font-weight:700;color:#16a34a;margin:4px 0;">$2,899</div>
+<div style="font-size:13px;line-height:1.5;color:#475569;">
+42" Edge deck · 22 HP V-twin B&S 724cc · Hydrostatic TLT200 · 2-yr/120-hr warranty · Standard rear hitch (~660 lb cart capacity)<br><br>
+<strong>Why:</strong> Best cut quality in class. Easy-Change 30-second oil. Holds resale value 50%+ at 5 years — best in segment. MowerPlus app.<br><br>
+<strong>Buy at:</strong> Home Depot Farmington (in stock typically), or trailer to Stotz Equipment Bluffdale (35 mi) for dealer-grade service.<br><br>
+<strong>Watch out:</strong> 2-yr warranty shorter than competitors' 3-yr. Stamped (not fabricated) deck.
+</div>
+</div>
+
+<div style="padding:18px;border-right:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;background:#fafafa;">
+<div style="background:#10b981;color:#fff;display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:8px;">🥈 BEST VALUE</div>
+<div style="font-size:17px;font-weight:700;">Cub Cadet XT1 LT46 Enduro</div>
+<div style="font-size:24px;font-weight:700;color:#16a34a;margin:4px 0;">$2,499</div>
+<div style="font-size:13px;line-height:1.5;color:#475569;">
+46" stamped deck · 22 HP Kohler 7000 V-twin · Hydrostatic K46 · 3-yr warranty · Standard hitch (~250 lb)<br><br>
+<strong>Why:</strong> Solid Kohler V-twin, longer warranty than JD, 4.3/5 from 4,000+ Home Depot reviews. Saves $400 vs. S120. The 46" deck shaves real time on a half-acre.<br><br>
+<strong>Buy at:</strong> Home Depot, Tractor Supply Layton, or local Cub Cadet dealer. <strong>BC Small Engine Repair (Layton)</strong> services Cub Cadet — local repair option.<br><br>
+<strong>Watch out:</strong> K46 transaxle is the known weak point of this class — avoid heavy hill towing.
+</div>
+</div>
+
+<div style="padding:18px;border-bottom:1px solid #e2e8f0;">
+<div style="background:#6366f1;color:#fff;display:inline-block;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:8px;">🥉 BUDGET PICK</div>
+<div style="font-size:17px;font-weight:700;">John Deere S100</div>
+<div style="font-size:24px;font-weight:700;color:#16a34a;margin:4px 0;">$2,399</div>
+<div style="font-size:13px;line-height:1.5;color:#475569;">
+42" Edge deck · 17.5 HP single-cylinder · Hydrostatic CVT · 2-yr/120-hr warranty · Standard hitch<br><br>
+<strong>Why:</strong> Same Edge deck = same cut quality as the S120 for $500 less. Plenty of motor for Scott's flat-ish 12,000 sf. Best resale value in the budget tier.<br><br>
+<strong>Buy at:</strong> Home Depot Farmington — stocks the BG21271 SKU.<br><br>
+<strong>Watch out:</strong> Single-cylinder feels underpowered if there's any meaningful slope. No Easy-Change oil. No app.
+</div>
+</div>
+
+</div>
+</div>
+
+<div style="background:#fef3c7;border:1px solid #f59e0b;padding:14px;border-radius:8px;margin:16px 0;font-size:14px;">
+<strong>⚠️ The dealer service problem in Davis County:</strong> There is <strong>no John Deere dealer in Davis County</strong>. Closest is Stotz Equipment in Bluffdale, ~35–40 miles south. For warranty work without a trailer, this is a real friction point. <strong>Husqvarna and Cub Cadet have local options</strong> — Husqvarna dealers in Kaysville/Layton, and BC Small Engine Repair in Layton services Toro, Cub Cadet, Husqvarna, Ariens, Honda, and even John Deere. If repair logistics matter, the Cub Cadet XT1 LT46 has the best service-radius story for Farmington.
+</div>
+
+<h2>Skip these: zero-turns under $3K and gear-driven tractors</h2>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin:16px 0;">
+<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px;border-radius:6px;">
+<div style="background:#dc2626;color:#fff;display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;">SKIP</div>
+<div style="font-weight:700;margin-bottom:4px;">Cub Cadet ZT1 42, Husqvarna Z142, Toro TimeCutter 42</div>
+<div style="font-size:13px;color:#475569;">Wrong machine for a particular newcomer. Lap-bar rookie mistakes leave permanent divots. Low towing kills the "tractor curiosity" use case. Slopes scary. Save the zero-turn for a future $4K+ purchase if/when needs change.</div>
+</div>
+<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px;border-radius:6px;">
+<div style="background:#dc2626;color:#fff;display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;">SKIP</div>
+<div style="font-weight:700;margin-bottom:4px;">Troy-Bilt Pony 42, Craftsman T110</div>
+<div style="font-size:13px;color:#475569;">Gear-driven (not hydrostatic). Cheaper at $1,800–$2,000 but transmission/spindle failures around year 5–7. Bottom-tier resale. False economy for a particular owner.</div>
+</div>
+<div style="background:#fef2f2;border-left:4px solid #dc2626;padding:14px;border-radius:6px;">
+<div style="background:#dc2626;color:#fff;display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;">SKIP</div>
+<div style="font-weight:700;margin-bottom:4px;">Cub Cadet XT1 LT50 (50" deck)</div>
+<div style="font-size:13px;color:#475569;">Deck is too big for 12,000 sq ft with mature landscaping — you'll fight it around obstacles every mow. The 42–46" sweet spot is correct for this lot.</div>
+</div>
+</div>
+
+<h2>Sand leveling: the curiosity that shouldn't drive the decision</h2>
+
+<p>Scott flagged "tractor for sand-leveling" as <em>just curious</em>. Honest answer: <strong>that's wise framing, because it's mostly a misconception.</strong></p>
+
+<p>Top-dressing a quarter-acre lawn with sand requires roughly <strong>10–11 cubic yards (13–15 tons)</strong> for a meaningful 1/4–3/8" leveling pass — that's 2–3 dump truck loads. The actual work is <strong>shoveling sand from piles, distributing with a leveling rake, then dragging a mat to settle it into the canopy</strong>. A ride-on helps with exactly two pieces of that:</p>
+
+<ol>
+<li><strong>Hauling sand in a dump cart</strong> from pile to spread location (lawn tractor with 250–650 lb cart helpful; ZTR limited)</li>
+<li><strong>Pulling a drag mat</strong> across the spread sand to settle it (any ride-on works <em>if</em> you avoid zero-turn maneuvers)</li>
+</ol>
+
+<p>The 80% of the work — shoveling, raking, walking — is unchanged. Pros use $4K–$15K powered topdressers (Ecolawn, Turfco) or skid-steers; homeowners use a <strong>Landzie leveling rake (~$90)</strong> which is the actual workhorse tool regardless of which mower you own. <strong>Don't pay $1,300 more for a tractor over a robot to gain a marginal sand-leveling assist on a project you'll do once every 3–5 years.</strong></p>
+
+<p>If Scott does want the towing utility for fertilizer/seed/aeration/hauling mulch — which is a more legitimate annual use — a lawn tractor wins easily over a zero-turn. Useful tractor accessories (any of the three picks above accept these):</p>
+
+<ul>
+<li><strong>Agri-Fab 130 lb tow broadcast spreader (~$220)</strong> — biggest real time saver, makes quarterly fertilization a 15-minute job</li>
+<li><strong>Brinly 36" lawn roller (~$250)</strong> + <strong>Yard Tuff 4.5'×5' drag mat (~$200)</strong> — for the leveling project he's curious about</li>
+<li><strong>10 cu ft poly dump cart (~$200)</strong> — for hauling mulch, leaves, sand</li>
+</ul>
+
+<h2>The honest recommendation hierarchy</h2>
+
+<div style="background:#fff;border:2px solid #1a4d2e;border-radius:10px;padding:18px;margin:16px 0;">
+<div style="font-size:13px;letter-spacing:1px;color:#1a4d2e;font-weight:700;margin-bottom:10px;">RANKED BY VALUE × TIME-RETURNED FOR SCOTT SPECIFICALLY</div>
+
+<div style="border-bottom:1px solid #e2e8f0;padding-bottom:14px;margin-bottom:14px;">
+<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+<span style="background:#16a34a;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;">#1 OPTIMAL</span>
+<span style="font-size:18px;font-weight:700;">Husqvarna Automower 410iQ + Ego trimmer</span>
+<span style="margin-left:auto;color:#16a34a;font-weight:700;">$1,850 total</span>
+</div>
+<div style="font-size:14px;color:#475569;line-height:1.5;">Saves 138 hrs/year. Daily micro-mowing actually <em>improves</em> KBG appearance — particular owners often end up with the best-looking lawns on the street. Setup is ~half-day. Buy from Utah Robomowers in Kaysville (10 mi from Farmington — they specialize in this). Leaves $1,150 of the $3K budget for a premium trimmer/edger, the Landzie rake, or just untouched.</div>
+</div>
+
+<div style="border-bottom:1px solid #e2e8f0;padding-bottom:14px;margin-bottom:14px;">
+<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+<span style="background:#2563eb;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;">#2 RIDE-ON</span>
+<span style="font-size:18px;font-weight:700;">John Deere S120</span>
+<span style="margin-left:auto;color:#2563eb;font-weight:700;">$2,899</span>
+</div>
+<div style="font-size:14px;color:#475569;line-height:1.5;">Best cut, best resale, best ride for a particular owner. Saves 75 hrs/year. The "I want a tractor and I'll enjoy it" answer. Add the spreader/cart/drag-mat accessory bundle (~$650) to genuinely use the tractor function. Honest read: this is a <em>lifestyle</em> choice over a pure ROI choice — and that's fine.</div>
+</div>
+
+<div style="border-bottom:1px solid #e2e8f0;padding-bottom:14px;margin-bottom:14px;">
+<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+<span style="background:#7c3aed;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;">#3 HYBRID</span>
+<span style="font-size:18px;font-weight:700;">Automower + Toro Super Recycler 21"</span>
+<span style="margin-left:auto;color:#7c3aed;font-weight:700;">~$2,400</span>
+</div>
+<div style="font-size:14px;color:#475569;line-height:1.5;">Robot does daily maintenance; the Toro is for first-cut-of-spring, post-vacation catch-up, and leaf cleanup. The "I don't fully trust robots yet" answer. Toro Super Recycler is widely cited as the closest cut quality to the discontinued Honda HRX.</div>
+</div>
+
+<div>
+<div style="display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap;">
+<span style="background:#94a3b8;color:#fff;padding:4px 10px;border-radius:4px;font-size:11px;font-weight:700;">#4 SIMPLEST</span>
+<span style="font-size:18px;font-weight:700;">Lawn service (Green Castle or Wilkins)</span>
+<span style="margin-left:auto;color:#475569;font-weight:700;">$1,400/yr forever</span>
+</div>
+<div style="font-size:14px;color:#475569;line-height:1.5;">Saves 139 hrs/year, zero hands-on work. The catch: no asset, ongoing dependency, and quality variance with marketplace platforms (use Nextdoor/word-of-mouth instead of LawnStarter). For a particular owner, finding the right operator takes 1–2 attempts.</div>
+</div>
+</div>
+
+<h2>Honda is dead — what to know about replacement walk-behinds</h2>
+
+<p>One last data point that affects Scott's mental model: <strong>Honda exited the US gas walk-behind mower market in September 2023.</strong> Remaining HRX217 inventory sold through 2024. As of 2026, you can only buy Honda walk-behinds used or new-old-stock. Parts/service still supported, but it's a sunsetting platform. The real successor for "premium 21" cut quality" is the <strong>Toro Super Recycler ($800–$1,100)</strong>; for "I want to mow faster" it's the <strong>Toro TimeMaster 30" ($1,500–$1,850)</strong>, which cuts mowing time roughly in half vs. a 21".</p>
+
+<h2>Conclusion: the ride-on isn't wrong, but it isn't right either</h2>
+
+<p>Scott's question was framed as "which ride-on?" — but the underlying job is <em>"give me my time back so I can build."</em> A ride-on partially solves that. A robot mower solves it better, cheaper, and with arguably better lawn quality on Kentucky bluegrass. A lawn service solves it best in pure time terms but costs $1,400/year forever and takes the lawn out of his hands.</p>
+
+<p>The "tractor for sand leveling" curiosity is a small factor that shouldn't tilt a $1,300 spending decision. The slopes argument and "I'm new to ride-ons" argument <em>do</em> rule out zero-turns at this price tier — so if the answer is a ride-on, it's a <strong>lawn tractor, full stop</strong>, and the John Deere S120 is the cleanest pick.</p>
+
+<p style="font-size:16px;background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);padding:16px;border-radius:8px;border-left:4px solid #d97706;"><strong>The decision tree, in one sentence:</strong> If Scott wants maximum time back, buy the Husqvarna Automower 410iQ from Utah Robomowers in Kaysville. If Scott wants a ride-on because he <em>wants</em> a ride-on (which is a fine reason), buy the John Deere S120 at Home Depot Farmington and add the $650 accessory bundle. Either way, do not buy a zero-turn under $3K, do not buy a gear-driven tractor, and verify the actual lot size on the Davis County portal before pulling the trigger.</p>
+
+<div style="margin-top:48px;padding-top:24px;border-top:1px solid #e2e8f0;font-size:12px;color:#94a3b8;text-align:center;">
+Built by Skippy · fosterlabs.org · May 2, 2026
+</div>
+
+</div>
+</body>
+</html>
