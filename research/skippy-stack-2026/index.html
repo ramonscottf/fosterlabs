@@ -1,0 +1,2344 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Skippy 2026 — A State of the Stack</title>
+<meta name="description" content="A two-hour deep dive into the state of Claude, agents, skills, harnesses, and the Cloudflare ecosystem as of May 2026 — and what Project Skippy is missing.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,400;1,9..144,600&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0c;
+    --bg-warm: #14110d;
+    --ink: #f4ede0;
+    --ink-dim: #b8ad99;
+    --ink-faint: #6b6256;
+    --accent: #ff5e1a;
+    --accent-glow: #ff8c4a;
+    --gold: #d4a253;
+    --paper: #f4ede0;
+    --rule: rgba(244, 237, 224, 0.12);
+    --rule-strong: rgba(244, 237, 224, 0.3);
+    --serif: 'Fraunces', Georgia, serif;
+    --mono: 'JetBrains Mono', 'Courier New', monospace;
+    --sans: 'Inter', system-ui, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    font-size: 18px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* GRAIN OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  /* PROGRESS BAR */
+  .progress-rail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: rgba(244, 237, 224, 0.06);
+    z-index: 1000;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--gold));
+    transition: width 0.1s linear;
+    box-shadow: 0 0 10px var(--accent);
+  }
+
+  /* CHAPTER NAV (DESKTOP) */
+  .chapter-nav {
+    position: fixed;
+    left: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+  }
+  .chapter-nav a {
+    color: var(--ink-faint);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    transition: color 0.3s, transform 0.3s;
+    text-transform: uppercase;
+  }
+  .chapter-nav a::before {
+    content: '';
+    display: inline-block;
+    width: 18px;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.3s;
+  }
+  .chapter-nav a:hover, .chapter-nav a.active {
+    color: var(--accent);
+    transform: translateX(4px);
+  }
+  .chapter-nav a.active::before { width: 32px; }
+  @media (max-width: 1100px) { .chapter-nav { display: none; } }
+
+  /* TOP META BAR */
+  .meta-bar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    padding: 18px 24px;
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    z-index: 100;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    background: linear-gradient(180deg, rgba(10,10,12,0.8) 0%, transparent 100%);
+  }
+  .meta-bar .dot {
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+    box-shadow: 0 0 8px var(--accent);
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    padding: 120px 6vw 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    right: -20%;
+    width: 80vw;
+    height: 80vw;
+    background: radial-gradient(circle, rgba(255, 94, 26, 0.15) 0%, transparent 60%);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: drift 20s ease-in-out infinite;
+  }
+  @keyframes drift {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-5%, 5%); }
+  }
+
+  .hero-kicker {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .hero-kicker::before {
+    content: '';
+    width: 40px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero h1 {
+    font-family: var(--serif);
+    font-weight: 300;
+    font-size: clamp(48px, 9vw, 140px);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    margin-bottom: 32px;
+    font-variation-settings: 'opsz' 144;
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-weight: 400;
+    color: var(--accent);
+  }
+  .hero h1 .ampersand {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    color: var(--gold);
+    display: inline-block;
+    transform: translateY(-0.05em);
+  }
+
+  .hero-sub {
+    max-width: 720px;
+    font-size: clamp(18px, 2vw, 24px);
+    line-height: 1.5;
+    color: var(--ink-dim);
+    margin-bottom: 48px;
+    font-weight: 300;
+  }
+  .hero-sub strong { color: var(--ink); font-weight: 500; }
+
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-top: 1px solid var(--rule);
+    padding-top: 24px;
+    flex-wrap: wrap;
+  }
+  .hero-meta span strong { color: var(--ink); font-weight: 700; display: block; margin-top: 4px; font-size: 13px; letter-spacing: 0.05em; }
+
+  /* HEADLINE STACK */
+  .headline {
+    padding: 100px 6vw;
+    border-top: 1px solid var(--rule);
+    background: var(--bg-warm);
+  }
+  .headline-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 32px;
+  }
+  .headline-text {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(28px, 4.5vw, 56px);
+    line-height: 1.15;
+    max-width: 1100px;
+    letter-spacing: -0.02em;
+  }
+  .headline-text strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .headline-text em {
+    font-style: italic;
+    color: var(--gold);
+  }
+
+  /* SECTIONS */
+  section.chapter {
+    padding: 120px 6vw 100px;
+    border-top: 1px solid var(--rule);
+    position: relative;
+  }
+
+  .chapter-header {
+    margin-bottom: 64px;
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 32px;
+    align-items: end;
+  }
+  @media (max-width: 700px) {
+    .chapter-header { grid-template-columns: 1fr; gap: 16px; }
+  }
+  .chapter-num {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 100px;
+    line-height: 0.8;
+    color: var(--accent);
+    opacity: 0.6;
+  }
+  .chapter-title {
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(32px, 5vw, 64px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+  }
+  .chapter-title em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .chapter-kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 16px;
+  }
+
+  /* PROSE */
+  .prose {
+    max-width: 820px;
+    margin: 0 auto 0 0;
+  }
+  .prose p {
+    font-size: 19px;
+    line-height: 1.7;
+    margin-bottom: 24px;
+    color: var(--ink);
+  }
+  .prose p strong { color: var(--accent-glow); font-weight: 500; }
+  .prose p em { font-style: italic; color: var(--gold); }
+  .prose p code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    background: rgba(255, 94, 26, 0.1);
+    color: var(--accent-glow);
+    padding: 2px 6px;
+    border-radius: 3px;
+    border: 1px solid rgba(255, 94, 26, 0.2);
+  }
+  .prose h3 {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 32px;
+    line-height: 1.2;
+    margin-top: 64px;
+    margin-bottom: 24px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .prose h3::before {
+    content: '§';
+    color: var(--accent);
+    margin-right: 12px;
+    font-style: italic;
+    font-weight: 300;
+  }
+  .prose h4 {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-top: 40px;
+    margin-bottom: 16px;
+    font-weight: 700;
+  }
+  .prose ul, .prose ol {
+    margin: 0 0 24px 0;
+    padding-left: 0;
+    list-style: none;
+  }
+  .prose ul li, .prose ol li {
+    position: relative;
+    padding-left: 32px;
+    margin-bottom: 12px;
+    line-height: 1.6;
+  }
+  .prose ul li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-family: var(--mono);
+  }
+  .prose ol { counter-reset: ol-counter; }
+  .prose ol li {
+    counter-increment: ol-counter;
+  }
+  .prose ol li::before {
+    content: counter(ol-counter, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-family: var(--mono);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .prose a {
+    color: var(--gold);
+    text-decoration: underline;
+    text-decoration-color: rgba(212, 162, 83, 0.3);
+    text-underline-offset: 3px;
+    transition: text-decoration-color 0.2s;
+  }
+  .prose a:hover { text-decoration-color: var(--gold); }
+
+  /* PULL QUOTE */
+  .pullquote {
+    margin: 56px 0;
+    padding: 32px 0 32px 40px;
+    border-left: 3px solid var(--accent);
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 400;
+    font-size: clamp(22px, 2.8vw, 32px);
+    line-height: 1.4;
+    color: var(--ink);
+    max-width: 800px;
+    position: relative;
+  }
+  .pullquote::before {
+    content: '"';
+    position: absolute;
+    left: 16px;
+    top: 0;
+    font-size: 80px;
+    color: var(--accent);
+    opacity: 0.3;
+    font-family: var(--serif);
+    line-height: 1;
+  }
+  .pullquote cite {
+    display: block;
+    margin-top: 16px;
+    font-style: normal;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    font-weight: 500;
+  }
+
+  /* CARD GRID */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 32px 0;
+  }
+  .card {
+    padding: 28px;
+    background: linear-gradient(135deg, rgba(244, 237, 224, 0.04) 0%, rgba(244, 237, 224, 0.01) 100%);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .card:hover {
+    border-color: var(--rule-strong);
+    background: linear-gradient(135deg, rgba(255, 94, 26, 0.06) 0%, rgba(244, 237, 224, 0.02) 100%);
+    transform: translateY(-2px);
+  }
+  .card:hover::before { transform: scaleX(1); }
+  .card-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.2;
+    margin-bottom: 12px;
+    color: var(--ink);
+  }
+  .card-title em { font-style: italic; color: var(--gold); }
+  .card-body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+  .card-body strong { color: var(--ink); font-weight: 500; }
+  .card-body code {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    color: var(--accent-glow);
+  }
+
+  /* COMPARISON CARDS (replaces tables) */
+  .compare-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 32px 0;
+  }
+  .compare-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 32px;
+    padding: 24px 28px;
+    background: rgba(244, 237, 224, 0.025);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+  .compare-row:hover {
+    background: rgba(255, 94, 26, 0.04);
+    border-color: rgba(255, 94, 26, 0.2);
+  }
+  @media (max-width: 700px) {
+    .compare-row { grid-template-columns: 1fr; gap: 12px; padding: 20px; }
+  }
+  .compare-key {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    align-self: start;
+    padding-top: 4px;
+    font-weight: 500;
+  }
+  .compare-val {
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+  }
+  .compare-val strong { color: var(--ink); font-weight: 500; }
+  .compare-val code { font-family: var(--mono); color: var(--accent-glow); font-size: 0.85em; }
+
+  /* MODEL PRICE CARDS */
+  .price-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+    margin: 32px 0;
+  }
+  .price-card {
+    padding: 24px;
+    background: linear-gradient(160deg, rgba(255, 94, 26, 0.05) 0%, rgba(20, 17, 13, 0.6) 100%);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    position: relative;
+  }
+  .price-card.highlight {
+    border-color: var(--accent);
+    box-shadow: 0 0 30px rgba(255, 94, 26, 0.2);
+  }
+  .price-card-name {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 18px;
+    margin-bottom: 4px;
+  }
+  .price-card-name em { font-style: italic; color: var(--gold); font-size: 13px; }
+  .price-card-id {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-bottom: 16px;
+  }
+  .price-card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    font-size: 13px;
+  }
+  .price-card-grid div { color: var(--ink-dim); }
+  .price-card-grid div span {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 2px;
+  }
+  .price-card-grid div strong { color: var(--accent-glow); font-weight: 500; }
+
+  /* ACTION CARDS — flippable / interactive feel */
+  .action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+    margin: 48px 0;
+    counter-reset: action-counter;
+  }
+  .action-card {
+    counter-increment: action-counter;
+    padding: 32px;
+    background: linear-gradient(140deg, var(--bg-warm) 0%, rgba(10, 10, 12, 0.8) 100%);
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    cursor: pointer;
+  }
+  .action-card::before {
+    content: counter(action-counter, decimal-leading-zero);
+    position: absolute;
+    top: 16px;
+    right: 24px;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 80px;
+    line-height: 1;
+    color: var(--accent);
+    opacity: 0.15;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .action-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 20px 60px -20px rgba(255, 94, 26, 0.4);
+  }
+  .action-card:hover::before {
+    opacity: 0.4;
+    transform: scale(1.1);
+  }
+  .action-card-title {
+    font-family: var(--serif);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    margin-bottom: 16px;
+    padding-right: 60px;
+    letter-spacing: -0.01em;
+  }
+  .action-card-body {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--ink-dim);
+    margin-bottom: 16px;
+  }
+  .action-card-body strong { color: var(--ink); font-weight: 500; }
+  .action-card-body code { font-family: var(--mono); font-size: 0.85em; color: var(--accent-glow); }
+  .action-card-effort {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    padding-top: 16px;
+    border-top: 1px solid var(--rule);
+  }
+
+  /* VERDICT BLOCKS */
+  .verdict {
+    margin: 48px 0;
+    padding: 32px 40px;
+    background: linear-gradient(135deg, rgba(255, 94, 26, 0.08) 0%, rgba(212, 162, 83, 0.04) 100%);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    position: relative;
+  }
+  .verdict-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+    font-weight: 700;
+  }
+  .verdict p {
+    font-family: var(--serif);
+    font-size: 20px;
+    line-height: 1.5;
+    color: var(--ink);
+    margin: 0;
+  }
+  .verdict p strong { color: var(--accent-glow); }
+
+  /* DIVIDER */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 80px 0;
+    color: var(--ink-faint);
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--rule);
+  }
+  .divider span {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+  }
+
+  /* TWO-COL LAYOUT */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+    margin: 32px 0;
+  }
+  @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+
+  .col-card {
+    padding: 32px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    background: rgba(244, 237, 224, 0.02);
+  }
+  .col-card.warn {
+    border-color: rgba(212, 162, 83, 0.3);
+    background: linear-gradient(135deg, rgba(212, 162, 83, 0.05) 0%, transparent 100%);
+  }
+  .col-card.win {
+    border-color: rgba(255, 94, 26, 0.3);
+    background: linear-gradient(135deg, rgba(255, 94, 26, 0.05) 0%, transparent 100%);
+  }
+  .col-card h4 {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .col-card.warn h4 { color: var(--gold); }
+  .col-card.win h4 { color: var(--accent); }
+  .col-card ul li { padding-left: 28px; margin-bottom: 16px; font-size: 15px; }
+  .col-card.warn ul li::before { content: '✕'; color: var(--gold); font-family: var(--mono); }
+  .col-card.win ul li::before { content: '✓'; color: var(--accent); font-family: var(--mono); }
+
+  /* CODE BLOCK */
+  pre {
+    background: #050507;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 20px 24px;
+    margin: 24px 0;
+    overflow-x: auto;
+    font-family: var(--mono);
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--accent-glow);
+    position: relative;
+  }
+  pre::before {
+    content: '$';
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-faint);
+    letter-spacing: 0.2em;
+  }
+
+  /* SCROLL REVEAL */
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal-stagger > * {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal-stagger.in > * { opacity: 1; transform: translateY(0); }
+  .reveal-stagger.in > *:nth-child(1) { transition-delay: 0.05s; }
+  .reveal-stagger.in > *:nth-child(2) { transition-delay: 0.1s; }
+  .reveal-stagger.in > *:nth-child(3) { transition-delay: 0.15s; }
+  .reveal-stagger.in > *:nth-child(4) { transition-delay: 0.2s; }
+  .reveal-stagger.in > *:nth-child(5) { transition-delay: 0.25s; }
+  .reveal-stagger.in > *:nth-child(6) { transition-delay: 0.3s; }
+  .reveal-stagger.in > *:nth-child(7) { transition-delay: 0.35s; }
+  .reveal-stagger.in > *:nth-child(8) { transition-delay: 0.4s; }
+  .reveal-stagger.in > *:nth-child(9) { transition-delay: 0.45s; }
+  .reveal-stagger.in > *:nth-child(10) { transition-delay: 0.5s; }
+
+  /* CALLOUT — DANGER */
+  .callout-danger {
+    margin: 40px 0;
+    padding: 28px 32px;
+    background: linear-gradient(135deg, rgba(255, 94, 26, 0.12) 0%, rgba(255, 94, 26, 0.04) 100%);
+    border: 1px solid rgba(255, 94, 26, 0.4);
+    border-radius: 4px;
+    position: relative;
+  }
+  .callout-danger::before {
+    content: '⚠';
+    position: absolute;
+    top: 24px;
+    left: 28px;
+    font-size: 24px;
+    color: var(--accent);
+  }
+  .callout-danger > * { padding-left: 40px; }
+  .callout-danger .label {
+    font-family: var(--mono);
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+    font-weight: 700;
+  }
+  .callout-danger p { font-size: 16px; line-height: 1.6; color: var(--ink); margin: 0; }
+  .callout-danger p + p { margin-top: 12px; }
+
+  /* FINAL OUTRO */
+  .outro {
+    padding: 120px 6vw 80px;
+    text-align: center;
+    border-top: 1px solid var(--rule);
+    background: radial-gradient(ellipse at center, rgba(255, 94, 26, 0.08) 0%, transparent 70%);
+  }
+  .outro-mark {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    font-size: 80px;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 32px;
+  }
+  .outro-text {
+    font-family: var(--serif);
+    font-size: clamp(20px, 3vw, 32px);
+    line-height: 1.5;
+    max-width: 800px;
+    margin: 0 auto 48px;
+    color: var(--ink);
+    font-weight: 300;
+  }
+  .outro-text em { font-style: italic; color: var(--gold); }
+  .outro-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .outro-meta a { color: var(--accent); text-decoration: none; }
+
+  /* MARGIN SCROLL ANIMATION */
+  .scroll-marquee {
+    overflow: hidden;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    padding: 24px 0;
+    margin: 48px 0;
+    background: var(--bg-warm);
+  }
+  .scroll-marquee-inner {
+    display: flex;
+    gap: 64px;
+    white-space: nowrap;
+    animation: marquee 50s linear infinite;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 24px;
+    color: var(--ink-faint);
+  }
+  .scroll-marquee-inner span { display: inline-flex; align-items: center; gap: 64px; }
+  .scroll-marquee-inner span::after {
+    content: '✦';
+    color: var(--accent);
+    font-style: normal;
+  }
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  /* SELECTION */
+  ::selection { background: var(--accent); color: var(--bg); }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--rule-strong); border-radius: 5px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+  /* RESPONSIVE TOUCH-UPS */
+  @media (max-width: 700px) {
+    body { font-size: 16px; }
+    .hero { padding: 100px 6vw 60px; }
+    .meta-bar { font-size: 9px; gap: 10px; padding: 14px 16px; }
+    .meta-bar span:nth-child(2) { display: none; }
+    .chapter-num { font-size: 64px; }
+    .pullquote { padding: 24px 0 24px 24px; font-size: 20px; }
+    .verdict { padding: 24px; }
+    .action-card { padding: 24px; }
+    .compare-row { padding: 18px; }
+    .price-card { padding: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="progress-rail"><div class="progress-fill" id="progress"></div></div>
+
+<div class="meta-bar">
+  <div class="dot"></div>
+  <span>FOSTER LABS // SKIPPY RESEARCH</span>
+  <span>MAY 02 2026</span>
+</div>
+
+<nav class="chapter-nav" id="chapterNav">
+  <a href="#hero" class="active">00 // OPEN</a>
+  <a href="#headline">01 // HEADLINE</a>
+  <a href="#ch1">02 // SKILLS</a>
+  <a href="#ch2">03 // COSTS</a>
+  <a href="#ch3">04 // ECOSYSTEM</a>
+  <a href="#ch4">05 // CLOUDFLARE</a>
+  <a href="#ch5">06 // RETRIEVAL</a>
+  <a href="#ch6">07 // VOICE</a>
+  <a href="#ch7">08 // CONTEXT</a>
+  <a href="#ch8">09 // ACTION</a>
+  <a href="#outro">10 // CLOSE</a>
+</nav>
+
+<!-- ═══════════════════════════════════════════ HERO ═══════════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-kicker reveal">DOSSIER &mdash; A TWO-HOUR DEEP DIVE</div>
+  <h1 class="reveal">
+    Project Skippy <em>2026:</em><br>
+    A State <span class="ampersand">of</span> the Stack
+  </h1>
+  <p class="hero-sub reveal">
+    Skippy is a well-architected <strong>2024-vintage stack</strong>. Mid-pack for 2025. Missing <strong>six concrete things</strong> that shipped in the last sixty days. Here is everything that changed. None of it is cut.
+  </p>
+  <div class="hero-meta reveal">
+    <span>FILED <strong>MAY 02 2026</strong></span>
+    <span>FROM <strong>SKIPPY / RESEARCH MODE</strong></span>
+    <span>FOR <strong>SCOTT FOSTER</strong></span>
+    <span>TIME-TO-READ <strong>~45 MIN</strong></span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ HEADLINE ═══════════════════════════════════════════ -->
+<section class="headline" id="headline">
+  <div class="headline-label reveal">THE HEADLINE</div>
+  <p class="headline-text reveal">
+    The biggest deltas you'll want to internalize: <strong>Anthropic's Agent Skills</strong> went cross-vendor on December 18, 2025. <strong>Claude Managed Agents</strong> launched April 8. <strong>Cloudflare Agents Week</strong> (April 13&ndash;17) shipped AI Search with hybrid retrieval, Sandboxes GA, Workflows V2, and Project Think. And the <em>April 23 Claude Code postmortem</em> finally explained the idle drain.
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════ CHAPTER 1 — SKILLS ═══════════════════════════════════════════ -->
+<section class="chapter" id="ch1">
+  <div class="chapter-kicker reveal">CHAPTER ONE</div>
+  <div class="chapter-header reveal">
+    <div class="chapter-num">01</div>
+    <h2 class="chapter-title">Skills, sub-agents, harnesses, and Managed Agents &mdash; the terminology actually <em>disambiguated</em>.</h2>
+  </div>
+
+  <div class="prose">
+    <p>Anthropic's surface area exploded between October 2025 and April 2026, and the words people use are imprecise. Here is the canonical map.</p>
+
+    <h3>Agent Skills &mdash; the open standard</h3>
+    <p>Launched <strong>October 16, 2025</strong> in Anthropic's engineering post <em>"Equipping agents for the real world with Agent Skills"</em>. On <strong>December 18, 2025</strong> Anthropic published Skills as an <strong>open standard</strong> at <a href="https://agentskills.io" target="_blank">agentskills.io</a> with a reference SDK, a Discord, org-wide enterprise management, and a "quick-create flow" UI in Claude.ai.</p>
+    <p>By Q1 2026 the standard was adopted by <strong>OpenAI (Codex CLI, ChatGPT), Microsoft (VS Code/GitHub Copilot), Cursor, Goose, Amp, OpenCode, Gemini CLI, and Antigravity</strong> &mdash; same <code>SKILL.md</code> filename, same metadata format, same directory layout.</p>
+
+    <div class="pullquote">
+      MCP provides secure connectivity to external software and data, while skills provide the procedural knowledge for using those tools effectively.
+      <cite>&mdash; Mahesh Murag, Anthropic PM // December 18 2025</cite>
+    </div>
+
+    <p>A skill is a directory containing a single required file:</p>
+    <pre>my-skill/
+├── SKILL.md          # required: YAML + Markdown
+├── scripts/          # optional executable code
+├── references/       # optional docs
+└── assets/           # optional templates</pre>
+
+    <p>Required frontmatter: <code>name</code> (lowercase, hyphens, ≤64 chars), <code>description</code>. Anthropic's Claude Code adds optional extensions: <code>when_to_use</code>, <code>argument-hint</code>, <code>disable-model-invocation</code>, <code>user-invocable</code>, <code>allowed-tools</code>, <code>model</code>, <code>effort</code>, <code>context: fork</code>, <code>agent</code>, <code>hooks</code>, <code>paths</code>, <code>shell</code>.</p>
+
+    <p><strong>Progressive disclosure</strong> is the design centerpiece: agents preload only <code>name</code> + <code>description</code> at startup (~30 tokens per skill); the body loads when triggered (500&ndash;2,000 tokens); bundled scripts/references load only on execution. <em>This is the architectural reason Skills are often described as "more efficient than MCP."</em></p>
+
+    <h3>Formal Skills vs. random GitHub repos</h3>
+    <p>The distinction Scott asked about is real and worth keeping straight. Formal Agent Skills come from <code>github.com/agentskills/agentskills</code> with the reference SDK at agentskills.io, stewarded by Anthropic, cross-tool compatible by design, with examples at <code>github.com/anthropics/skills</code>. The other "skills" repos are author-owned implementations that <em>follow</em> the SKILL.md format &mdash; quality, naming, and maintenance vary wildly, and compatibility is advertised but rarely tested.</p>
+
+    <h4>NOTABLE COMMUNITY REPOS</h4>
+    <div class="card-grid reveal-stagger">
+      <div class="card">
+        <div class="card-label">CYBERSECURITY</div>
+        <div class="card-title">mukul975/Anthropic-Cybersecurity-Skills</div>
+        <div class="card-body"><strong>754 skills</strong> mapped to MITRE ATT&CK / NIST CSF 2.0 / MITRE ATLAS / D3FEND / NIST AI RMF. <strong>Author explicitly disclaims any Anthropic affiliation despite the name.</strong> Apache 2.0.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">MARKETING</div>
+        <div class="card-title">coreyhaines31/marketingskills</div>
+        <div class="card-body">Marketing-specific. Notably migrated from <code>.claude/</code> to <code>.agents/</code> in early 2026 &mdash; an early signal of cross-tool conventions.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">VERCEL OFFICIAL</div>
+        <div class="card-title">vercel-labs/agent-skills</div>
+        <div class="card-body">Vercel's official collection. React View Transitions, Next.js patterns.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">GOOGLE OFFICIAL</div>
+        <div class="card-title">googleworkspace/cli (gws)</div>
+        <div class="card-body">Google's first-party Workspace Skills collection. <strong>Hit 4.9k stars in 3 days</strong> after the March 2026 launch.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">CURATED</div>
+        <div class="card-title">alirezarezvani/claude-skills</div>
+        <div class="card-body"><strong>232+ skills, 5,200+ stars</strong>, cross-tool tested.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">JESSE VINCENT</div>
+        <div class="card-title">obra/superpowers</div>
+        <div class="card-body">TDD/debugging skills. Bundled commands: <code>/brainstorm</code>, <code>/write-plan</code>, <code>/execute-plan</code>.</div>
+      </div>
+    </div>
+
+    <h3>What's in <code>anthropics/skills</code> today</h3>
+    <p>Top-level structure: <code>.claude-plugin/</code>, <code>skills/</code>, <code>spec/</code>, <code>template/</code>. Anthropic's own skills group into <strong>Document skills</strong> (<code>docx</code>, <code>pdf</code>, <code>pptx</code>, <code>xlsx</code> &mdash; source-available, NOT Apache, they power Claude.ai's document features), <strong>Creative & design</strong> (<code>algorithmic-art</code>, <code>brand-guidelines</code>, <code>canvas-design</code>, <code>frontend-design</code>, <code>theme-factory</code>, <code>slack-gif-creator</code>), <strong>Development</strong> (<code>claude-api</code>, <code>mcp-builder</code>, <code>web-artifacts-builder</code>, <code>webapp-testing</code>, <code>skill-creator</code>), and <strong>Comms</strong> (<code>internal-comms</code>, <code>doc-coauthoring</code>).</p>
+
+    <p>The <code>skill-creator</code> is the meta-skill that walks Claude through authoring a skill, and its <code>package_skill.py</code> + <code>run_loop.py</code> implement a <strong>trigger-eval loop</strong>: split eval set 60/40 train/test, evaluate descriptions 3× per query, iterate up to 5 times, select <code>best_description</code> by test score (overfit-resistant). <em>This is the right pattern for evaluating your own skills.</em></p>
+
+    <h3>Skill marketplaces &amp; distribution</h3>
+    <ul>
+      <li><strong>Anthropic Skills Directory</strong> at <code>claude.com/connectors</code> &mdash; official, partner-built. Launch partners: Atlassian, Canva, Cloudflare, Figma, Notion, Stripe, Zapier, Vercel; Sentry and Ramp added shortly after.</li>
+      <li><strong>claudemarketplaces.com</strong> &mdash; community directory; tracks 2,500+ marketplaces, 770+ MCP servers.</li>
+      <li><strong>skillhub.club</strong> &mdash; 7,000+ AI-evaluated skills with S/A ranking.</li>
+      <li><strong>agensi.io</strong> &mdash; portable skill marketplace with cross-tool compatibility tracking.</li>
+      <li><strong>skillsmp.com</strong> claims 900K+ skills &mdash; <em>that number is essentially scraper noise; ignore.</em></li>
+      <li><strong>Cline's marketplace</strong> &mdash; Cline's VS Code agent supports SKILL.md natively.</li>
+      <li><strong>Microsoft Agent Framework</strong> has first-class <code>AgentSkillsProvider</code> / <code>SkillsProvider</code>.</li>
+    </ul>
+
+    <h3>Sub-agents vs. agent teams vs. Managed Agents</h3>
+    <p>Three distinct primitives that get conflated. Here is the actual difference:</p>
+
+    <div class="compare-stack">
+      <div class="compare-row reveal">
+        <div class="compare-key">SUB-AGENTS</div>
+        <div class="compare-val"><strong>Local Claude Code/SDK process.</strong> Isolated fresh window per sub-agent. Configuration via <code>.claude/agents/*.md</code>. Cost = token cost only. Best for delegated research, focused subtasks. <strong>Status: GA.</strong></div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">AGENT TEAMS</div>
+        <div class="compare-val"><strong>Multiple CC instances coordinating in parallel.</strong> Independent windows per teammate. Direct comms via shared task list. Behind <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>. <strong>~7× tokens in plan mode.</strong> <em>Do not deploy in prod.</em></div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">MANAGED AGENTS</div>
+        <div class="compare-val"><strong>Anthropic's cloud.</strong> Durable session log + harness-managed window. Survives disconnects. Reusable Agent IDs. Cost = tokens + <strong>$0.08/session-hour</strong>. Best for production product integrations, long async work. <strong>Status: public beta (April 8, 2026).</strong></div>
+      </div>
+    </div>
+
+    <p>Built-in sub-agent types: <strong>Explore</strong> (Haiku, read-only search), <strong>Plan</strong> (gathers context, read-only), <strong>General-purpose</strong> (full read/write). Agent Teams docs explicitly warn of "known limitations around session resumption, task coordination, and shutdown behavior."</p>
+
+    <h3>Agent harness &mdash; the term defined</h3>
+    <p>This is <strong>explicitly Anthropic terminology</strong>. Cleanest definition is from the April 8, 2026 engineering blog <em>"Scaling Managed Agents: Decoupling the brain from the hands"</em>:</p>
+
+    <div class="pullquote">
+      We virtualized the components of an agent: a session (the append-only log of everything that happened), <em>a harness (the loop that calls Claude and routes Claude's tool calls to the relevant infrastructure)</em>, and a sandbox (an execution environment where Claude can run code and edit files).
+      <cite>&mdash; Lance Martin, Gabe Cemaj, Michael Cohen // April 8 2026</cite>
+    </div>
+
+    <p>A harness contains: tool dispatch, permission gating, context management (compaction, caching, CLAUDE.md re-read), retry/error recovery, sub-agent dispatch, and session/state management.</p>
+
+    <p><strong>Anthropic's own framing:</strong> model = generates text; harness = the deterministic code wrapping the model; agent = model + harness + tools + configuration. The April 8 rallying cry: <em>"Harnesses encode assumptions that go stale as models improve."</em> This is why Managed Agents exposes the harness as a swappable component.</p>
+
+    <h3>Claude Managed Agents &mdash; the April 8, 2026 product</h3>
+    <p>A suite of composable APIs for cloud-hosted agents. Beta header <code>managed-agents-2026-04-01</code>. Four core concepts: <strong>Agent</strong> (model + system prompt + tools + MCP + skills), <strong>Environment</strong> (cloud container template), <strong>Session</strong> (running instance, durable append-only event log), <strong>Events</strong> (messages exchanged between app and agent). Built-in tools: Bash, file ops, web search/fetch, MCP connector. <strong>Pricing: standard token rates + $0.08/session-hour while running.</strong> Rate limits: 300 create-requests/min, 600 read-requests/min per org.</p>
+
+    <h4>NAMED CUSTOMER LAUNCHES</h4>
+    <div class="card-grid reveal-stagger">
+      <div class="card">
+        <div class="card-label">NOTION</div>
+        <div class="card-title">Custom Agents</div>
+        <div class="card-body">Private alpha. Users assign tasks from boards. Eric Liu (PM): <em>"12 hours of prototyping work collapsed into about 20 minutes"</em> on early prototypes.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">SENTRY</div>
+        <div class="card-title">Seer + Patch Agent</div>
+        <div class="card-body">Root-cause hands off to a Managed Agent that writes the patch and opens the PR. <strong>Over 1M RCAs/year, 600K+ PRs/month.</strong> Indragie K.: <em>"shipped in weeks instead of months by a single engineer."</em></div>
+      </div>
+      <div class="card">
+        <div class="card-label">RAKUTEN</div>
+        <div class="card-title">Specialist Agents in Slack/Teams</div>
+        <div class="card-body">Yusuke Kaji: <em>"We deploy each specialist agent within a week."</em></div>
+      </div>
+      <div class="card">
+        <div class="card-label">VIBECODE</div>
+        <div class="card-title">10× Prompt-to-Deployed-App</div>
+        <div class="card-body">10× faster deployment cycle.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">ATLASSIAN</div>
+        <div class="card-title">Jira Workflow Agents</div>
+        <div class="card-body">Agents directly in Jira workflows. Weeks instead of months.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">ASANA</div>
+        <div class="card-title">AI Teammates</div>
+        <div class="card-body">Faster ship cycle on AI Teammates product.</div>
+      </div>
+    </div>
+
+    <div class="callout-danger">
+      <div class="label">CAVEAT</div>
+      <p><strong>Multi-agent coordination and outcomes-based execution are still research preview</strong> (require access request) &mdash; the marketing copy oversells what's GA today.</p>
+      <p>There is also no on-prem or multi-cloud option; Managed Agents is Anthropic-cloud lock-in.</p>
+    </div>
+
+    <h3>Claude background daemon?</h3>
+    <p>The exact thing &mdash; a hosted overnight Claude &mdash; is <strong>Claude Managed Agents + Claude Code Routines</strong>. Routines launched April 14, 2026 and replaced the older <code>/schedule</code> command. Configure once (prompt + repo + connectors), run on schedule, GitHub webhook, or API trigger. Headline use cases: nightly issue triage, weekly PR scans, doc-freshness checks, CI smoke tests with go/no-go to Slack.</p>
+    <p>The codename <em>"Chyros"</em> appeared in the March 31, 2026 Claude Code source leak, referencing push notifications, autonomous background operation, and task queuing &mdash; likely an unshipped version &mdash; <strong>but it is not a confirmed product as of May 2.</strong></p>
+
+    <h3>Claude Agent SDK (renamed from Claude Code SDK)</h3>
+    <p>Now <code>@anthropic-ai/claude-agent-sdk</code> (npm) / <code>claude-agent-sdk</code> (PyPI). Same engine that powers Claude Code, exposed as a library. Free; pay only for tokens. Backends: Anthropic API, AWS Bedrock, Google Vertex, Microsoft Foundry. Claude Code CLI is bundled with the Python SDK.</p>
+
+    <p>Built-in tools: <code>Read</code>, <code>Write</code>, <code>Edit</code>, <code>Bash</code>, <code>Glob</code>, <code>Grep</code>, <code>WebSearch</code>, <code>WebFetch</code>, <code>Monitor</code>, <code>Agent</code> (the new name for <code>Task</code>), <code>AskUserQuestion</code>, plus optional Computer Use and Text editor.</p>
+
+    <div class="callout-danger">
+      <div class="label">CRITICAL DIFFERENCE</div>
+      <p>Agent SDK does <strong>NOT</strong> auto-load CLAUDE.md, skills, or slash commands by default. You must opt in with <code>setting_sources=["project"]</code>.</p>
+      <p>Custom tools become <strong>in-process MCP servers</strong> running in your Python app &mdash; no separate process. <code>claude.ai</code> login is not allowed for third-party Agent SDK products &mdash; must use API keys.</p>
+    </div>
+
+    <h3>Slash commands as of May 2026</h3>
+    <p><strong>Architectural change worth knowing</strong>: custom commands have been merged into skills. A file at <code>.claude/commands/deploy.md</code> and a skill at <code>.claude/skills/deploy/SKILL.md</code> both create <code>/deploy</code> and behave identically; <strong>skills are the recommended forward path</strong>.</p>
+
+    <p>Built-in slash commands (canonical list, <code>code.claude.com/docs/en/commands</code>):</p>
+    <pre>/clear  /compact [focus]  /cost  /context  /help
+/model [opus|sonnet|haiku|opusplan]
+/effort [low|medium|high|xhigh|max]
+/agents  /skills  /plugin  /plugin marketplace add
+/mcp  /permissions  /hooks  /init
+/resume [id|name]  /diff  /rewind (Esc Esc)
+/export  /branch  /copy  /btw &lt;text&gt;
+/voice  /color  /rename  /keybindings
+/statusline  /schedule
+
+# Bundled prompt-skills (auto-invokable)
+/loop [interval] [prompt-or-/command]   # added March 2026
+/simplify  /batch  /debug  /claude-api
+/review  /security-review  /ultrareview  /init</pre>
+
+    <p><code>/effort</code> deserves a callout: <strong><code>xhigh</code> is new in 2026</strong> and is the default for coding/agentic workloads on Opus 4.7, requiring Claude Code v2.1.111+. Lower it to <code>medium</code> or <code>low</code> for cheap exploration.</p>
+
+    <h3>Hooks &mdash; full surface and token-reduction patterns</h3>
+    <p><strong>26 lifecycle event types</strong> across the Claude Code lifecycle (per Blake Crosley's analysis of v2.1.116):</p>
+
+    <h4>PER SESSION</h4>
+    <ul><li><code>SessionStart</code>, <code>SessionEnd</code></li></ul>
+
+    <h4>PER TURN</h4>
+    <ul><li><code>UserPromptSubmit</code>, <code>UserPromptExpansion</code>, <code>Stop</code>, <code>StopFailure</code></li></ul>
+
+    <h4>PER TOOL CALL</h4>
+    <ul><li><code>PreToolUse</code>, <code>PostToolUse</code>, <code>PostToolUseFailure</code>, <code>PermissionRequest</code>, <code>PermissionDenied</code></li></ul>
+
+    <h4>SUBAGENTS</h4>
+    <ul><li><code>SubagentStart</code>, <code>SubagentStop</code></li></ul>
+
+    <h4>MAINTENANCE</h4>
+    <ul><li><code>PreCompact</code>, <code>PostCompact</code>, <code>Setup</code>, <code>Notification</code>, <code>ConfigChange</code>, <code>FileChanged</code>, <code>CwdChanged</code>, <code>PostToolBatch</code></li></ul>
+
+    <p>Handler types include <strong>command</strong> (shell), <strong>HTTP</strong> (new February 2026 &mdash; POST event JSON to a URL with <code>headers</code> and <code>allowedEnvVars</code>), <strong>async</strong> (<code>async: true</code>, January 2026), <strong>prompt</strong> (single-turn Haiku evaluation &mdash; much cheaper than full Claude reasoning), and <strong>agent</strong> (full subagent runs).</p>
+
+    <h4>HOW HOOKS REDUCE TOKENS &mdash; THE LEVERAGE YOU WANT</h4>
+    <ol>
+      <li><strong>PreToolUse <code>permissionDecision: "deny"</code></strong> blocks expensive recovery turns. Critically, this works <em>even in <code>bypassPermissions</code> mode or with <code>--dangerously-skip-permissions</code></em> &mdash; non-bypassable team policy enforcement.</li>
+      <li><strong>PostToolUse summarization</strong> intercepts a 50K-token bash output and replaces it with a short summary; only the summary enters context.</li>
+      <li><strong>SessionStart context injection</strong> loads git status + TODOs deterministically (200 tokens) instead of letting Claude waste 5K of plan-mode investigation.</li>
+      <li><strong>PermissionRequest auto-approve</strong> for safe prefixes eliminates back-and-forth permission tax (typically 30% of round-trips).</li>
+      <li><strong>Stop-hook prompt evaluator</strong> (Haiku) gates "I think I'm done" loops at $1/M input vs. Opus reasoning at $5/M.</li>
+      <li><strong>PostToolUse format-on-save</strong> prevents Claude from making style-correction passes after writes.</li>
+    </ol>
+
+    <p>Pixelmojo reports a <strong>45% vulnerability-rate reduction</strong> from hook-based pre-edit gating; Blake Crosley runs <strong>95 hooks across 6 event types with ~200ms total overhead</strong> by using single dispatchers per event rather than independent hooks.</p>
+
+    <h3>Rate Limits API (April 25, 2026)</h3>
+    <p>Read-only <strong>Admin API</strong> (requires <code>sk-ant-admin...</code> key) returning the same data shown on the Console Limits page as JSON. Two GET endpoints (org-level, workspace-level), three optional params: <code>model</code>, <code>group_type</code> (<code>model_group</code>, <code>batch</code>, <code>token_count</code>, <code>files</code>, <code>skills</code>, <code>web_search</code>), <code>page</code>. <strong>Released two days after the April 23 Claude Code postmortem</strong> with no launch tweet &mdash; just new docs.</p>
+    <p>What it does NOT do: doesn't serve Pro/Max/Team subscribers (admin-only), doesn't include Managed Agents limits in the endpoint, doesn't let you change limits. Background: token-bucket rate limiting with sliding-window enforcement (replaced fixed-window in March 2026), per-model RPM/ITPM/OTPM limits, four usage tiers ($5&ndash;$400+ deposits), weekly limits added Aug 28 2025.</p>
+
+    <h3>CLAUDE.md best practices, 2026 consensus</h3>
+
+    <div class="pullquote">
+      Keep it concise. For each line, ask: "Would removing this cause Claude to make mistakes?" If not, cut it. <em>Bloated CLAUDE.md files cause Claude to ignore your actual instructions!</em>
+      <cite>&mdash; Anthropic, code.claude.com/docs/en/best-practices</cite>
+    </div>
+
+    <p>Community consensus from Marmelab (Apr 24 2026), computingforgeeks, Druce.ai, Simon Willison's <em>Agentic Engineering Patterns</em>, Sankalp's blog, Batsov.com:</p>
+
+    <ol>
+      <li><strong>Under 200 lines</strong> is the ceiling. Bloat actively degrades performance.</li>
+      <li>Move conditional knowledge to <strong>skills</strong>, not CLAUDE.md.</li>
+      <li><strong><code>@-imports</code></strong> for large reference docs (<code>@AGENTS.md</code>, <code>@docs/git.md</code>).</li>
+      <li><strong>AGENTS.md as canonical, CLAUDE.md as a thin shim</strong> &mdash; Copilot, Codex, Cursor, Windsurf, Cline, Antigravity, OpenCode all read different files; AGENTS.md is the lowest-common-denominator that emerged in late 2025.</li>
+      <li><strong>Path-specific rules</strong> in <code>.claude/rules/</code> only load when Claude touches matching files.</li>
+      <li><strong>Use hooks for guarantees</strong> &mdash; anything that <em>must</em> happen (lint after edit, no force-push to main) goes in a hook, not in CLAUDE.md instructions; hooks are deterministic, CLAUDE.md is advisory.</li>
+      <li><strong>Run a retro every session</strong>: ask Claude what it learned; route to ADRs / rules / skills / CLAUDE.md.</li>
+    </ol>
+  </div>
+</section>
+
+<div class="scroll-marquee">
+  <div class="scroll-marquee-inner">
+    <span>SKILLS &gt; MCP for procedural knowledge</span>
+    <span>HOOKS = deterministic guardrails</span>
+    <span>HARNESS = the loop, not the model</span>
+    <span>MANAGED AGENTS = $0.08 per session-hour</span>
+    <span>SKILLS &gt; MCP for procedural knowledge</span>
+    <span>HOOKS = deterministic guardrails</span>
+    <span>HARNESS = the loop, not the model</span>
+    <span>MANAGED AGENTS = $0.08 per session-hour</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ CHAPTER 2 — COSTS ═══════════════════════════════════════════ -->
+<section class="chapter" id="ch2">
+  <div class="chapter-kicker reveal">CHAPTER TWO</div>
+  <div class="chapter-header reveal">
+    <div class="chapter-num">02</div>
+    <h2 class="chapter-title">Cost optimization for <em>heavy</em> Claude users in 2026.</h2>
+  </div>
+
+  <div class="prose">
+    <h3>The 2026 model and pricing landscape</h3>
+    <p>All prices per million tokens. Output is consistently 5× input &mdash; easy budgeting heuristic.</p>
+
+    <div class="price-cards reveal-stagger">
+      <div class="price-card highlight">
+        <div class="price-card-name">Opus 4.7 <em>(Apr 16)</em></div>
+        <div class="price-card-id">claude-opus-4-7</div>
+        <div class="price-card-grid">
+          <div><span>Input</span><strong>$5</strong></div>
+          <div><span>Output</span><strong>$25</strong></div>
+          <div><span>Cache 5m</span><strong>$6.25</strong></div>
+          <div><span>Cache read</span><strong>$0.50</strong></div>
+          <div><span>Context</span><strong>1M</strong></div>
+        </div>
+      </div>
+      <div class="price-card">
+        <div class="price-card-name">Opus 4.6</div>
+        <div class="price-card-id">claude-opus-4-6</div>
+        <div class="price-card-grid">
+          <div><span>Input</span><strong>$5</strong></div>
+          <div><span>Output</span><strong>$25</strong></div>
+          <div><span>Cache 5m</span><strong>$6.25</strong></div>
+          <div><span>Cache read</span><strong>$0.50</strong></div>
+          <div><span>Context</span><strong>1M</strong></div>
+        </div>
+      </div>
+      <div class="price-card highlight">
+        <div class="price-card-name">Sonnet 4.6 <em>(Feb 17)</em></div>
+        <div class="price-card-id">claude-sonnet-4-6</div>
+        <div class="price-card-grid">
+          <div><span>Input</span><strong>$3</strong></div>
+          <div><span>Output</span><strong>$15</strong></div>
+          <div><span>Cache 5m</span><strong>$3.75</strong></div>
+          <div><span>Cache read</span><strong>$0.30</strong></div>
+          <div><span>Context</span><strong>1M</strong></div>
+        </div>
+      </div>
+      <div class="price-card">
+        <div class="price-card-name">Sonnet 4.5</div>
+        <div class="price-card-id">claude-sonnet-4-5</div>
+        <div class="price-card-grid">
+          <div><span>Input</span><strong>$3</strong></div>
+          <div><span>Output</span><strong>$15</strong></div>
+          <div><span>Cache 5m</span><strong>$3.75</strong></div>
+          <div><span>Cache read</span><strong>$0.30</strong></div>
+          <div><span>Context</span><strong>1M*</strong></div>
+        </div>
+      </div>
+      <div class="price-card highlight">
+        <div class="price-card-name">Haiku 4.5</div>
+        <div class="price-card-id">claude-haiku-4-5-20251001</div>
+        <div class="price-card-grid">
+          <div><span>Input</span><strong>$1</strong></div>
+          <div><span>Output</span><strong>$5</strong></div>
+          <div><span>Cache 5m</span><strong>$1.25</strong></div>
+          <div><span>Cache read</span><strong>$0.10</strong></div>
+          <div><span>Context</span><strong>200K</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <p><strong>Long-context surcharges eliminated March 13, 2026</strong>; a 900K-token request bills the same per-token as a 9K-token request on Opus 4.7 / Sonnet 4.6.</p>
+
+    <div class="callout-danger">
+      <div class="label">TOKENIZER WATCH</div>
+      <p><strong>Opus 4.7 ships a new tokenizer that produces up to 35% more tokens for the same input</strong> &mdash; same sticker price, but effective cost is 0&ndash;35% higher (worse on code, structured data, non-English). Benchmark before migrating off 4.6.</p>
+      <p>Sonnet 4 / Opus 4 retire on the API <strong>June 15, 2026</strong>. <code>inference_geo: "us"</code> adds a 1.1× multiplier (Opus 4.6+, Sonnet 4.6+ only). <strong>Fast mode</strong> (Opus 4.6, beta) is 6× standard pricing. <strong>Batch API</strong> is flat 50% off both directions; supports 300K output tokens via <code>output-300k-2026-03-24</code> beta header.</p>
+      <p>Server tools: web search $10/1K queries; code execution = 50 free hours/day per org then $0.05/hr/container; Managed Agents $0.08/session-hour.</p>
+    </div>
+
+    <h3>Prompt caching state in 2026 &mdash; and the silent regression you need to know about</h3>
+    <p><strong>Mechanics:</strong> mark a content block with <code>"cache_control": {"type": "ephemeral"}</code>. Cache reads cost <strong>10% of standard input price (90% savings)</strong>. Up to 4 breakpoints per request. Caches are workspace-isolated as of February 5, 2026 (was org-isolated). Min cacheable prefix 1,024 tokens. TTL options: 5m (default, write costs 1.25× input) or 1h (write costs 2× input). <strong>Pays for itself after 1 read at 5m, after 2 reads at 1h.</strong> Reads do <em>not</em> count against your TPM rate limits.</p>
+
+    <div class="callout-danger">
+      <div class="label">THE SILENT REGRESSION OF 2026</div>
+      <p>On <strong>March 6, 2026 Anthropic silently changed the default TTL</strong> for <code>cache_control: {type: "ephemeral"}</code> from 1 hour to 5 minutes &mdash; no changelog, no blog post. Disabling telemetry also kills the 1-hour TTL (silent coupling).</p>
+      <p>For Claude Code subscribers, JSONL analysis (GitHub issue #46829) showed <strong>17.1% measured cache-cost waste</strong> across 119,866 API calls (Jan 11&ndash;Apr 11, 2026) on both Sonnet 4.6 and Opus 4.6 driven entirely by the 5m/1h split.</p>
+    </div>
+
+    <h4>FIXES YOU NEED TO APPLY RIGHT NOW</h4>
+    <ul>
+      <li>API users: set <code>"ttl": "1h"</code> explicitly in every <code>cache_control</code> block, and add <code>anthropic-beta: prompt-caching-2024-07-31</code>.</li>
+      <li>Claude Code v2.1.105+: set <code>ENABLE_PROMPT_CACHING_1H=1</code> in your shell profile.</li>
+      <li>Avoid <code>--resume</code> for long sessions &mdash; leaked source analysis showed it triggers full context reprocessing billed as new input.</li>
+    </ul>
+
+    <p>Anti-patterns that silently kill cache hits: timestamps in cached prefix (truncate to day), user-specific content in cached system prefix, single-character whitespace drift, <strong>attestation drift</strong> (per-request data Claude Code attaches that varies &mdash; confirmed by the March 31, 2026 source leak).</p>
+
+    <p>Reported real-world savings when configured correctly: <strong>60&ndash;90% on input tokens</strong>; aimagicx.com case study: <strong>65% measured savings</strong> on 1.8K-token system prompt + 14K diff + 5K codebase + 7K tool defs across three workloads.</p>
+
+    <h3><code>/clear</code> vs. <code>/compact</code> strategy</h3>
+    <p>The fundamental cost problem: every turn re-sends entire conversation history + system prompt + CLAUDE.md + MCP tool defs + tool results. <strong>One developer measured 98.5% of tokens spent re-reading history, 1.5% on actual output.</strong></p>
+
+    <ul>
+      <li><strong><code>/clear</code></strong> drops conversation entirely (keeps MCP servers, skills, parsed CLAUDE.md). Use between unrelated tasks. <em>Risk: waiting &gt;5 min after <code>/clear</code> expires the prefix cache; next turn pays a full cache write.</em></li>
+      <li><strong><code>/compact [focus]</code></strong> summarizes and continues; preserves architectural decisions, file diffs, current task state, errors and fixes. Cache stays warm. <strong>Auto-compaction triggers around 187K tokens</strong> (or 76K on Opus 1M, wasting 92% of available window). Each compaction can cost 100&ndash;200K tokens. Use <code>/compact &lt;focus instructions&gt;</code> for steering. Override: <code>CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000</code>.</li>
+    </ul>
+
+    <p>The <strong>autocompact infinite-loop bug</strong> (March 2026): leaked source revealed 1,279 sessions with 50+ consecutive failures (up to 3,272) &mdash; wasting ~250K API calls/day globally. Fix shipped April 1, 2026 in v2.1.89: <code>MAX_CONSECUTIVE_AUTOCOMPACT_FAILURES = 3</code>. <strong>Update to v2.1.116 or later.</strong></p>
+
+    <h3>Model routing &mdash; the highest-leverage cost lever</h3>
+    <div class="compare-stack">
+      <div class="compare-row reveal">
+        <div class="compare-key">HAIKU 4.5 / LOW</div>
+        <div class="compare-val">File discovery, simple lookups, listing, transformations. <strong>15× cheaper than Opus on input, 5× cheaper than Sonnet.</strong></div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">SONNET 4.6 / HIGH</div>
+        <div class="compare-val">Implementation, refactors, test writing. The default daily driver.</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">OPUS 4.7 / XHIGH</div>
+        <div class="compare-val">Architecture, complex multi-file, plan-mode, long-horizon. <em>Reserve.</em></div>
+      </div>
+    </div>
+
+    <p>Reports cite <strong>75&ndash;92% cost reduction</strong> when routing simple work to Haiku with no observable quality loss.</p>
+
+    <p>The single biggest Claude Code lever:</p>
+    <pre>export CLAUDE_CODE_SUBAGENT_MODEL="claude-sonnet-4-6"</pre>
+
+    <p>Main session keeps Opus, all sub-agents drop to Sonnet. Or pin per-subagent in <code>.claude/agents/&lt;name&gt;.md</code> frontmatter (<code>model: claude-haiku-4-5-20251001</code>).</p>
+
+    <p>A 44-day power-user dataset showed <strong>60&ndash;70% of Opus tokens were spent on tasks Sonnet/Haiku could have handled</strong> &mdash; equivalent to $2,000&ndash;3,000/month savings for heavy users with no quality loss.</p>
+
+    <h4>OTHER COST LEVERS</h4>
+    <ul>
+      <li><code>MAX_THINKING_TOKENS=8000</code> &mdash; thinking tokens bill at output rates; defaults of 32&ndash;64K per turn add up.</li>
+      <li><code>DISABLE_ADAPTIVE_THINKING=1</code> &mdash; community-discovered ~3.3× token reduction on tasks that don't need extended reasoning.</li>
+      <li>The <strong>Advisor Tool</strong> (public beta, late April 2026, <code>advisor-tool-2026-03-01</code>) &mdash; pair fast executor + high-intelligence advisor providing strategic guidance mid-generation. Long-horizon tasks get close to advisor-solo quality with bulk generation at executor rates.</li>
+    </ul>
+
+    <h3>Cost-tracking tools &mdash; what to actually use</h3>
+    <div class="card-grid reveal-stagger">
+      <div class="card">
+        <div class="card-label">DE-FACTO STANDARD</div>
+        <div class="card-title">ccusage</div>
+        <div class="card-body"><code>github.com/ryoppippi/ccusage</code>. v18.0.11, ~41K weekly npm downloads, 13.2K stars. Parses <code>~/.claude/projects/</code> JSONL directly &mdash; no API key needed. <code>npx ccusage@latest</code>, <code>ccusage daily/monthly/session</code>, <code>ccusage blocks --live</code>, <code>ccusage statusline</code>. Companions: <code>@ccusage/codex</code>, <code>@ccusage/opencode</code>, <code>@ccusage/amp</code>, <code>@ccusage/mcp</code>.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">OFFICIAL</div>
+        <div class="card-title">Anthropic Usage &amp; Cost API</div>
+        <div class="card-body">Admin API key required. Endpoints: <code>/v1/organizations/usage_report/messages</code>, <code>/v1/organizations/cost_report</code>. Bucket widths 1m/1h/1d. <code>inference_geo</code>, <code>speeds</code> filter (Feb 2026 beta), workspace+description grouping. Fast-mode tracking via <code>anthropic-beta: fast-mode-2026-02-01</code>.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">FORECASTING</div>
+        <div class="card-title">cc-budget</div>
+        <div class="card-body">Holt-Winters forecasting with seasonality awareness. Alerts like <em>"at your current burn rate you will exceed monthly budget by Tuesday."</em></div>
+      </div>
+      <div class="card">
+        <div class="card-label">PROXY</div>
+        <div class="card-title">Helicone</div>
+        <div class="card-body">Open-source. Native Anthropic prompt-caching analytics, sessions, custom properties, alerts. Free tier 10K req/mo, paid from $20/seat.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">EVAL-FIRST</div>
+        <div class="card-title">Braintrust</div>
+        <div class="card-body">Free tier: 1M trace spans + 10K eval scores.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">RIGHT FOR SKIPPY</div>
+        <div class="card-title">Cloudflare AI Gateway</div>
+        <div class="card-body">Proxies Claude calls. Per-request logging, cost dashboards, latency, custom metadata. Unified Billing beta lets you pay Cloudflare for Anthropic+OpenAI+Google in one bill.</div>
+      </div>
+    </div>
+
+    <div class="callout-danger">
+      <div class="label">SECURITY ALERT</div>
+      <p><strong>LiteLLM versions 1.82.7 and 1.82.8 were compromised in a March 2026 supply chain incident.</strong> Pin to a known-good version, never use <code>:latest</code> in production.</p>
+    </div>
+
+    <h3>Rate limits, session windows, and the idle-drain story</h3>
+    <p><strong>Subscription windows for Max 20× ($200/month):</strong></p>
+    <ul>
+      <li>5-hour rolling session, clock starts on first message; hard reset at 100%.</li>
+      <li>Weekly rate limits introduced Aug 28 2025: ~240&ndash;480h Sonnet 4 + 24&ndash;40h Opus 4 per week; ~900 messages per 5h, ~200&ndash;800 Claude Code prompts.</li>
+      <li><strong>Peak-hour throttling confirmed by Anthropic's Thariq Shihipar on March 26, 2026</strong> (X). Peak: weekdays 5&ndash;11 am PT / 1&ndash;7 pm GMT. Anthropic estimated ~7% of users would hit limits earlier; community-derived burn multipliers are 1.3&ndash;1.5× during peak.</li>
+      <li><strong>Account-wide reset April 23, 2026</strong> for all Claude Code subscribers compensating the postmortem-confirmed quality bugs.</li>
+    </ul>
+
+    <h4>THE IDLE DRAIN &mdash; WHAT ACTUALLY HAPPENED</h4>
+    <p>Three independent things converged Q1&ndash;Q2 2026, all confirmed in Anthropic's April 23 postmortem (<code>anthropic.com/engineering/april-23-postmortem</code>):</p>
+
+    <div class="action-grid reveal-stagger">
+      <div class="action-card">
+        <div class="action-card-title">Reasoning silently downgraded</div>
+        <div class="action-card-body"><strong>Mar 4 → Apr 7.</strong> Default reasoning effort silently dropped from <code>high</code> to <code>medium</code> to address UI freezes from long thinks. Caused shallow "edit-first not research-first" behavior. Reverted; Opus 4.7 now defaults to <code>xhigh</code>.</div>
+        <div class="action-card-effort">SEVERITY :: MEDIUM</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">The thinking-block cache bug <em>(the most expensive bug)</em></div>
+        <div class="action-card-body"><strong>Mar 26 → Apr 10.</strong> A caching optimization meant to clear Claude's older <code>thinking</code> blocks <em>once</em> after &gt;1h idle had a bug &mdash; it cleared them on <em>every turn</em> for the rest of the session. Claude appeared forgetful, repeated work, redid investigations; the cache layer that should have absorbed cost was broken. <strong>Single most likely root cause of "Max 20× exhausted in 70 minutes" reports.</strong></div>
+        <div class="action-card-effort">SEVERITY :: CRITICAL</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">25-word response cap</div>
+        <div class="action-card-body"><strong>Apr 16 → Apr 20.</strong> A system-prompt instruction capping responses at 25 words between tool calls and 100 words for final responses. Measurably hurt coding quality (3% Opus eval drop). Reverted in 4 days.</div>
+        <div class="action-card-effort">SEVERITY :: HIGH</div>
+      </div>
+    </div>
+
+    <p>All three resolved by <strong>April 20, 2026 (v2.1.116)</strong>. API was not affected.</p>
+
+    <p>Layered on top: the <strong>autocompact infinite-loop bug</strong>, the <strong>attestation drift</strong> cache-invalidation bug (one Max 20× user's cache reads collapsed to 36% &mdash; should be 90%+), <strong>plugins injecting tool defs every turn</strong> (5 idle plugins ≈ 55K tokens before you type), <strong>MCP servers loading 18K tokens of schemas per turn</strong> (5 servers = 90K overhead &mdash; Tool Search reduces this by 95%), <strong>sub-agent fan-out</strong> on Opus 4.6 (one user spawning 5 parallel sub-agents unprompted, hitting Pro 5h limit in 15 minutes), <strong><code>--resume</code> reloading and re-billing full conversation history</strong>, and an unfixed <strong>silent tool-result truncation bug</strong> at the 200K aggregate threshold (still active in v2.1.91).</p>
+
+    <p>AMD's Stella Laurenzo (Issue #42796) published the most rigorous public analysis: <strong>6,852 sessions, 234,760 tool calls, behavioral regression starting March 8.</strong> Her February bill: $345. <strong>March: $42,121. AMD switched providers.</strong></p>
+
+    <div class="verdict">
+      <div class="verdict-label">FIX LIST FOR SKIPPY</div>
+      <p>Update Claude Code to <strong>≥v2.1.116</strong>; pin the version; set <code>ENABLE_PROMPT_CACHING_1H=1</code>; avoid <code>--resume</code> for long sessions; run <code>npx ccusage blocks --live</code> while working; use <code>/cost</code> after every notable session; if your quota burns &gt;2× faster than baseline downgrade Claude Code one version (unsupported but works).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ CHAPTER 3 — ECOSYSTEM ═══════════════════════════════════════════ -->
+<section class="chapter" id="ch3">
+  <div class="chapter-kicker reveal">CHAPTER THREE</div>
+  <div class="chapter-header reveal">
+    <div class="chapter-num">03</div>
+    <h2 class="chapter-title">The broader 2026 agent <em>ecosystem.</em></h2>
+  </div>
+
+  <div class="prose">
+    <h3>Agent frameworks &mdash; the May 2026 cheatsheet</h3>
+
+    <div class="card-grid reveal-stagger">
+      <div class="card">
+        <div class="card-label">TS / RUST WASM</div>
+        <div class="card-title">Ruflo (Claude-Flow rebrand)</div>
+        <div class="card-body"><strong>v3.6.10 (Apr 29 2026); ~500K downloads, 100K MAU.</strong> 60+ specialized agents, swarm/hive coordination, Q-learning router, RuVector memory. Pick when you live in Claude Code and want parallel multi-agent swarms.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">GO TUI</div>
+        <div class="card-title">claude-squad</div>
+        <div class="card-body"><strong>v1.0.14; 5.6K stars.</strong> Tmux + git worktrees TUI, supervises N parallel coding agents. Pick when overseeing parallel Claude/Codex/Aider/Gemini sessions.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">PYTHON</div>
+        <div class="card-title">CrewAI</div>
+        <div class="card-body"><strong>v1.14.2 series; 1.3M monthly PyPI installs.</strong> Role-based crews + event-driven Flows + AMP enterprise control plane. Pick for linear, role-based business workflows.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">PYTHON / OSS</div>
+        <div class="card-title">AG2 (community AutoGen)</div>
+        <div class="card-body"><strong>48.4K stars.</strong> Apache-2.0 fork of AutoGen 0.2 + Reasoner agent. Free of MS lock-in.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">PY / .NET</div>
+        <div class="card-title">Microsoft Agent Framework (MAF)</div>
+        <div class="card-body"><strong>RC 1.0 (Feb 19 2026).</strong> Successor to AutoGen + Semantic Kernel. Durable, A2A+MCP, Magentic-One reference. Pick for Azure-centric enterprise. <em>AutoGen is now in maintenance mode.</em></div>
+      </div>
+      <div class="card">
+        <div class="card-label">PY / JS</div>
+        <div class="card-title">LangGraph</div>
+        <div class="card-body"><strong>1.0 GA (late 2025); 1.1.10 active.</strong> Durable execution, checkpointing, human-in-the-loop, LangSmith observability. Used at Klarna, Uber, LinkedIn, Replit, Elastic, Ally.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">PYTHON</div>
+        <div class="card-title">Pydantic AI</div>
+        <div class="card-body"><strong>v1.89.x (May 1 2026); 16.5K+ stars.</strong> Joined Linux Foundation AAIF. Type-safe Agent + Capabilities, native MCP/A2A/AG-UI. "FastAPI feeling."</div>
+      </div>
+      <div class="card">
+        <div class="card-label">PY / TS</div>
+        <div class="card-title">LlamaIndex / LlamaCloud</div>
+        <div class="card-body">LlamaParse rebrand; ACP integration Jan 2026. LlamaParse (OCR/VLM), LlamaExtract, LlamaSheets, LlamaSplit. Pick for document-heavy enterprise pipelines.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">TS</div>
+        <div class="card-title">mcporter (steipete)</div>
+        <div class="card-body"><strong>v0.9.0.</strong> Treats MCP servers as TS API or generates standalone CLI binaries. Wrap MCPs as CLIs.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">PYTHON</div>
+        <div class="card-title">DSPy 3.x</div>
+        <div class="card-body"><strong>3.2.0 (Apr 21 2026).</strong> LiteLLM decoupling. Programmatic prompt optimization. <strong>GEPA outperforms RL on some tasks.</strong> Pick for pipelines you want to <em>optimize</em>, not handcraft.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">PYTHON / HF</div>
+        <div class="card-title">smolagents</div>
+        <div class="card-body">Minimal ~1k LOC. CodeAgent: agents that write Python actions instead of JSON. Active 2026. Lightweight, model-agnostic.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">PY / TS</div>
+        <div class="card-title">OpenAI Agents SDK</div>
+        <div class="card-body"><strong>openai-agents ≥0.14.0 (Apr 15 2026).</strong> Harness/compute separation, native sandbox, code mode, sub-agents.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">TYPESCRIPT</div>
+        <div class="card-title">Mastra</div>
+        <div class="card-body"><strong>v1.0 (Jan 20); v1.2.0 (Feb 4).</strong> AI SDK v6 support, Observational Memory (5&ndash;40× compression), Skills-aware CLI, server adapters. Pick for TS/Vercel/Next.js production agents.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">TYPESCRIPT</div>
+        <div class="card-title">Vercel AI SDK 5</div>
+        <div class="card-body"><strong>5.0.179 (Apr 17 2026); v6 in flight.</strong> Typed UIMessages, <code>Agent</code>/<code>ToolLoopAgent</code>, AI Gateway, SSE streaming. Pick for TS/React agents with ChatKit-like UI.</div>
+      </div>
+    </div>
+
+    <h3>State of MCP, May 2026 &mdash; alive but right-sized</h3>
+    <p>Adoption signals are unambiguous: MCP donated to the Linux Foundation under the new <strong>Agentic AI Foundation (AAIF)</strong> on December 9, 2025; platinum members AWS, Anthropic, Block, Bloomberg, Cloudflare, Google, Microsoft, OpenAI. OpenAI also donated AGENTS.md; Block donated Goose.</p>
+
+    <p>Cross-vendor support: Claude (native), ChatGPT (Apps SDK + Connectors), <strong>Google Gemini API + Vertex AI Agent Builder</strong> (March 2026), Cursor, Windsurf, Zed, JetBrains, Vercel AI SDK, OpenAI Agents SDK, Microsoft Agent Framework. PulseMCP indexed ~12K+ servers by early 2026; Cloudflare-hosted runtime growing +103% QoQ. <strong>Pinterest deployed MCP in production for engineering workflows</strong> (InfoQ, April 2026).</p>
+
+    <p>The 2026 roadmap (<code>blog.modelcontextprotocol.io/posts/2026-mcp-roadmap/</code>, March 9, 2026, lead maintainer David Soria Parra) names four priorities: transport scalability (stateless Streamable HTTP, <code>.well-known</code> discovery), agent communication, governance maturation (SEP review bottleneck), enterprise readiness (audit trails, SSO auth, gateways). Current spec is <strong>2025-11-25</strong>; MCP Apps (formerly mcp-ui) formalized under SEP-1865.</p>
+
+    <h3>The Death-of-MCP argument &mdash; this is real and worth understanding</h3>
+
+    <h4>THE CRITICS</h4>
+    <ul>
+      <li><strong>Armin Ronacher</strong> (Flask creator, lucumr.pocoo.org) &mdash; most consistent since July 2025, migrated all his MCPs (incl. Sentry, Playwright) to Skills.</li>
+      <li><strong>Eric Holmes</strong> &mdash; <em>"MCP is dead. Long live the CLI"</em> (Feb 28 2026), top of HN with 400+ upvotes.</li>
+      <li><strong>Peter Steinberger</strong> &mdash; built mcporter to convert MCPs into CLIs.</li>
+      <li><strong>Denis Yarats</strong> (Perplexity CTO, Ask 2026 conf, Mar 11): Perplexity is <em>deprioritizing MCP internally</em>, citing tool-schema overhead consuming up to 72% of context window.</li>
+      <li><strong>Garry Tan</strong> (YC) &mdash; built CLI-based agent integration in ~30 min.</li>
+      <li><strong>Cloudflare's "Code Mode"</strong> &mdash; replacing MCP tool calls with code generation against pre-authorized API client; <strong>244× token reduction</strong> (244K → ~1K tokens for 2,500 endpoints).</li>
+    </ul>
+
+    <h4>SUBSTANTIVE CRITIQUES</h4>
+    <ul>
+      <li><strong>Token bloat:</strong> Firecrawl's 75-run study: CLI 1.3K&ndash;8.7K tokens vs MCP 32K&ndash;82K, MCP 72% reliable vs CLI 100%.</li>
+      <li><strong>Eager loading:</strong> every session loads all schemas.</li>
+      <li><strong>Composability:</strong> CLIs compose via bash; models already know <code>git</code>/<code>gh</code>/<code>kubectl</code>/<code>jq</code> from training.</li>
+      <li><strong>Auth complexity:</strong> multiple OAuth flows per server.</li>
+      <li><strong>Security:</strong> 24% of public MCP servers have zero auth per Zuplo; Bloomberry put it at 38.7%; OWASP MCP Top 10 published early 2026; lethal-trifecta prompt injection; the fake Postmark MCP that BCC'd emails to attackers; the Supabase MCP SQL-injection via support tickets.</li>
+      <li><strong>Process management:</strong> stdio servers hang.</li>
+    </ul>
+
+    <h4>COUNTER-ARGUMENTS</h4>
+    <p>Charles Chen <em>"MCP is Dead; Long Live MCP!"</em>, Anthropic <em>"Code execution with MCP"</em> (Nov 2025): the discourse conflates stdio MCP (real problems) with HTTP MCP; CLI savings vanish when LLM doesn't already know your custom CLI; MCP wins on multi-tenant, multi-user, cross-platform distribution; Linux Foundation donation is institutional commitment.</p>
+
+    <div class="verdict">
+      <div class="verdict-label">VERDICT // MAY 2026</div>
+      <p><strong>MCP is not dying &mdash; it's being right-sized.</strong> The hype peak passed; we're in the trough of disillusionment. Consensus is settling around a three-layer model: <strong>CLI</strong> for inner-loop coding tasks (model already knows the tool), <strong>Skills</strong> for procedural knowledge, <strong>MCP</strong> for cross-platform distribution, enterprise auth/audit, multi-tenant SaaS, and services without a usable CLI (Notion, Figma, Slack, Linear). The pattern that wins: <em>"Skills wrapping MCP."</em></p>
+    </div>
+
+    <h3>TOON (Token-Oriented Object Notation) &mdash; the verdict</h3>
+    <p>Released November 2025 (v1.0, MIT). Drop-in lossless encoding of the JSON data model designed for LLM input. YAML-style indentation + CSV-style rows for uniform arrays. Reference repo (<code>github.com/toon-format/toon</code>, TypeScript) plus ports in Python, Go, Rust, .NET. Token-saving claims: ~40% fewer tokens than JSON in the reference benchmarks; up to 60% for flat tabular data; Webmaster Ramos benchmark (5 formats × 8 scenarios × 3 Claude tiers): TOON −62%, Markdown −53%, YAML −32% vs. JSON.</p>
+
+    <p><strong>Adversarial reality</strong> (arXiv 2603.03306, Ivan Matveev, Feb 2026): TOON's edge for <em>generation</em> is partly eaten by a "prompt tax" &mdash; instructional overhead for one-shot ICL examples. Plain JSON generation is best one-shot for many cases; <strong>constrained-decoding JSON sets the lower token-budget bound</strong>. TOON wins on heavy-syntax structures (Company case +4.5pp final accuracy, 28% fewer tokens) but loses on deeply nested or non-uniform data (~5% overhead for headers). HN [item 45715632, 45730789] notes the differences become statistically insignificant on better models. <strong>No public evidence of large-scale production adoption</strong> at OpenAI/Anthropic/Google. Mostly individual benchmarks.</p>
+
+    <div class="verdict">
+      <div class="verdict-label">VERDICT</div>
+      <p>Real but narrow benefit. TOON is a clever optimization for <em>uniform-array, table-shaped</em> prompt inputs, especially with cheap small models, where 30&ndash;60% token savings translate to real cost. <strong>Not a JSON replacement; a complementary serializer.</strong> Worth A/B-testing on bulk classification or extraction over tabular data; not a slam-dunk default for Skippy.</p>
+    </div>
+
+    <h3>Local / self-hosted models &mdash; when local actually replaces Claude</h3>
+    <p>A note on sources: many "May 2026" SEO blogs contain speculative model names (Claude Mythos Preview, GPT-5.5 Spud, Gemini 3.1 Pro, DeepSeek V4-Pro). Below is what's well-corroborated.</p>
+
+    <div class="card-grid reveal-stagger">
+      <div class="card">
+        <div class="card-label">META</div>
+        <div class="card-title">Llama 4 Scout</div>
+        <div class="card-body">109B / 17B active, 10M ctx. Together $0.18 in. Long-context RAG; doesn't match Opus on coding.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">META</div>
+        <div class="card-title">Llama 4 Maverick</div>
+        <div class="card-body">400B / 17B active, 1M ctx. Groq $0.20/$0.60; Together $0.35/$1.00. Strong general; trails frontier 5&ndash;10pts on hardest reasoning.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">DEEPSEEK</div>
+        <div class="card-title">DeepSeek V3 / V3.2</div>
+        <div class="card-body">671B / 37B active. DeepSeek API $0.28/$0.42. Near-Sonnet for coding.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">ALIBABA / OPEN</div>
+        <div class="card-title">Qwen 3.5 / 3.6 family</div>
+        <div class="card-body">27B&ndash;397B-A17B MoE, 256K ctx, Apache 2.0. <strong>Best Apache-2.0 self-hostable.</strong> Together $0.27&ndash;0.50.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">CODING / LOCAL</div>
+        <div class="card-title">Qwen 3 Coder 30B-A3B</div>
+        <div class="card-body">30B / 3B active, Apache 2.0. Self-host on RTX 3090/4090. <strong>Top local coding pick.</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">FIM</div>
+        <div class="card-title">Qwen 2.5-Coder-32B</div>
+        <div class="card-body">32B dense, Apache 2.0. Together $0.80. Best for IDE tab-completion locally.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">MISTRAL</div>
+        <div class="card-title">Mistral Small 4 <em>(Mar 16 2026)</em></div>
+        <div class="card-body">119B / 6B active, 256K ctx, Apache 2.0. La Plateforme ~$0.15/$0.45. <strong>Best open multimodal+reasoning unified.</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">MISTRAL + ALL HANDS</div>
+        <div class="card-title">Devstral Small</div>
+        <div class="card-body">24B, Apache 2.0. $0.10/$0.30. <strong>Best local agentic coding.</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">GOOGLE</div>
+        <div class="card-title">Gemma 3 / 4</div>
+        <div class="card-body">12B / 27B / 31B (Apache 2.0 claim). Together $0.10&ndash;0.30. Best open multimodal at small size.</div>
+      </div>
+    </div>
+
+    <div class="verdict">
+      <div class="verdict-label">HONEST VERDICT</div>
+      <p>Local replaces Claude only for: (a) classification/extraction/summarization, (b) code-completion (FIM) where Qwen 2.5-Coder is genuinely competitive, (c) bulk RAG, (d) privacy-mandated workflows. <strong>For long-horizon agentic coding and computer use, Anthropic's frontier still leads by 5&ndash;15 points</strong> and that gap is the difference between "ships" and "doesn't ship."</p>
+    </div>
+
+    <p>The practical 2026 routing pattern: <strong>70% to DeepSeek/Qwen 3.6 / GLM-5.1 hosted on Together/Fireworks/Groq/DeepInfra, 25% to Sonnet 4.6 ($3/$15), 5% to Opus 4.7 ($5/$25)</strong>. Net cost ~15% of all-frontier with claimed near-equivalent quality. Break-even for self-hosting on dedicated H100s ≈ 70% GPU utilization (morphllm).</p>
+
+    <h3>Computer-use / browser / code agents</h3>
+    <p>OSWorld-Verified is the 2026 lingua franca. Well-corroborated numbers:</p>
+    <ul>
+      <li><strong>Claude Opus 4.7: 78.0%</strong> &mdash; 3.75 MP vision is the actual unlock, up from 1.15 MP.</li>
+      <li><strong>Claude Sonnet 4.6: 72.7%.</strong></li>
+      <li><strong>Human expert baseline: 72.4%</strong> &mdash; <em>frontier now exceeds humans on this split.</em></li>
+      <li>Anthropic Claude Computer Use leads on desktop/file-ops/Windows.</li>
+      <li>OpenAI Operator stagnates ($200/mo ChatGPT Pro tier required, no API as of April 2026, lags Browser Use Cloud by ~36 pts on Online-Mind2Web).</li>
+      <li><strong>Browser Use Cloud v3 scores 97% on Online-Mind2Web</strong> (vendor-reported).</li>
+      <li><strong>Stagehand v3</strong> (Browserbase, Nov 2025) &mdash; Apache 2.0, 44% faster than v2, AI primitives over Playwright.</li>
+      <li><strong>Skyvern 85.8%</strong> on WebVoyager.</li>
+      <li><strong>OpenAI Codex Background Computer Use</strong> (Apr 16 2026) &mdash; newest entrant, parallel sessions on macOS.</li>
+    </ul>
+
+    <h4>CODE AGENTS</h4>
+    <ul>
+      <li><strong>Cursor 3</strong> added Agents Window for parallel agents on cloud VMs; ARR approaching $2B.</li>
+      <li><strong>Claude Code:</strong> ~75% SWE-bench Verified at xhigh on Opus 4.7.</li>
+      <li><strong>GitHub Copilot Agent</strong> GA in VS Code + JetBrains by March 2026 (claimed 56% SWE-bench Verified).</li>
+      <li><strong>Devin (Cognition)</strong> 2025 Performance Review: 67% PR merge rate, 4× faster, 2× more efficient; SWE-1.6 model preview (March 2026) trained for the harness; deployed at Cognizant, Goldman, Santander, Nubank.</li>
+      <li><strong>OpenHands:</strong> 72.4K stars, the standard open agentic harness.</li>
+      <li><strong>Goose (Block):</strong> migrated to Agentic AI Foundation in April 2026; Rust core, 70+ MCP extensions, sub-agents + sandbox.</li>
+    </ul>
+
+    <h3>Major evals &mdash; where benchmarks actually stand</h3>
+    <ul>
+      <li><strong>SWE-bench Verified:</strong> Opus 4.7 87.6%, GPT-5.3 Codex 85.0%, Sonnet 4.6 79.6%. <em>OpenAI now recommends moving on; heavy contamination concerns.</em></li>
+      <li><strong>SWE-bench Pro</strong> (Scale AI, multi-language, contamination-resistant, 1,865 tasks): Opus 4.7 64.3%, GPT-5.4 57.7%, Gemini 3.1 Pro 54.2%, GLM-5.1 58.4% (best open). <strong>The harder, more honest metric &mdash; ~35-pt gap from Verified.</strong></li>
+      <li><strong>Terminal-Bench 2.0</strong> (Stanford + Laude Institute, 89 tasks): Opus 4.7 69.4%; scaffolds add 2&ndash;6 pts on top of model.</li>
+      <li><strong>GAIA:</strong> Claude Sonnet 4.5 74.6% (Princeton HAL); Anthropic sweeps top 6.</li>
+      <li><strong>OSWorld-Verified:</strong> Opus 4.7 78.0%, Sonnet 4.6 72.7%, human baseline 72.4%.</li>
+      <li><strong>Online-Mind2Web:</strong> Browser Use Cloud v3 97% (vendor-reported), Claude Sonnet CU 61%, OpenAI Operator 61%, Stagehand 65%, Gemini CUA 69%.</li>
+      <li><strong>ARC-AGI-2:</strong> Public Kaggle 2025 winner 24% at $0.20/task. Semi-Private: Poetiq 54% at $30.57/task. <em>Genuinely unsaturated.</em></li>
+      <li><strong>Vending-Bench 2</strong> (Andon Labs, year-long sim): Claude formed a price-fixing cartel in Arena mode (Futurism). Opus 4.6 ~$8K avg ending balance from $500.</li>
+      <li><strong>Humanity's Last Exam:</strong> Opus 4.7 46.9% (no tools); frontier-discriminating.</li>
+    </ul>
+
+    <p>UC Berkeley RDI (Apr 12 2026) demonstrated <strong>all 8 major agent benchmarks reward-hackable to ~100%</strong> &mdash; trust third-party runs (Epoch AI, BenchLM, Princeton HAL) over vendor self-reports.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ CHAPTER 4 — CLOUDFLARE ═══════════════════════════════════════════ -->
+<section class="chapter" id="ch4">
+  <div class="chapter-kicker reveal">CHAPTER FOUR</div>
+  <div class="chapter-header reveal">
+    <div class="chapter-num">04</div>
+    <h2 class="chapter-title">The Cloudflare ecosystem &mdash; Skippy's <em>home turf.</em></h2>
+  </div>
+
+  <div class="prose">
+    <p>This is where the report gets directly actionable. Cloudflare did the most in this space over the last 60 days of any vendor.</p>
+
+    <h3>Birthday Week 2025 (Sept 22&ndash;26)</h3>
+    <ul>
+      <li><strong>Workflows GA</strong> with <code>step.waitForEvent()</code> for human-in-the-loop.</li>
+      <li><strong>Durable Objects free tier</strong>; SQLite-backed DOs to 10 GB per object.</li>
+      <li><strong>AutoRAG → AI Search</strong> primitive launched.</li>
+      <li><strong>agents.cloudflare.com</strong> landing page; Agents SDK + remote MCP client/server (OAuth, dynamic client registration).</li>
+      <li><strong>Cap'n Web</strong> RPC, <strong>VibeSDK</strong> open-source AI vibe-coding platform.</li>
+      <li><strong>AI Gateway "AI Avenue" refresh:</strong> unified billing, Secrets Store integration for BYOK, Dynamic Routes, DLP guardrails.</li>
+    </ul>
+
+    <h3>Agents Week (April 13&ndash;17, 2026) &mdash; the big one</h3>
+
+    <div class="compare-stack">
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 13</div>
+        <div class="compare-val"><strong>Containers + Sandbox SDK GA</strong> &mdash; active-CPU pricing, Docker Hub, SSH, snapshots</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 13</div>
+        <div class="compare-val"><strong>Sandboxes GA</strong> &mdash; per-agent Linux env, PTY, FS watching, snapshot recovery</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 13</div>
+        <div class="compare-val"><strong>Outbound Workers</strong> &mdash; zero-trust egress proxy, agent never sees tokens</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 13</div>
+        <div class="compare-val"><strong>Durable Object Facets</strong> &mdash; DOs nestable in Dynamic Workers</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 13</div>
+        <div class="compare-val"><strong><code>cf</code> unified CLI</strong> + Local Explorer</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 15</div>
+        <div class="compare-val"><strong>Project Think</strong> preview &mdash; <code>@cloudflare/think</code>: Fibers, sub-agents, tree-structured Sessions API w/ FTS5, sandboxed code execution, execution ladder</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 15</div>
+        <div class="compare-val"><strong>Workflows V2</strong> &mdash; 50,000 concurrent, 300 instances/sec creation</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 15</div>
+        <div class="compare-val"><strong>Browser Run</strong> (Browser Rendering rebrand) &mdash; Live View, HiTL, CDP, session recordings, 4× concurrency</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 15</div>
+        <div class="compare-val"><strong>Voice agents</strong> &mdash; STT/TTS pipeline over WebSockets in ~30 LOC</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 15</div>
+        <div class="compare-val"><strong>Registrar API beta</strong> &mdash; agents can buy domains</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 16</div>
+        <div class="compare-val"><strong>Cloudflare AI Platform</strong> &mdash; unified inference for 14+ providers, Workers binding for 3rd-party models</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 16</div>
+        <div class="compare-val"><strong>Email Service</strong> public beta for agents</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 16</div>
+        <div class="compare-val"><strong>Agent Memory</strong> &mdash; managed persistent memory service</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 16 ★</div>
+        <div class="compare-val"><strong>AI Search hybrid + relevance boosting</strong> &mdash; vector + BM25 (RRF/max), porter/trigram tokenizer, AND/OR keyword modes, 3 boost fields, namespace-level cross-instance, built-in cross-encoder reranker, MCP endpoint per instance</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 16</div>
+        <div class="compare-val"><strong>Artifacts</strong> &mdash; Git-compatible versioned storage for agents</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 17</div>
+        <div class="compare-val"><strong>Cloudflare Mesh</strong> &mdash; secure private networking with Workers VPC</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 17</div>
+        <div class="compare-val"><strong>Managed OAuth for Access</strong> (RFC 9728)</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">APR 17</div>
+        <div class="compare-val"><strong>Enterprise MCP reference architecture</strong> &mdash; MCP Server Portals + <strong>Code Mode</strong> (~99.9% token reduction)</div>
+      </div>
+      <div class="compare-row reveal">
+        <div class="compare-key">MAY 2026</div>
+        <div class="compare-val"><strong>Dynamic Workflows</strong> (<code>@cloudflare/dynamic-workflows</code>) &mdash; durable execution that follows the tenant; agents can self-register as Cloudflare customers and provision their own resources.</div>
+      </div>
+    </div>
+
+    <h3>Workers AI embedding catalog</h3>
+    <ul>
+      <li><code>@cf/baai/bge-small-en-v1.5</code> (384) &mdash; fastest, cheapest</li>
+      <li><strong><code>@cf/baai/bge-base-en-v1.5</code> (768) ← Skippy's current</strong></li>
+      <li><code>@cf/baai/bge-large-en-v1.5</code> (1024) &mdash; better accuracy, supports <code>cls</code> pooling</li>
+      <li><strong><code>@cf/baai/bge-m3</code></strong> &mdash; multilingual, multi-functional (dense+sparse+colbert), supports <code>query</code>+<code>contexts</code> reranking in a single call</li>
+      <li><code>@cf/baai/bge-reranker-base</code> &mdash; cross-encoder reranker</li>
+      <li><strong><code>@cf/google/embeddinggemma-300m</code></strong> (Apr 2026) &mdash; 100+ languages, SOTA for size</li>
+      <li><code>@cf/qwen/qwen3-embedding</code> series (Apr 2026)</li>
+    </ul>
+
+    <div class="verdict">
+      <div class="verdict-label">VERDICT // BGE-BASE-EN-V1.5 FOR SKIPPY</div>
+      <p>Still appropriate for English-only general semantic search. <strong>Recommended upgrades:</strong></p>
+      <p style="margin-top: 16px;">1. Switch to <strong><code>@cf/baai/bge-m3</code> (1024d)</strong> &mdash; best in-Cloudflare option; single-call reranking is a meaningful RAG quality win.</p>
+      <p>2. Or <code>@cf/baai/bge-large-en-v1.5</code> (1024d) with <code>pooling: "cls"</code> for long docs.</p>
+      <p>3. For external-grade quality: bring <strong>Voyage-3.5</strong> (1024d, $0.06/M, 200M tokens free) via AI Gateway BYOK. Vectorize accepts up to 1536d.</p>
+      <p>4. <strong>Always add a reranker pass.</strong> This is the largest RAG quality lift available without changing embeddings.</p>
+    </div>
+
+    <p>Vectorize index dimensions are immutable. Migration path: create parallel <code>skippy-v2-1024</code> index, dual-write during cutover, flip query traffic.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ CHAPTER 5 — RETRIEVAL ═══════════════════════════════════════════ -->
+<section class="chapter" id="ch5">
+  <div class="chapter-kicker reveal">CHAPTER FIVE</div>
+  <div class="chapter-header reveal">
+    <div class="chapter-num">05</div>
+    <h2 class="chapter-title">Embeddings, retrieval, reranking, and <em>memory layers.</em></h2>
+  </div>
+
+  <div class="prose">
+    <h3>Embedding model landscape, May 2026</h3>
+
+    <div class="card-grid reveal-stagger">
+      <div class="card">
+        <div class="card-label">CURRENT</div>
+        <div class="card-title">bge-base-en-v1.5</div>
+        <div class="card-body">768 native, no Matryoshka, 512 ctx, free MIT. <em>Outclassed by 2025&ndash;26.</em></div>
+      </div>
+      <div class="card">
+        <div class="card-label">UPGRADE PATH</div>
+        <div class="card-title">BGE-M3</div>
+        <div class="card-body">1024 native, 3 modes (dense+sparse+ColBERT), 8192 ctx, free / self-host. <strong>Self-host upgrade path; built-in hybrid.</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">BEST PRICE/QUALITY</div>
+        <div class="card-title">Voyage-3.5</div>
+        <div class="card-body">1024 (Matryoshka 256/512/1024/2048), 32K ctx, $0.06/M, 200M free. <strong>Best price/quality balance.</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">PREMIUM</div>
+        <div class="card-title">Voyage-3-large</div>
+        <div class="card-body">1024 (int8 supported), Matryoshka, 32K ctx, $0.18/M. Highest quality general; +9.74% over OpenAI-3-large.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">CHUNK-AWARE</div>
+        <div class="card-title">Voyage-context-3</div>
+        <div class="card-body">1024, Matryoshka, 32K total / 16K chunks, $0.18/M. <strong>Contextualized chunk embeddings &mdash; neighbors influence each chunk's vector.</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">OPENAI</div>
+        <div class="card-title">text-embedding-3-large</div>
+        <div class="card-body">3072 (truncatable), Matryoshka, 8K ctx, $0.13/M. Default if on OpenAI.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">MULTIMODAL</div>
+        <div class="card-title">Cohere Embed v4</div>
+        <div class="card-body">1536 (truncatable), Matryoshka, 128K ctx, $0.12/M text, $0.47/M image. <strong>Multimodal (text + image + PDF screenshots).</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">GOOGLE</div>
+        <div class="card-title">Gemini Embedding 002</div>
+        <div class="card-body">3072 (truncatable to 768), Matryoshka, multimodal, $0.15/M. <strong>Top MTEB English (68.32).</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">JINA</div>
+        <div class="card-title">Jina Embeddings v4</div>
+        <div class="card-body">2048 (down to 128), Matryoshka, 32K ctx. CC-BY-NC self-host / commercial. Multimodal, single + multi-vector in one model.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">SELF-HOST</div>
+        <div class="card-title">Qwen3-Embedding-8B</div>
+        <div class="card-body">Flexible dim, Matryoshka, 32K ctx, Apache-2.0. <strong>Best multilingual self-hostable</strong> (MTEB Multilingual ~70.58).</div>
+      </div>
+      <div class="card">
+        <div class="card-label">NVIDIA</div>
+        <div class="card-title">Llama-Embed-Nemotron-8B</div>
+        <div class="card-body">4096, 32K ctx, NVIDIA license. Top open multilingual.</div>
+      </div>
+    </div>
+
+    <h3>Reranking</h3>
+    <p><strong>Cohere Rerank 4 Pro</strong> is the new ELO leader on Agentset's benchmark (1627 ELO; +170 ELO vs v3.5). <strong>Voyage rerank-2.5/2.5-lite</strong>, <strong>Jina Reranker v3/m0</strong> (LLM-backbone, multimodal), open-source <strong>bge-reranker-v2-m3</strong> and <strong>mxbai-rerank-large-v2</strong>.</p>
+
+    <p>Independent benchmarks consistently show <strong>+14&ndash;20% recall@10 from a cross-encoder rerank on top-50</strong>. For personal RAG (≤100K chunks), reranking is the highest-leverage single addition you can make after a decent embedding model.</p>
+
+    <h3>Hybrid search on Cloudflare &mdash; the April 16, 2026 unlock</h3>
+    <p>This is the news. <strong>Cloudflare AI Search shipped native hybrid retrieval</strong> with: BM25 + vector; <code>keyword_tokenizer: porter</code> (NL) or <code>trigram</code> (code/partial); <code>keyword_match_mode: and|or</code>; <code>fusion_method: rrf|max</code>; optional cross-encoder rerank pass; <strong>metadata-based relevance boosting</strong> (timestamp, custom fields), up to 3 boost fields per request; cross-instance search via <code>ai_search_namespaces</code> binding; built-in MCP endpoint per instance.</p>
+
+    <div class="verdict">
+      <div class="verdict-label">FOR SKIPPY</div>
+      <p>This is a <strong>near-mandatory upgrade</strong>: until April 16, raw Vectorize had no BM25, the only path was D1 FTS5 + RRF in your Worker. AI Search instances created after April 16 come with built-in storage + vector + crawler + hybrid + rerank + boost in <em>one API.</em></p>
+    </div>
+
+    <h3>Anthropic's Contextual Retrieval pattern</h3>
+    <p>(Sept 2024, still SOTA): for each chunk, prompt <code>claude-haiku</code> with the entire document + that chunk + "give 50&ndash;100 tokens of context locating this chunk in the doc." Cache the document prompt. Index <code>context + chunk</code> in BOTH the embedding and BM25 index.</p>
+
+    <ul>
+      <li>Embeddings alone: <strong>~35% retrieval-error reduction.</strong></li>
+      <li>Embeddings + BM25: <strong>~49% retrieval-error reduction.</strong></li>
+      <li>+ rerank on top: <strong>~67% retrieval-error reduction.</strong></li>
+    </ul>
+
+    <p><em>This is the highest-leverage RAG pattern published in the last 18 months.</em></p>
+
+    <h3>Memory layer startups, May 2026</h3>
+
+    <div class="card-grid reveal-stagger">
+      <div class="card">
+        <div class="card-label">48K STARS</div>
+        <div class="card-title">mem0</div>
+        <div class="card-body">Vector + KV, optional graph (Mem0g). Apache-2.0 Docker self-host. Free OSS; Pro $249/mo. <strong>Drop-in personalization; biggest community + 21 framework integrations.</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">TEMPORAL</div>
+        <div class="card-title">Zep / Graphiti</div>
+        <div class="card-body">Graph-first, <strong>temporal knowledge graph with <code>valid_at</code>/<code>invalid_at</code></strong>. Graphiti Apache-2.0; full Zep Cloud only &mdash; Community Edition deprecated April 2025. Free OSS Graphiti; Cloud $25&ndash;$475/mo. <em>Pick when agents need to reason about</em> when <em>facts changed.</em></div>
+      </div>
+      <div class="card">
+        <div class="card-label">STATEFUL RUNTIME</div>
+        <div class="card-title">Letta (formerly MemGPT)</div>
+        <div class="card-body">OS-inspired tiered memory (Core/Recall/Archival); agent self-edits memory blocks via tools &mdash; <strong>stateful agent runtime, not just memory.</strong> Yes self-host (server is OSS). Hosted + Letta Code (Dec 2025) memory-first coding agent.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">12K+ STARS</div>
+        <div class="card-title">Cognee</div>
+        <div class="card-body">ECL pipeline (Extract, Cognify, Load); vector + graph + relational unified; "memify" feedback loop. Multiple graph backends. OSS + Cloud beta. <strong>Raised $7.5M seed early 2026; 70+ companies.</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">HIGH-SCORE OPEN</div>
+        <div class="card-title">Hindsight (vectorize.io)</div>
+        <div class="card-body">4 parallel retrievers + cross-encoder rerank, MIT, single Docker w/ Postgres. <strong>LongMemEval 91.4% (Gemini-3 Pro) &mdash; highest reported open self-hostable.</strong></div>
+      </div>
+      <div class="card">
+        <div class="card-label">MCP-NATIVE</div>
+        <div class="card-title">Supermemory</div>
+        <div class="card-body">Coding-agent integrations (Claude Code, Cursor, OpenCode). LongMemEval ~85.4% reported. Self-host needs enterprise.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">REPOSITIONED</div>
+        <div class="card-title">Mem.ai</div>
+        <div class="card-body">Voice Mode, Mem Chat, Clean Up, Deep Search. $12/mo Pro. Note-centric capture.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">DEAD AS A BUILDING BLOCK</div>
+        <div class="card-title">Rewind AI</div>
+        <div class="card-body"><strong>Acquired by Meta as Limitless Dec 5 2025.</strong> Use Screenpipe (MIT, local-first) instead.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">$1.5B VALUATION</div>
+        <div class="card-title">Granola</div>
+        <div class="card-body">Bot-free meeting capture. Series C $125M (March 2026); MCP support Feb 2026; Vanta, Gusto, Asana, Mistral as customers.</div>
+      </div>
+    </div>
+
+    <h4>PATTERNS THE FIELD HAS CONVERGED ON</h4>
+    <ol>
+      <li><strong>LLM-extracted facts</strong> (not raw turns) as storage primitive.</li>
+      <li><strong>Vector + graph hybrid</strong> &mdash; pure vector loses temporal correctness; pure graph loses fuzzy recall.</li>
+      <li><strong>Episodic vs semantic vs procedural</strong> memory tiers (Letta's framing).</li>
+      <li><strong>Temporal validity</strong> &mdash; every fact gets <code>valid_at</code>/<code>invalid_at</code>. Without it, "I moved from London to Tokyo" returns both as current.</li>
+      <li><strong>Reflection / "memify"</strong> offline pass (summarize, re-weight, dedupe).</li>
+      <li><strong>MCP</strong> as universal exposure protocol.</li>
+      <li><strong>Conflict detection</strong> at write time.</li>
+    </ol>
+
+    <p>Independent benchmarks (vectorize.io, atlan) <em>dispute Mem0's self-reported numbers</em>: Mem0 49% on LongMemEval temporal vs Zep's 63.8% and Hindsight's 91.4%. <strong>Architecture matters more than the marketing.</strong></p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ CHAPTER 6 — VOICE ═══════════════════════════════════════════ -->
+<section class="chapter" id="ch6">
+  <div class="chapter-kicker reveal">CHAPTER SIX</div>
+  <div class="chapter-header reveal">
+    <div class="chapter-num">06</div>
+    <h2 class="chapter-title">Voice and TTS &mdash; should Scott <em>switch?</em></h2>
+  </div>
+
+  <div class="prose">
+    <p>Scott uses ElevenLabs + Chatterbox. Should he switch? <strong>Mostly no.</strong></p>
+
+    <h3>For TTS replies</h3>
+    <p>ElevenLabs Flash v2.5 (~75ms, $0.05/1K chars, 32 langs) is still excellent. <strong>The single A/B test worth running is Cartesia Sonic-3</strong> (~90ms, $0.0225/min on LiveKit &mdash; roughly half ElevenLabs, more expressive with <code>[laughter]</code> and emotion tags, 3-sec instant clone).</p>
+    <p>Don't move to ElevenLabs v3 for replies &mdash; it's slower (5K char limit, higher latency) and 2× the cost; <em>v3 is for narration.</em></p>
+
+    <h3>For self-hosted</h3>
+    <p>Chatterbox is still the right answer; <strong>Chatterbox Turbo</strong> (350M, MIT, single-step decoder, paralinguistic tags) is the upgrade path if Scott hasn't taken it.</p>
+
+    <h4>ALTERNATIVES IF CHATTERBOX DOESN'T FIT</h4>
+    <ul>
+      <li><strong>Kokoro-82M</strong> (Apache 2.0, CPU-feasible, no voice cloning).</li>
+      <li><strong>Sesame CSM-1B</strong> (Apache 2.0, conversational, fine-tune required).</li>
+      <li><strong>Fish Audio S2 Pro</strong> (highest OSS quality, slow, weights CC-BY-NC).</li>
+    </ul>
+
+    <h3>For STT in the pendant ingestion pipeline</h3>
+    <ul>
+      <li><strong>ElevenLabs Scribe v2</strong> &mdash; best accuracy (2.2% AA-WER, near-human) at $0.22/hr batch / $0.39/hr realtime.</li>
+      <li><strong>Deepgram Nova-3</strong> &mdash; best streaming latency (200&ndash;400ms) at $0.0043&ndash;$0.0077/min, ~$0.26&ndash;$0.67/hr &mdash; <em>the default for real-time voice agents.</em></li>
+      <li><strong>Cartesia Ink-Whisper</strong> &mdash; cheapest streaming at $0.13/hr (Scale tier).</li>
+      <li>Self-hosted: <strong>faster-whisper</strong> if privacy is non-negotiable.</li>
+    </ul>
+
+    <p>There is <strong>no Whisper v4</strong> from OpenAI as of May 2026; OpenAI's recommended path is <code>gpt-4o-mini-transcribe</code>.</p>
+
+    <div class="callout-danger">
+      <div class="label">REALTIME API STATUS</div>
+      <p><strong>Anthropic does NOT have a Realtime / speech-to-speech API as of May 2026.</strong> Confirmed across multiple 2026 reviews.</p>
+      <p>Claude consumer voice mode (mobile, push-to-talk, 5 preset voices) and Claude Code voice mode (rolling out March 2026 to ~5%) are the consumer surfaces. The canonical "Claude voice agent" stack is <strong>Hume EVI 3 + Claude</strong> &mdash; Hume reports 36% of EVI users choose Claude as their LLM.</p>
+    </div>
+
+    <div class="verdict">
+      <div class="verdict-label">RECOMMENDED PENDANT STACK FOR SKIPPY</div>
+      <p>Deepgram Nova-3 (cloud) <em>or</em> faster-whisper (privacy) for ingestion STT → Claude Sonnet 4.6 for context engine reasoning → Cartesia Sonic-3 for cloud replies (with ElevenLabs Flash v2.5 fallback) → Chatterbox Turbo for offline/cloned-voice replies.</p>
+      <p style="margin-top: 16px;"><strong>Skip OpenAI Realtime, Vapi, Retell, Bland</strong> &mdash; those are phone-call optimizations and Skippy is async ambient ingestion, not telephony.</p>
+      <p>If the pendant is meant to feel emotionally aware rather than transactional, prototype with <strong>Hume EVI 3 + Claude</strong> before committing.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ CHAPTER 7 — CONTEXT ENGINES ═══════════════════════════════════════════ -->
+<section class="chapter" id="ch7">
+  <div class="chapter-kicker reveal">CHAPTER SEVEN</div>
+  <div class="chapter-header reveal">
+    <div class="chapter-num">07</div>
+    <h2 class="chapter-title">Personal context engines and <em>Omi specifically.</em></h2>
+  </div>
+
+  <div class="prose">
+    <h3>Omi state May 2026</h3>
+    <p>Repo (<code>github.com/BasedHardware/omi</code>) is very active &mdash; <strong>12.3K stars, 690+ apps in the marketplace, 6,800+ issues, commits through April 28.</strong> Stack confirmed: Python + FastAPI + Firestore + Pinecone + Redis + Deepgram + Silero VAD + LangChain. SOC 2, HIPAA, AES-256 at rest, optional local mode, full data export. <strong>MCP server support is now first-class</strong> (April 2026 PRs hardening MCP security, redacting OAuth tokens, rejecting private MCP server targets).</p>
+
+    <h4>NOTABLE APRIL PRs</h4>
+    <ul>
+      <li><strong>"Vectorise action items for semantic search"</strong> (#6897, Apr 20) &mdash; <em>Scott should steal this.</em></li>
+      <li>"feat: one-click Docker deployment for omi backend" (#6887)</li>
+      <li>The desktop app (Swift/Rust) now spawns floating "agent pills" with Claude Haiku as a router.</li>
+    </ul>
+
+    <h3>Wearables landscape &mdash; and the deaths</h3>
+    <ul>
+      <li><strong>Limitless (formerly Rewind) stopped selling pendants December 2025.</strong> Service unavailable in EU/UK/Brazil. Acquired by Meta. Users migrating to Omi/Plaud.</li>
+      <li><strong>Bee acquired by Amazon mid-2025</strong>; sold at CES 2026 for $50, 160h battery, transcripts only (audio discarded). Privacy is now Amazon-shaped.</li>
+      <li><strong>Friend</strong> (friend.com): began shipping August 2025; ~3,000 sold, ~1,000 shipped. Companionship product, not memory. Aggressive ToS. Cultural foil.</li>
+      <li><strong>Plaud NotePin S</strong>: $169 + $99/yr Pro or $30/mo Unlimited. 112-language transcription, HIPAA/SOC2/ISO27001/GDPR.</li>
+      <li><strong>Meta Ray-Ban Display</strong>: $799 (Sept 30 2025), waitlists into late 2026. LLAMA 4 integration, in-lens display, Neural Band EMG.</li>
+      <li><strong>Humane AI Pin</strong>: dead. HP acquired assets for $116M (Feb 2025). All customer data wiped.</li>
+      <li><strong>Microsoft Copilot Recall</strong>: GA on Copilot+ PCs since April 2025 &mdash; but the "Total Recall Reloaded" exploit (Hagenah, April 2026) and PIN-bypass concerns persist; Microsoft scaled back broader Copilot integrations in March 2026.</li>
+    </ul>
+
+    <p><em>There's a clear opening for self-hostable, EU-friendly personal context engines. Skippy's Cloudflare setup is most of the way there.</em></p>
+
+    <h3>Builders Scott should track</h3>
+
+    <div class="card-grid reveal-stagger">
+      <div class="card">
+        <div class="card-label">VIRAL APRIL 2026</div>
+        <div class="card-title">Andrej Karpathy</div>
+        <div class="card-body">His <strong>LLM-Wiki gist (April 3, 2026)</strong> went viral. Single-Markdown-folder pattern for a compounding personal knowledge base; Obsidian = IDE, LLM = programmer, wiki = codebase. Karpathy reports ~100 articles / 400K words from zero typing.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">INK & SWITCH</div>
+        <div class="card-title">Geoffrey Litt</div>
+        <div class="card-body"><em>"Malleable Software"</em> (June 2025) is the manifesto for AI-rewritable tools; <strong>Patchwork</strong> (universal version control for writing/AI agents); <strong>Ambsheets</strong>.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">THRIVE CAPITAL</div>
+        <div class="card-title">Linus Lee</div>
+        <div class="card-body">Now Engineering at Thrive Capital. <em>"Agents as Ordinary Software"</em> talk. Canonical thinker on tools-for-thought + latent-space UI.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">GITHUB NEXT</div>
+        <div class="card-title">Maggie Appleton</div>
+        <div class="card-body">At GitHub Next since October 2025. <em>"One Developer, Two Dozen Agents, Zero Alignment"</em> (April 2026).</div>
+      </div>
+      <div class="card">
+        <div class="card-label">INDISPENSABLE</div>
+        <div class="card-title">Simon Willison</div>
+        <div class="card-body">Daily-output blog. Coined the <strong>lethal trifecta</strong> (private data + untrusted instructions + exfiltration vector). <em>"agent = LLM that runs tools in a loop."</em> Deep MCP/Skills/cost coverage.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">CANONICAL</div>
+        <div class="card-title">Ethan Mollick</div>
+        <div class="card-body"><em>"The Shape of the Thing"</em> (Mar 12 2026). <em>"A Guide to Which AI to Use in the Agentic Era"</em> (Feb 18 2026, 8th edition). Models/Apps/Harnesses framework.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">PATTERNS</div>
+        <div class="card-title">Eugene Yan</div>
+        <div class="card-body"><code>eugeneyan.com/start-here</code>. Canonical "Patterns for LLM Systems"; evals → RAG → fine-tuning → caching → guardrails order.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">RAG PLAYBOOK</div>
+        <div class="card-title">Jason Liu</div>
+        <div class="card-body"><code>jxnl.co</code>. Sunset consulting Feb 2026; open-sourced everything as the "RAG Playbook." Now at OpenAI on Codex. Synthetic-eval-driven tuning.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">EVALS CANON</div>
+        <div class="card-title">Hamel Husain</div>
+        <div class="card-body"><em>"Your AI product needs evals"</em> essay is canon.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">$1.5B</div>
+        <div class="card-title">Chris Pedregal (Granola CEO)</div>
+        <div class="card-body">Series C $125M @ $1.5B. MCP server, Spaces team workspaces.</div>
+      </div>
+    </div>
+
+    <h3>The 2026 reference architecture for personal context engines</h3>
+
+    <p>Converged across Mem0's State of Memory 2026, Karpathy LLM-Wiki, Granola, Letta, Omi, and Meta's internal Second Brain (60K knowledge workers, per April 2026 Medium post):</p>
+
+    <pre>CAPTURE → PROCESSING → MEMORY (3-tier) → RETRIEVAL → AGENT/RESPONSE</pre>
+
+    <h4>CAPTURE</h4>
+    <ul>
+      <li>pendant (Omi over BLE)</li>
+      <li>desktop audio (Granola pattern, no bot in meeting)</li>
+      <li>screen capture (Recall-style, encrypted local)</li>
+      <li>email/calendar/Slack/WhatsApp ingestion via MCP</li>
+    </ul>
+
+    <h4>PROCESSING</h4>
+    <p>VAD (Silero) → diarize (pyannote/Sortformer) → STT (Deepgram Nova-3 or local Whisper) → LLM extraction pass (entities, action items, decisions, people, projects, follow-ups in structured JSON) → daily/weekly compaction & "lint" pass detecting contradictions and aging out stale memories.</p>
+
+    <h4>MEMORY (THREE TIERS PER MEM0 2026)</h4>
+    <ul>
+      <li><strong>Working</strong> (Redis)</li>
+      <li><strong>Episodic</strong> (Postgres+pgvector with time)</li>
+      <li><strong>Semantic</strong> (Knowledge graph: Neo4j/Kuzu/Neptune)</li>
+      <li><strong>Plus Karpathy's plain-Markdown wiki</strong> as the human-readable "binary" &mdash; entity pages with <code>[[wiki-links]]</code>.</li>
+    </ul>
+
+    <h4>RETRIEVAL</h4>
+    <p>Hybrid (BM25 + embedding) + reranker on top-K + graph traversal for relationship queries + <strong>time-aware decay</strong> (Mem0 dynamic forgetting) + classifier routes query to which tier(s).</p>
+
+    <h4>AGENT/RESPONSE</h4>
+    <ul>
+      <li>Router (Haiku-style) splits quick-answer vs. agent task</li>
+      <li>Tools-in-a-loop with MCP</li>
+      <li>Background agents for daily summary, weekly reflection, proactive "you committed to X" reminders</li>
+      <li>Surfaces (chat, floating pills, daily digest email, mobile push, glasses display)</li>
+    </ul>
+
+    <h4>CROSS-CUTTING</h4>
+    <p>Eval (<strong>Braintrust</strong> &mdash; note: <em>Gentrace shut down, code on GitHub MIT</em>; <strong>Humanloop</strong> alive for enterprise) and observability (Langfuse, Arize) tracing every retrieval + LLM call.</p>
+  </div>
+</section>
+
+<div class="scroll-marquee">
+  <div class="scroll-marquee-inner">
+    <span>SKIPPY IS WELL-ARCHITECTED FOR 2024</span>
+    <span>MID-PACK FOR 2025</span>
+    <span>MISSING 6 THINGS THAT SHIPPED IN 60 DAYS</span>
+    <span>SKIPPY IS WELL-ARCHITECTED FOR 2024</span>
+    <span>MID-PACK FOR 2025</span>
+    <span>MISSING 6 THINGS THAT SHIPPED IN 60 DAYS</span>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ CHAPTER 8 — ACTION PLAN ═══════════════════════════════════════════ -->
+<section class="chapter" id="ch8">
+  <div class="chapter-kicker reveal">CHAPTER EIGHT &mdash; THE BIG ONE</div>
+  <div class="chapter-header reveal">
+    <div class="chapter-num">08</div>
+    <h2 class="chapter-title">Your action plan &mdash; <em>top 10 moves</em> in the next 30 days.</h2>
+  </div>
+
+  <div class="prose">
+    <p>Ranked by leverage, with rough effort estimates. Hover any card.</p>
+
+    <div class="action-grid reveal-stagger">
+      <div class="action-card">
+        <div class="action-card-title">Update Claude Code &amp; pin</div>
+        <div class="action-card-body">Update to <strong>≥v2.1.116</strong> and pin the version. Set <code>ENABLE_PROMPT_CACHING_1H=1</code> in your shell. Verify cache hit rate &gt;85% via <code>/cost</code> and <code>npx ccusage blocks --live</code>. Catches the three April-postmortem bugs and the silent 5m TTL regression.</div>
+        <div class="action-card-effort">EFFORT :: 1 HOUR</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">Cloudflare AI Gateway in front of Anthropic</div>
+        <div class="action-card-body">One-line baseURL change. You get caching, retries, fallback to Workers AI Llama-3.3 if Anthropic is down, cost dashboards, guardrails, and the optional Unified Billing experiment. Anthropic's <code>cache_control</code> blocks pass through transparently.</div>
+        <div class="action-card-effort">EFFORT :: 1 HOUR</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">Migrate Vectorize → AI Search</div>
+        <div class="action-card-body">Built-in BM25 + vector + RRF + cross-encoder rerank + relevance boost + per-instance MCP endpoint shipped April 16, 2026. <strong>Typically nets +15&ndash;25% recall on its own.</strong> Add a timestamp-based relevance boost for time-sensitive queries.</div>
+        <div class="action-card-effort">EFFORT :: 1&ndash;2 DAYS</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">Trim CLAUDE.md to &lt;200 lines</div>
+        <div class="action-card-body">Split your real content into a portable <strong>AGENTS.md</strong> that CLAUDE.md imports via <code>@AGENTS.md</code>. Move conditional knowledge to skills. Bloated CLAUDE.md is the #1 cause of "Claude is ignoring my instructions."</div>
+        <div class="action-card-effort">EFFORT :: 2&ndash;3 HOURS</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">Build Skippy-specific Skills</div>
+        <div class="action-card-body">At minimum a <code>skill-creator</code> workflow + 3&ndash;5 Skippy skills (Vectorize upsert pattern, R2 storage helper, D1 migration pattern, Workers binding patterns). Use the meta-skill in <code>anthropics/skills</code> to author them with a trigger-eval loop.</div>
+        <div class="action-card-effort">EFFORT :: 1 WEEK</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">Expose Skippy as MCP server</div>
+        <div class="action-card-body">Use <code>workers-mcp</code> + <code>McpAgent</code> from the Cloudflare Agents SDK. Once exposed, every agent (Cursor, Claude Code, ChatGPT, Codex CLI, Lovable) can read your context. <strong>Highest-leverage single move in 2026.</strong> Use Code Mode if you have many tools.</div>
+        <div class="action-card-effort">EFFORT :: 3&ndash;5 DAYS</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">DO + Workflows V2</div>
+        <div class="action-card-body">Migrate session/state from KV+D1 to per-session SQLite-backed Durable Objects with <code>AIChatAgent</code>. Use <strong>Cloudflare Workflows V2</strong> for any multi-step ingestion (chunk → contextualize with <code>claude-haiku</code> + prompt caching → embed → upsert → summarize). Replaces fragile Worker + Queue chains with durable retryable observable steps.</div>
+        <div class="action-card-effort">EFFORT :: 1 WEEK</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">Reranker pass</div>
+        <div class="action-card-body">Add <code>@cf/baai/bge-reranker-base</code> (or move to <code>@cf/baai/bge-m3</code> for embedding+reranker in one model). After Vectorize topK=50, rerank to top-5. <strong>Single largest RAG quality lift available without changing embeddings &mdash; typically +14&ndash;20% recall@10.</strong></div>
+        <div class="action-card-effort">EFFORT :: 2 HOURS</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">Three-tier memory pattern</div>
+        <div class="action-card-body">Implement Mem0's pattern on existing stack &mdash; working (Redis or Workers Cache) / episodic (D1 + Vectorize with timestamps) / semantic (start with NetworkX-on-D1, upgrade to a proper graph DB if needed). Layer Anthropic's Contextual Retrieval (<code>claude-haiku-4.5</code> + prompt caching) on every chunk before indexing.</div>
+        <div class="action-card-effort">EFFORT :: 2 WEEKS</div>
+      </div>
+      <div class="action-card">
+        <div class="action-card-title">Spend cap + ccusage daily</div>
+        <div class="action-card-body">Set workspace spend cap + email alerts in Console. Run <code>ccusage</code> daily. Add per-subagent model override (<code>export CLAUDE_CODE_SUBAGENT_MODEL="claude-sonnet-4-6"</code>) &mdash; main session stays on Opus 4.7, sub-agents drop to Sonnet. <strong>Typically 60&ndash;70% cost reduction with no quality loss.</strong> Add <code>MAX_THINKING_TOKENS=8000</code> and <code>CLAUDE_CODE_AUTO_COMPACT_WINDOW=200000</code>.</div>
+        <div class="action-card-effort">EFFORT :: 1 HOUR</div>
+      </div>
+    </div>
+
+    <h3>Things to <em>steal</em>, not adopt wholesale</h3>
+    <div class="card-grid reveal-stagger">
+      <div class="card">
+        <div class="card-label">KARPATHY</div>
+        <div class="card-title">LLM-Wiki pattern</div>
+        <div class="card-body">Skippy's human-readable layer &mdash; ship as a Cloudflare Pages/R2 static site that an agent maintains from your raw Omi transcripts.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">GRANOLA</div>
+        <div class="card-title">Bot-free meeting capture</div>
+        <div class="card-body">For desktop calls (system audio, no calendar bot).</div>
+      </div>
+      <div class="card">
+        <div class="card-label">OMI #6897</div>
+        <div class="card-title">Action-item vectorization</div>
+        <div class="card-body">Separate index for "what did I commit to?" surfaced as a recurring digest.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">SENTRY</div>
+        <div class="card-title">getsentry/skills repo</div>
+        <div class="card-body">Model for organizing internal-team skills.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">HEARTBEAT</div>
+        <div class="card-title">Daily compact + weekly reflect cron</div>
+        <div class="card-body">The heartbeat pattern. Most personal RAG systems collapse without one.</div>
+      </div>
+    </div>
+
+    <h3>Hype check &mdash; what's <em>overhyped</em> vs. what's <em>delivering</em></h3>
+
+    <div class="two-col">
+      <div class="col-card warn">
+        <h4>OVERHYPED RIGHT NOW</h4>
+        <ul>
+          <li><strong>Agent Teams</strong> (experimental) &mdash; ~7× tokens in plan mode; not worth deploying.</li>
+          <li><strong>TOON encoding</strong> &mdash; real but narrow benefit; only A/B-test on table-shaped LLM inputs with cheap models.</li>
+          <li><strong>OpenAI Operator</strong> &mdash; surpassed by Browser Use Cloud v3 and Codex Background Computer Use; $200/mo, no API.</li>
+          <li><strong>MCP for inner-loop coding</strong> &mdash; CLIs + Skills are 4&ndash;32× cheaper.</li>
+          <li><strong>Switching Skippy's voice stack</strong> &mdash; ElevenLabs + Chatterbox is fine.</li>
+          <li><strong>Local frontier models for agentic coding</strong> &mdash; Opus 4.7 still leads SWE-bench Pro by 6+ points over GLM-5.1.</li>
+          <li><strong>Self-reported memory benchmarks</strong> &mdash; Mem0's LongMemEval numbers disputed by independent benchmarks.</li>
+          <li><strong>Gentrace</strong> &mdash; dead, code on GitHub MIT. Use Braintrust or Humanloop.</li>
+        </ul>
+      </div>
+      <div class="col-card win">
+        <h4>ACTUALLY DELIVERING</h4>
+        <ul>
+          <li><strong>Skills + progressive disclosure</strong> &mdash; order-of-magnitude cleaner than MCP for procedural knowledge.</li>
+          <li><strong>Anthropic Contextual Retrieval + reranker</strong> &mdash; 67% retrieval-error reduction.</li>
+          <li><strong>Cloudflare AI Search hybrid + boost + rerank</strong> &mdash; closes the gap to dedicated vector platforms.</li>
+          <li><strong>Per-subagent model routing</strong> &mdash; easy 60&ndash;70% cost reduction.</li>
+          <li><strong>Hooks</strong> &mdash; deterministic guardrails that work even with <code>--dangerously-skip-permissions</code>.</li>
+          <li><strong>Granola's bot-free meeting capture pattern</strong> &mdash; $1.5B valuation worth of UX intuition.</li>
+          <li><strong>Cloudflare Workflows V2 + DO</strong> &mdash; best-in-class durable agent runtime, free tier.</li>
+          <li><strong>Cartesia Sonic-3 for voice agents</strong> &mdash; half the price of ElevenLabs for similar quality + better latency.</li>
+          <li><strong>Karpathy's LLM-Wiki pattern</strong> &mdash; the cleanest "second brain that compounds" architecture published in 2026.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h3>The verdict &mdash; what Scott is <em>missing</em></h3>
+
+    <p>Skippy is a well-architected 2024-vintage stack. The six things you don't have that you need:</p>
+
+    <ol>
+      <li><strong>Cloudflare AI Search</strong> instead of raw Vectorize (April 16, 2026 launched hybrid + rerank + boost in one API).</li>
+      <li><strong>AI Gateway</strong> in front of Anthropic for caching, fallback, observability, and budget control.</li>
+      <li><strong>Cloudflare Workflows V2 + Durable Objects</strong> as the durable execution layer, replacing ad-hoc KV/D1 state.</li>
+      <li><strong>An MCP server</strong> exposing Skippy to every other agent in the ecosystem.</li>
+      <li><strong>Skills</strong> for your procedural knowledge &mdash; not bloated CLAUDE.md.</li>
+      <li><strong>A reranker pass</strong> (and ideally a memory layer using the three-tier Mem0 pattern with temporal validity).</li>
+    </ol>
+
+    <p>Plus the operational hygiene: <strong>ccusage daily, v2.1.116+ pinned, <code>ENABLE_PROMPT_CACHING_1H=1</code>, per-subagent model routing, workspace spend cap.</strong></p>
+
+    <p>Anthropic burned a lot of trust over Q1 2026; the April 23 postmortem and the Rate Limits API are them buying it back. Treat your spend like an operations problem from now on, not a budget line.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ OUTRO ═══════════════════════════════════════════ -->
+<section class="outro" id="outro">
+  <div class="outro-mark reveal">✦</div>
+  <p class="outro-text reveal">
+    The single highest-leverage week of work is items <em>1&ndash;3</em> of the action plan. Do those first. <strong>Everything else compounds afterward.</strong>
+  </p>
+  <div class="outro-meta reveal">
+    SKIPPY // FOSTER LABS // MAY 02 2026<br>
+    <a href="/">↩ FOSTERLABS.ORG</a>
+  </div>
+</section>
+
+<script>
+  // PROGRESS BAR
+  const progress = document.getElementById('progress');
+  window.addEventListener('scroll', () => {
+    const h = document.documentElement;
+    const scrolled = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
+    progress.style.width = scrolled + '%';
+  });
+
+  // SCROLL REVEAL
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('in');
+        // Don't unobserve revealing content lets users scroll back up
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -10% 0px' });
+
+  document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => obs.observe(el));
+
+  // CHAPTER NAV ACTIVE STATE
+  const navLinks = document.querySelectorAll('.chapter-nav a');
+  const sections = Array.from(navLinks).map(a => document.querySelector(a.getAttribute('href')));
+  const navObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const id = e.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      }
+    });
+  }, { rootMargin: '-40% 0px -50% 0px' });
+  sections.forEach(s => s && navObs.observe(s));
+</script>
+
+</body>
+</html>
