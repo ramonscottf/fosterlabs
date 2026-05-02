@@ -893,6 +893,18 @@
   ::-webkit-scrollbar-thumb { background: var(--rule-strong); border-radius: 5px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
+  /* WIDE-SCREEN: keep prose clear of the fixed left chapter nav */
+  @media (min-width: 1101px) {
+    section.chapter,
+    .headline,
+    .outro {
+      padding-left: max(6vw, 200px);
+    }
+    .hero {
+      padding-left: max(6vw, 200px);
+    }
+  }
+
   /* RESPONSIVE TOUCH-UPS */
   @media (max-width: 700px) {
     body { font-size: 16px; }
