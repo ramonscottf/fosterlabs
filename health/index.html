@@ -6,335 +6,524 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Health">
-<meta name="theme-color" content="#08080d">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <meta name="mobile-web-app-capable" content="yes">
-<title>Foster Health | Skippy</title>
+<title>Foster Health</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="manifest" href="/health/manifest.json">
 <link rel="apple-touch-icon" href="/health/apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="/health/icon-512.svg">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  /* ============================================
+     FOSTER HEALTH
+     iOS Health × Apple Music
+     Adaptive light/dark, teal tint preserved
+     ============================================ */
+
   :root {
-    --bg: #08080d;
-    --surface: #0f0f18;
-    --card: #161622;
-    --card-hover: #1e1e30;
-    --border: #252538;
-    --border-bright: #3a3a55;
-    --text: #e4e4f0;
-    --dim: #7878a0;
-    --accent: #00d4aa;
-    --accent-dim: rgba(0,212,170,0.12);
-    --warn: #ffaa00;
-    --warn-dim: rgba(255,170,0,0.1);
-    --danger: #ff4466;
-    --danger-dim: rgba(255,68,102,0.1);
-    --blue: #4488ff;
-    --blue-dim: rgba(68,136,255,0.1);
-    --purple: #aa66ff;
-    --purple-dim: rgba(170,102,255,0.1);
-    --mono: 'JetBrains Mono', monospace;
-    --sans: 'DM Sans', -apple-system, sans-serif;
+    /* Light mode — Apple Health */
+    --bg: #F2F2F7;
+    --bg-elev: #FFFFFF;
+    --surface: #FFFFFF;
+    --surface-2: #F8F8FA;
+    --separator: rgba(60, 60, 67, 0.12);
+    --label: #000000;
+    --label-secondary: rgba(60, 60, 67, 0.6);
+    --label-tertiary: rgba(60, 60, 67, 0.3);
+    --label-quaternary: rgba(60, 60, 67, 0.18);
+    --tint: #00C9A7;
+    --tint-bg: rgba(0, 201, 167, 0.12);
+    --nav-blur: rgba(248, 248, 250, 0.78);
+
+    /* Apple Health categories */
+    --activity: #FA114F;
+    --body: #FF9500;
+    --nutrition: #FFCC00;
+    --sleep: #5856D6;
+    --mindfulness: #AF52DE;
+    --peptide: #BF5AF2;
+    --oral: #007AFF;
+    --hearing: #00C7BE;
+
+    --safe-top: env(safe-area-inset-top);
+    --safe-bottom: env(safe-area-inset-bottom);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #000000;
+      --bg-elev: #1C1C1E;
+      --surface: #1C1C1E;
+      --surface-2: #2C2C2E;
+      --separator: rgba(84, 84, 88, 0.6);
+      --label: #FFFFFF;
+      --label-secondary: rgba(235, 235, 245, 0.6);
+      --label-tertiary: rgba(235, 235, 245, 0.3);
+      --label-quaternary: rgba(235, 235, 245, 0.16);
+      --tint: #00D4AA;
+      --tint-bg: rgba(0, 212, 170, 0.18);
+      --nav-blur: rgba(22, 22, 23, 0.78);
+      --activity: #FF375F;
+      --body: #FF9F0A;
+      --nutrition: #FFD60A;
+      --sleep: #5E5CE6;
+      --mindfulness: #BF5AF2;
+      --peptide: #DA8FFF;
+      --oral: #0A84FF;
+    }
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: env(safe-area-inset-bottom); }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--label);
+    min-height: 100vh;
+    font-size: 17px;
+    line-height: 1.3;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior-y: contain;
+  }
+  button { font-family: inherit; cursor: pointer; }
+  input, select, textarea { font-family: inherit; font-size: 17px; }
 
-  /* PASSWORD GATE */
+  /* GATE */
   #gate {
     display: flex; align-items: center; justify-content: center;
-    min-height: 100vh; padding: 20px;
-    background: radial-gradient(ellipse at 30% 20%, rgba(0,212,170,0.04) 0%, transparent 50%),
-                radial-gradient(ellipse at 70% 80%, rgba(170,102,255,0.03) 0%, transparent 50%);
+    min-height: 100vh; padding: 20px; background: var(--bg);
   }
-  .gate-box {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 32px 28px; max-width: 380px; width: 100%;
+  .gate-box { max-width: 340px; width: 100%; text-align: center; padding: 40px 28px 32px; }
+  .gate-icon {
+    width: 80px; height: 80px; margin: 0 auto 24px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, var(--tint), #007AFF);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 12px 36px rgba(0, 201, 167, 0.35);
   }
-  .gate-box h1 { font-size: 22px; margin-bottom: 6px; letter-spacing: -0.02em; }
-  .gate-box .sub { color: var(--dim); font-size: 13px; margin-bottom: 20px; }
+  .gate-icon svg { width: 44px; height: 44px; }
+  .gate-box h1 { font-size: 28px; font-weight: 700; letter-spacing: -0.022em; margin-bottom: 6px; }
+  .gate-box .sub { color: var(--label-secondary); font-size: 15px; margin-bottom: 28px; }
   .gate-box input {
-    width: 100%; background: var(--bg); border: 1px solid var(--border);
-    color: var(--text); padding: 12px 14px; border-radius: 10px;
-    font-family: var(--mono); font-size: 14px; margin-bottom: 12px;
+    width: 100%; background: var(--surface); border: none; color: var(--label);
+    padding: 14px 16px; border-radius: 12px; font-size: 17px;
+    margin-bottom: 12px; text-align: center; letter-spacing: 0.5em;
+    font-feature-settings: 'tnum';
   }
-  .gate-box input:focus { outline: none; border-color: var(--accent); }
+  .gate-box input:focus { outline: 2px solid var(--tint); }
   .gate-box button {
-    width: 100%; background: var(--accent); color: #001512; border: none;
-    padding: 12px; border-radius: 10px; font-weight: 600; font-size: 14px;
-    cursor: pointer; font-family: var(--sans);
+    width: 100%; background: var(--tint); color: white; border: none;
+    padding: 14px; border-radius: 12px; font-weight: 600; font-size: 17px;
+    transition: opacity 0.15s, transform 0.15s;
   }
-  .gate-err { color: var(--danger); font-size: 12px; margin-top: 8px; min-height: 16px; }
+  .gate-box button:active { opacity: 0.7; transform: scale(0.98); }
+  .gate-err { color: var(--activity); font-size: 14px; margin-top: 10px; min-height: 18px; }
 
-  /* APP SHELL */
-  #app { display: none; }
-  .header {
-    padding: 16px 20px 12px;
-    border-bottom: 1px solid var(--border);
-    background: rgba(8,8,13,0.85); backdrop-filter: blur(12px);
+  /* APP */
+  #app { display: none; padding-bottom: calc(72px + var(--safe-bottom)); }
+
+  /* Large title nav */
+  .nav {
     position: sticky; top: 0; z-index: 50;
-    padding-top: calc(16px + env(safe-area-inset-top));
+    padding: var(--safe-top) 0 0;
+    background: var(--nav-blur);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: 0.5px solid transparent;
+    transition: border-color 0.2s;
   }
-  .header h1 {
-    font-size: 18px; letter-spacing: -0.02em; font-weight: 600;
-    display: flex; align-items: center; gap: 8px;
+  .nav.scrolled { border-bottom-color: var(--separator); }
+  .nav-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 16px; height: 44px;
   }
-  .header .pill {
-    font-size: 10px; padding: 3px 8px; border-radius: 6px;
-    background: var(--accent-dim); color: var(--accent);
-    font-family: var(--mono); font-weight: 500; letter-spacing: 0.05em;
+  .nav-title-compact {
+    font-size: 17px; font-weight: 600; opacity: 0; transition: opacity 0.2s;
+    flex: 1; text-align: center;
   }
+  .nav.scrolled .nav-title-compact { opacity: 1; }
+  .nav-action {
+    background: transparent; border: none; color: var(--tint);
+    font-size: 17px; padding: 8px;
+  }
+  .nav-action.icon-only {
+    width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; background: var(--surface); color: var(--label-secondary);
+  }
+  .nav-large { padding: 4px 16px 14px; }
+  .nav-large h1 { font-size: 34px; font-weight: 700; letter-spacing: 0.011em; }
 
-  /* TABS */
-  .tabs {
-    display: flex; gap: 4px; padding: 12px 16px; overflow-x: auto;
-    border-bottom: 1px solid var(--border); position: sticky; top: 53px; z-index: 49;
-    background: rgba(8,8,13,0.85); backdrop-filter: blur(12px);
-    scrollbar-width: none;
+  /* Tab bar */
+  .tabbar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 60;
+    background: var(--nav-blur);
+    backdrop-filter: saturate(180%) blur(20px);
+    -webkit-backdrop-filter: saturate(180%) blur(20px);
+    border-top: 0.5px solid var(--separator);
+    padding-bottom: var(--safe-bottom);
+    display: flex;
   }
-  .tabs::-webkit-scrollbar { display: none; }
-  .tab {
-    padding: 8px 14px; border-radius: 8px; cursor: pointer;
-    font-size: 13px; font-weight: 500; color: var(--dim);
-    white-space: nowrap; border: 1px solid transparent;
-    background: transparent;
+  .tabbar-item {
+    flex: 1; display: flex; flex-direction: column; align-items: center;
+    background: transparent; border: none; padding: 6px 0 8px;
+    color: var(--label-secondary); font-size: 10px; font-weight: 500;
+    transition: color 0.15s;
   }
-  .tab.active { background: var(--card); color: var(--text); border-color: var(--border); }
+  .tabbar-item .icon { font-size: 22px; margin-bottom: 2px; line-height: 1; }
+  .tabbar-item.active { color: var(--tint); }
 
-  /* MAIN */
-  main { padding: 16px; max-width: 720px; margin: 0 auto; }
+  main { max-width: 720px; margin: 0 auto; padding: 0; }
   .panel { display: none; }
-  .panel.active { display: block; }
+  .panel.active { display: block; animation: fadeIn 0.2s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
-  /* CARDS */
-  .card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 14px; padding: 18px; margin-bottom: 14px;
+  .section { padding: 0 16px; margin-bottom: 32px; }
+  .section-h {
+    font-size: 22px; font-weight: 700; letter-spacing: 0.012em;
+    padding: 0 4px 8px;
+    display: flex; align-items: center; justify-content: space-between;
   }
-  .card-h {
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
-    color: var(--dim); margin-bottom: 12px; font-weight: 600;
-  }
-
-  /* CALCULATOR */
-  .calc-section { margin-bottom: 18px; }
-  .calc-section:last-child { margin-bottom: 0; }
-  .calc-label {
-    font-size: 12px; color: var(--dim); margin-bottom: 8px;
+  .section-h .more { color: var(--tint); font-size: 15px; font-weight: 400; background: transparent; border: none; }
+  .section-sub {
+    font-size: 13px; color: var(--label-secondary);
     text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500;
-  }
-  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .chip {
-    background: var(--bg); border: 1px solid var(--border);
-    color: var(--text); padding: 10px 14px; border-radius: 10px;
-    font-family: var(--mono); font-size: 13px; font-weight: 500;
-    cursor: pointer; transition: all 0.15s;
-    flex: 0 0 auto; min-width: 56px; text-align: center;
-  }
-  .chip:hover { border-color: var(--border-bright); }
-  .chip.active {
-    background: var(--accent-dim); border-color: var(--accent); color: var(--accent);
-  }
-  .chip-input {
-    background: var(--bg); border: 1px solid var(--border);
-    color: var(--text); padding: 10px 12px; border-radius: 10px;
-    font-family: var(--mono); font-size: 13px; width: 90px;
-  }
-  .chip-input:focus { outline: none; border-color: var(--accent); }
-
-  /* RESULT */
-  .result-box {
-    background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(68,136,255,0.04));
-    border: 1px solid var(--accent); border-radius: 12px;
-    padding: 20px; margin-top: 8px;
-  }
-  .result-headline {
-    font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
-    color: var(--accent); margin-bottom: 8px; font-weight: 600;
-  }
-  .result-big {
-    font-family: var(--mono); font-size: 42px; font-weight: 600;
-    color: var(--text); letter-spacing: -0.02em; line-height: 1;
-  }
-  .result-big .unit { font-size: 18px; color: var(--dim); margin-left: 6px; }
-  .result-detail {
-    margin-top: 10px; font-size: 12px; color: var(--dim);
-    font-family: var(--mono); line-height: 1.6;
-  }
-  .result-warn {
-    background: var(--danger-dim); border-color: var(--danger);
-  }
-  .result-warn .result-headline { color: var(--danger); }
-  .result-warn .result-big { font-size: 18px; }
-
-  /* SYRINGE VIZ */
-  .syringe-viz {
-    margin-top: 14px; height: 40px; background: var(--bg);
-    border: 1px solid var(--border); border-radius: 8px;
-    position: relative; overflow: hidden;
-  }
-  .syringe-fill {
-    height: 100%; background: linear-gradient(90deg, var(--accent), var(--blue));
-    transition: width 0.3s; border-radius: 7px 0 0 7px;
-  }
-  .syringe-marks {
-    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-    display: flex; justify-content: space-between;
-    font-family: var(--mono); font-size: 9px; color: var(--dim);
-    align-items: flex-end; padding: 0 6px 4px; pointer-events: none;
-  }
-  .syringe-units {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    font-family: var(--mono); font-size: 14px; font-weight: 600;
-    color: var(--text); text-shadow: 0 0 8px var(--bg);
+    padding: 0 4px 8px;
   }
 
-  /* BUTTONS */
-  .btn-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
-  .btn {
-    background: var(--accent); color: #001512; border: none;
-    padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 13px;
-    cursor: pointer; font-family: var(--sans); flex: 1;
-    transition: opacity 0.15s;
+  /* HERO — Apple Music style */
+  .hero {
+    margin: 12px 16px 32px;
+    border-radius: 18px;
+    overflow: hidden; position: relative;
+    background: linear-gradient(135deg, var(--tint) 0%, #007AFF 60%, #5856D6 100%);
+    box-shadow: 0 12px 40px rgba(0, 201, 167, 0.25);
+    color: white;
+    aspect-ratio: 16 / 11; max-height: 280px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 22px;
+    border: none; text-align: left; width: calc(100% - 32px);
   }
-  .btn:hover { opacity: 0.9; }
-  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
-  .btn-secondary {
-    background: var(--card); border: 1px solid var(--border); color: var(--text);
+  .hero::before {
+    content: ''; position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.18), transparent 50%);
+    pointer-events: none;
   }
-  .btn-secondary:hover { background: var(--card-hover); }
-  .btn-danger { background: var(--danger-dim); color: var(--danger); border: 1px solid var(--danger); }
-  .btn-small { padding: 6px 12px; font-size: 11px; flex: 0 0 auto; }
-  .btn-icon {
-    background: transparent; border: none; color: var(--dim); cursor: pointer;
-    padding: 4px 6px; font-size: 14px; border-radius: 4px;
+  .hero::after {
+    content: ''; position: absolute; bottom: -40px; right: -40px;
+    width: 220px; height: 220px;
+    background: radial-gradient(circle, rgba(255,255,255,0.14), transparent 70%);
+    pointer-events: none;
   }
-  .btn-icon:hover { color: var(--danger); background: var(--danger-dim); }
-
-  /* MED PICKER */
-  .med-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-  @media (min-width: 480px) { .med-picker { grid-template-columns: repeat(3, 1fr); } }
-  .med-card {
-    background: var(--bg); border: 1px solid var(--border);
-    padding: 14px 12px; border-radius: 10px; cursor: pointer;
-    text-align: left; position: relative;
+  .hero-eyebrow {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 600; opacity: 0.9;
   }
-  .med-card.active {
-    border-color: var(--accent); background: var(--accent-dim);
+  .hero-title {
+    font-size: 32px; font-weight: 700; line-height: 1.05;
+    letter-spacing: -0.02em; margin-top: 2px;
   }
-  .med-card.peptide { border-left: 3px solid var(--purple); }
-  .med-card.peptide.active { border-color: var(--accent); border-left-color: var(--accent); }
-  .med-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
-  .med-meta { font-size: 11px; color: var(--dim); font-family: var(--mono); }
-  .peptide-tag {
-    position: absolute; top: 6px; right: 6px;
-    font-size: 9px; padding: 2px 5px; border-radius: 4px;
-    background: var(--purple-dim); color: var(--purple);
-    font-family: var(--mono); font-weight: 500;
+  .hero-stats { display: flex; gap: 18px; margin-top: auto; position: relative; }
+  .hero-stat .v {
+    font-size: 24px; font-weight: 700; letter-spacing: -0.02em;
+    font-feature-settings: 'tnum';
+  }
+  .hero-stat .l {
+    font-size: 11px; opacity: 0.85; text-transform: uppercase;
+    letter-spacing: 0.06em; font-weight: 600; margin-top: 1px;
   }
 
-  /* VIAL LIST */
-  .vial-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 12px; background: var(--bg); border: 1px solid var(--border);
-    border-radius: 10px; margin-bottom: 8px;
+  /* Category grid */
+  .cat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .cat-tile {
+    background: var(--surface); border-radius: 16px;
+    padding: 14px; text-align: left; border: none;
+    transition: transform 0.15s;
   }
-  .vial-item.archived { opacity: 0.5; }
-  .vial-info { flex: 1; min-width: 0; }
-  .vial-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
-  .vial-detail { font-size: 11px; color: var(--dim); font-family: var(--mono); }
-  .vial-conc {
-    background: var(--accent-dim); color: var(--accent);
-    padding: 4px 8px; border-radius: 6px; font-family: var(--mono);
-    font-size: 11px; font-weight: 600; white-space: nowrap;
+  .cat-tile:active { transform: scale(0.97); }
+  .cat-tile-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 16px; margin-bottom: 10px;
   }
+  .cat-tile-name { font-size: 15px; font-weight: 600; color: var(--label); margin-bottom: 2px; }
+  .cat-tile-meta { font-size: 13px; color: var(--label-secondary); font-feature-settings: 'tnum'; }
 
-  /* DOSE LOG */
-  .dose-item {
-    display: flex; align-items: center; gap: 12px;
-    padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
-    border-radius: 8px; margin-bottom: 6px;
+  /* Calculator */
+  .calc-step { margin-bottom: 22px; }
+  .calc-step-h {
+    font-size: 13px; font-weight: 600; color: var(--label-secondary);
+    text-transform: uppercase; letter-spacing: 0.05em;
+    padding: 0 4px 8px;
   }
-  .dose-time {
-    font-family: var(--mono); font-size: 11px; color: var(--dim);
-    min-width: 75px;
+  .seg {
+    display: flex; gap: 0; padding: 2px;
+    background: var(--surface-2); border-radius: 10px;
   }
-  .dose-info { flex: 1; min-width: 0; }
-  .dose-med { font-size: 13px; font-weight: 500; }
-  .dose-amount { font-family: var(--mono); font-size: 11px; color: var(--accent); }
-  .dose-notes { font-size: 11px; color: var(--dim); margin-top: 2px; }
-
-  /* DASHBOARD */
-  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
-  .stat {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px;
+  .seg-item {
+    flex: 1; padding: 8px 10px; text-align: center;
+    background: transparent; border: none; color: var(--label);
+    font-size: 14px; font-weight: 500; border-radius: 8px;
+    transition: background 0.15s;
+    font-feature-settings: 'tnum';
   }
-  .stat-label {
-    font-size: 10px; text-transform: uppercase; color: var(--dim);
-    letter-spacing: 0.08em; margin-bottom: 6px; font-weight: 600;
-  }
-  .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 600; }
-  .stat-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
-
-  /* MODAL */
-  .modal {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
-    z-index: 100; align-items: flex-end; justify-content: center;
-    padding: 0;
-  }
-  .modal.active { display: flex; }
-  .modal-content {
-    background: var(--card); border-top: 1px solid var(--border);
-    border-radius: 16px 16px 0 0; width: 100%; max-width: 480px;
-    padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
-    max-height: 85vh; overflow-y: auto;
-  }
-  @media (min-width: 600px) {
-    .modal { align-items: center; padding: 20px; }
-    .modal-content { border-radius: 16px; border: 1px solid var(--border); }
-  }
-  .modal-h {
-    font-size: 16px; font-weight: 600; margin-bottom: 16px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-  .modal-close {
-    background: var(--bg); border: 1px solid var(--border); color: var(--dim);
-    padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 16px;
-  }
-  .modal label {
-    display: block; font-size: 11px; text-transform: uppercase;
-    letter-spacing: 0.08em; color: var(--dim); margin: 12px 0 6px;
+  .seg-item.active {
+    background: var(--bg-elev);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 0 0 0.5px rgba(0,0,0,0.04);
     font-weight: 600;
   }
-  .modal input, .modal textarea, .modal select {
-    width: 100%; background: var(--bg); border: 1px solid var(--border);
-    color: var(--text); padding: 10px 12px; border-radius: 8px;
-    font-family: var(--mono); font-size: 13px;
+  @media (prefers-color-scheme: dark) {
+    .seg-item.active { box-shadow: none; outline: 0.5px solid rgba(255,255,255,0.1); }
   }
-  .modal input:focus, .modal textarea:focus, .modal select:focus {
-    outline: none; border-color: var(--accent);
-  }
-  .modal textarea { font-family: var(--sans); resize: vertical; min-height: 70px; }
 
-  /* EMPTY */
-  .empty {
-    text-align: center; padding: 40px 20px; color: var(--dim);
-    font-size: 13px;
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: var(--surface); border: none; color: var(--label);
+    padding: 10px 16px; border-radius: 100px;
+    font-size: 15px; font-weight: 500;
+    transition: all 0.15s;
+    font-feature-settings: 'tnum';
   }
-  .empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.5; }
+  .chip.active { background: var(--tint); color: white; }
+  .chip-input {
+    background: var(--surface); border: none; color: var(--label);
+    padding: 10px 14px; border-radius: 100px;
+    font-size: 15px; width: 100px;
+    font-feature-settings: 'tnum';
+  }
+  .chip-input:focus { outline: 2px solid var(--tint); }
 
-  /* TOAST */
+  /* Result */
+  .result {
+    margin-top: 24px; padding: 24px;
+    border-radius: 18px;
+    background: linear-gradient(140deg, var(--tint), #00B894);
+    color: white;
+    box-shadow: 0 8px 28px rgba(0, 201, 167, 0.28);
+    position: relative; overflow: hidden;
+  }
+  .result.warn {
+    background: linear-gradient(140deg, var(--activity), #C60036);
+    box-shadow: 0 8px 28px rgba(250, 17, 79, 0.28);
+  }
+  .result-eyebrow {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em;
+    font-weight: 600; opacity: 0.9;
+  }
+  .result-big {
+    font-size: 56px; font-weight: 700; letter-spacing: -0.025em;
+    line-height: 1; margin-top: 6px;
+    font-feature-settings: 'tnum';
+  }
+  .result-big .unit {
+    font-size: 22px; font-weight: 500; opacity: 0.85; margin-left: 6px;
+  }
+  .result-detail {
+    margin-top: 16px; font-size: 14px; opacity: 0.92; line-height: 1.5;
+    font-feature-settings: 'tnum';
+  }
+  .result-detail strong { font-weight: 700; }
+
+  .syringe {
+    margin-top: 16px; height: 44px;
+    background: rgba(0,0,0,0.18); border-radius: 22px;
+    position: relative; overflow: hidden;
+    backdrop-filter: blur(4px);
+  }
+  .syringe-fill {
+    height: 100%; background: rgba(255,255,255,0.92);
+    border-radius: 22px;
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .syringe-marks {
+    position: absolute; inset: 0;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 0 14px; font-size: 10px; font-weight: 600;
+    color: rgba(255,255,255,0.55); pointer-events: none;
+    font-feature-settings: 'tnum';
+  }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+  .btn {
+    flex: 1; padding: 14px; border-radius: 12px;
+    background: var(--tint); color: white; border: none;
+    font-size: 17px; font-weight: 600;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .btn:active { opacity: 0.7; transform: scale(0.98); }
+  .btn-secondary { background: var(--surface); color: var(--tint); }
+  .btn-icon {
+    background: transparent; border: none; color: var(--label-tertiary);
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s;
+  }
+  .btn-icon:active { background: var(--surface-2); }
+
+  /* Med picker */
+  .med-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .med-card {
+    background: var(--surface); border-radius: 16px; padding: 14px;
+    text-align: left; border: 2px solid transparent;
+    transition: border-color 0.15s, transform 0.15s;
+  }
+  .med-card:active { transform: scale(0.97); }
+  .med-card.active { border-color: var(--tint); }
+  .med-card-icon {
+    width: 32px; height: 32px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-size: 16px; margin-bottom: 10px;
+  }
+  .med-card-name { font-size: 15px; font-weight: 600; margin-bottom: 2px; color: var(--label); }
+  .med-card-dose { font-size: 13px; color: var(--label-secondary); font-feature-settings: 'tnum'; }
+
+  /* Vials */
+  .vial {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 16px; background: var(--surface);
+    border-bottom: 0.5px solid var(--separator);
+  }
+  .vial:last-child { border-bottom: none; }
+  .vial.archived { opacity: 0.5; }
+  .vial-thumb {
+    width: 50px; height: 50px; border-radius: 11px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; flex-shrink: 0; font-size: 22px;
+  }
+  .vial-info { flex: 1; min-width: 0; }
+  .vial-title { font-size: 16px; font-weight: 600; margin-bottom: 2px; color: var(--label); }
+  .vial-meta {
+    font-size: 13px; color: var(--label-secondary); line-height: 1.4;
+    font-feature-settings: 'tnum';
+  }
+  .vial-conc {
+    background: var(--tint-bg); color: var(--tint);
+    padding: 4px 10px; border-radius: 100px;
+    font-size: 12px; font-weight: 700;
+    font-feature-settings: 'tnum'; white-space: nowrap;
+  }
+
+  /* Doses */
+  .dose {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; background: var(--surface);
+    border-bottom: 0.5px solid var(--separator);
+  }
+  .dose:last-child { border-bottom: none; }
+  .dose-thumb {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; flex-shrink: 0; font-size: 16px;
+  }
+  .dose-info { flex: 1; min-width: 0; }
+  .dose-title { font-size: 15px; font-weight: 600; margin-bottom: 1px; color: var(--label); }
+  .dose-meta { font-size: 13px; color: var(--label-secondary); font-feature-settings: 'tnum'; }
+  .dose-time { font-size: 13px; color: var(--label-tertiary); font-feature-settings: 'tnum'; white-space: nowrap; }
+
+  /* Form list */
+  .form-list {
+    background: var(--surface); border-radius: 14px; overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .form-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 0.5px solid var(--separator);
+  }
+  .form-row:last-child { border-bottom: none; }
+  .form-row label { font-size: 15px; color: var(--label); flex-shrink: 0; min-width: 100px; }
+  .form-row input, .form-row select, .form-row textarea {
+    flex: 1; background: transparent; border: none;
+    color: var(--label); font-size: 17px; text-align: right;
+    font-feature-settings: 'tnum';
+  }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus { outline: none; }
+  .form-row.column { flex-direction: column; align-items: stretch; }
+  .form-row.column label {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em;
+    color: var(--label-secondary); font-weight: 600;
+    min-width: 0; margin-bottom: 6px;
+  }
+  .form-row.column input, .form-row.column textarea, .form-row.column select {
+    text-align: left; font-size: 17px;
+  }
+  .form-row.column textarea { min-height: 60px; resize: vertical; font-family: inherit; }
+
+  /* Empty */
+  .empty { text-align: center; padding: 48px 24px; color: var(--label-secondary); }
+  .empty-icon {
+    width: 56px; height: 56px; margin: 0 auto 14px;
+    border-radius: 16px; background: var(--surface);
+    display: flex; align-items: center; justify-content: center; font-size: 26px;
+  }
+  .empty-title { font-size: 18px; font-weight: 600; color: var(--label); margin-bottom: 4px; }
+  .empty-sub { font-size: 14px; }
+
+  /* Modal */
+  .modal {
+    display: none; position: fixed; inset: 0; z-index: 100;
+    background: rgba(0,0,0,0.4);
+    align-items: flex-end; justify-content: center;
+  }
+  .modal.active { display: flex; animation: bgFadeIn 0.25s ease-out; }
+  @keyframes bgFadeIn { from { background: rgba(0,0,0,0); } to { background: rgba(0,0,0,0.4); } }
+  .modal-sheet {
+    background: var(--bg);
+    border-radius: 14px 14px 0 0;
+    width: 100%; max-width: 540px;
+    max-height: 92vh; overflow-y: auto;
+    padding: 0 0 calc(20px + var(--safe-bottom));
+    animation: sheetUp 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+  @keyframes sheetUp { from { transform: translateY(100%); } to { transform: none; } }
+  @media (min-width: 600px) {
+    .modal { align-items: center; padding: 20px; }
+    .modal-sheet { border-radius: 14px; max-height: 80vh; }
+  }
+  .modal-handle {
+    width: 36px; height: 5px; border-radius: 100px;
+    background: var(--label-quaternary);
+    margin: 6px auto 0;
+  }
+  .modal-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px;
+  }
+  .modal-bar h2 { font-size: 17px; font-weight: 600; }
+  .modal-bar button { background: transparent; border: none; color: var(--tint); font-size: 17px; }
+  .modal-bar button.cancel { font-weight: 400; }
+  .modal-bar button.save { font-weight: 600; }
+  .modal-body { padding: 0 16px; }
+
+  /* Toast */
   .toast {
-    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
-    background: var(--card); border: 1px solid var(--accent);
-    color: var(--text); padding: 12px 18px; border-radius: 10px;
-    font-size: 13px; font-weight: 500; z-index: 200;
-    transition: transform 0.25s; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+    position: fixed; bottom: calc(80px + var(--safe-bottom));
+    left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--surface); color: var(--label);
+    padding: 14px 20px; border-radius: 14px;
+    font-size: 15px; font-weight: 500;
+    z-index: 200;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.18);
+    transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+    border: 0.5px solid var(--separator);
+    display: flex; align-items: center; gap: 10px;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast .check {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--tint); color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 600;
+  }
+  .toast.error .check { background: var(--activity); }
+
+  .reference {
+    font-size: 13px; color: var(--label-secondary); line-height: 1.6;
+    padding: 14px 16px;
+    background: var(--surface); border-radius: 14px;
+  }
+  .warn-text { color: var(--body); font-weight: 500; }
 </style>
 </head>
 <body>
@@ -342,9 +531,14 @@
 <!-- GATE -->
 <div id="gate">
   <div class="gate-box">
-    <h1>🧬 Foster Health</h1>
-    <div class="sub">Skippy's medical & peptide tracker</div>
-    <input type="password" id="pwInput" placeholder="Password" autocomplete="off">
+    <div class="gate-icon">
+      <svg viewBox="0 0 24 24" fill="white">
+        <path d="M12 2C9.5 2 7.5 4 7.5 6.5c0 1.5.7 2.8 1.8 3.7C7.7 11 6.5 12.4 6.5 14c0 1.5.7 2.8 1.8 3.7C7.7 18.6 6.5 20 6.5 21.5h11c0-1.5-1.2-2.9-1.8-3.8 1.1-.9 1.8-2.2 1.8-3.7 0-1.6-1.2-3-2.8-3.8 1.1-.9 1.8-2.2 1.8-3.7C16.5 4 14.5 2 12 2zm0 2c1.4 0 2.5 1.1 2.5 2.5S13.4 9 12 9 9.5 7.9 9.5 6.5 10.6 4 12 4z"/>
+      </svg>
+    </div>
+    <h1>Foster Health</h1>
+    <div class="sub">Enter passcode to continue</div>
+    <input type="password" id="pwInput" placeholder="••••••••" autocomplete="off">
     <button onclick="tryAuth()">Unlock</button>
     <div class="gate-err" id="gateErr"></div>
   </div>
@@ -352,50 +546,70 @@
 
 <!-- APP -->
 <div id="app">
-  <div class="header">
-    <h1>🧬 Foster Health <span class="pill">SKIPPY</span></h1>
-  </div>
-
-  <div class="tabs">
-    <button class="tab active" data-tab="dashboard">Dashboard</button>
-    <button class="tab" data-tab="calc">Calculator</button>
-    <button class="tab" data-tab="vials">Vials</button>
-    <button class="tab" data-tab="log">Log Dose</button>
-    <button class="tab" data-tab="history">History</button>
+  <div class="nav" id="nav">
+    <div class="nav-bar">
+      <div style="width:36px"></div>
+      <div class="nav-title-compact" id="navTitle">Summary</div>
+      <button class="nav-action icon-only" onclick="logoutHealth()" title="Lock">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a5 5 0 015 5v3h1a3 3 0 013 3v9a3 3 0 01-3 3H6a3 3 0 01-3-3v-9a3 3 0 013-3h1V6a5 5 0 015-5zm0 2a3 3 0 00-3 3v3h6V6a3 3 0 00-3-3z"/></svg>
+      </button>
+    </div>
+    <div class="nav-large">
+      <h1 id="navHeading">Summary</h1>
+    </div>
   </div>
 
   <main>
 
-    <!-- DASHBOARD -->
-    <section class="panel active" id="panel-dashboard">
-      <div class="stat-grid" id="statGrid"></div>
-      <div class="card">
-        <div class="card-h">Active Vials</div>
+    <!-- SUMMARY -->
+    <section class="panel active" id="panel-summary">
+      <button class="hero" onclick="switchTab('log')">
+        <div>
+          <div class="hero-eyebrow" id="heroEyebrow">Today</div>
+          <div class="hero-title" id="heroTitle">Tap to log a dose</div>
+        </div>
+        <div class="hero-stats" id="heroStats"></div>
+      </button>
+
+      <div class="section" id="dashVialsSection" style="display:none">
+        <div class="section-h">
+          Active Vials
+          <button class="more" onclick="switchTab('vials')">See All</button>
+        </div>
         <div id="dashVials"></div>
       </div>
-      <div class="card">
-        <div class="card-h">Recent Doses</div>
+
+      <div class="section">
+        <div class="section-h">
+          Recently Taken
+          <button class="more" onclick="switchTab('history')">See All</button>
+        </div>
         <div id="dashDoses"></div>
+      </div>
+
+      <div class="section">
+        <div class="section-h">Health Categories</div>
+        <div class="cat-grid" id="catGrid"></div>
       </div>
     </section>
 
     <!-- CALCULATOR -->
     <section class="panel" id="panel-calc">
-      <div class="card">
-        <div class="card-h">Peptide Reconstitution Calculator</div>
+      <div class="section">
+        <div class="section-sub">Reconstitution</div>
 
-        <div class="calc-section">
-          <div class="calc-label">1. Syringe Size</div>
-          <div class="chip-row" id="syringeChips">
-            <button class="chip" data-syringe="0.3:30">0.3 mL · 30u</button>
-            <button class="chip active" data-syringe="0.5:50">0.5 mL · 50u</button>
-            <button class="chip" data-syringe="1.0:100">1.0 mL · 100u</button>
+        <div class="calc-step">
+          <div class="calc-step-h">1. Syringe Size</div>
+          <div class="seg" id="syringeSeg">
+            <button class="seg-item" data-syringe="0.3:30">0.3 mL · 30u</button>
+            <button class="seg-item active" data-syringe="0.5:50">0.5 mL · 50u</button>
+            <button class="seg-item" data-syringe="1.0:100">1.0 mL · 100u</button>
           </div>
         </div>
 
-        <div class="calc-section">
-          <div class="calc-label">2. Vial Quantity (mg)</div>
-          <div class="chip-row" id="vialChips">
+        <div class="calc-step">
+          <div class="calc-step-h">2. Vial Quantity</div>
+          <div class="chips" id="vialChips">
             <button class="chip" data-vial="5">5 mg</button>
             <button class="chip" data-vial="10">10 mg</button>
             <button class="chip active" data-vial="15">15 mg</button>
@@ -403,9 +617,9 @@
           </div>
         </div>
 
-        <div class="calc-section">
-          <div class="calc-label">3. Bacteriostatic Water (mL)</div>
-          <div class="chip-row" id="bacChips">
+        <div class="calc-step">
+          <div class="calc-step-h">3. Bacteriostatic Water</div>
+          <div class="chips" id="bacChips">
             <button class="chip" data-bac="1">1 mL</button>
             <button class="chip active" data-bac="2">2 mL</button>
             <button class="chip" data-bac="3">3 mL</button>
@@ -414,15 +628,15 @@
           </div>
         </div>
 
-        <div class="calc-section">
-          <div class="calc-label">4. Desired Dose</div>
-          <div class="chip-row" id="doseChips">
+        <div class="calc-step">
+          <div class="calc-step-h">4. Desired Dose</div>
+          <div class="chips" id="doseChips">
             <button class="chip" data-dose="1.25:mg">1.25 mg</button>
             <button class="chip active" data-dose="2.5:mg">2.5 mg</button>
             <button class="chip" data-dose="5:mg">5 mg</button>
             <button class="chip" data-dose="7.5:mg">7.5 mg</button>
             <button class="chip" data-dose="10:mg">10 mg</button>
-            <input type="number" class="chip-input" id="doseOther" placeholder="Other" step="0.05">
+            <input type="number" class="chip-input" id="doseOther" placeholder="Other" step="0.05" style="width:80px">
             <select id="doseUnit" class="chip-input" style="width:80px">
               <option value="mg">mg</option>
               <option value="mcg">mcg</option>
@@ -433,183 +647,154 @@
         <div id="calcResult"></div>
 
         <div class="btn-row">
-          <button class="btn btn-secondary" onclick="saveAsVial()">📦 Save as New Vial</button>
-          <button class="btn" onclick="logDoseFromCalc()">💉 Log This Dose</button>
+          <button class="btn btn-secondary" onclick="saveAsVial()">Save as Vial</button>
+          <button class="btn" onclick="logDoseFromCalc()">Log Dose</button>
         </div>
       </div>
 
-      <div class="card">
-        <div class="card-h">Quick Reference</div>
-        <div style="font-size: 12px; color: var(--dim); line-height: 1.7; font-family: var(--mono);">
-          Concentration = vial_mg ÷ bac_water_mL<br>
-          Volume per dose = dose ÷ concentration<br>
-          Syringe units = volume × (total_units ÷ total_mL)<br><br>
-          <span style="color: var(--warn);">⚠ Tilt vial to 45°. Slow stream down sidewall.<br>
-          Don't shake. Refrigerate after reconstitution.</span>
+      <div class="section">
+        <div class="section-sub">How It Works</div>
+        <div class="reference">
+          <strong>Concentration</strong> = vial mg ÷ BAC water mL<br>
+          <strong>Volume per dose</strong> = dose ÷ concentration<br>
+          <strong>Syringe units</strong> = volume × (total units ÷ total mL)<br><br>
+          <span class="warn-text">⚠ Tilt vial 45°. Slow stream down sidewall. Don't shake. Refrigerate after reconstitution.</span>
         </div>
       </div>
     </section>
 
     <!-- VIALS -->
     <section class="panel" id="panel-vials">
-      <div class="card">
-        <div class="card-h">
-          Active Vials
-          <button class="btn btn-secondary btn-small" style="float:right; margin-top:-4px" onclick="showAllVials = !showAllVials; loadVials()">Toggle Archived</button>
+      <div class="section">
+        <div class="section-h">
+          Your Vials
+          <button class="more" onclick="showAllVials = !showAllVials; loadVials()" id="archToggle">Show Archived</button>
         </div>
         <div id="vialsList"></div>
       </div>
     </section>
 
-    <!-- LOG DOSE -->
+    <!-- LOG -->
     <section class="panel" id="panel-log">
-      <div class="card">
-        <div class="card-h">Log a Dose</div>
+      <div class="section">
+        <div class="section-sub">Medication</div>
+        <div class="med-grid" id="medPicker"></div>
+      </div>
 
-        <div class="calc-section">
-          <div class="calc-label">Medication</div>
-          <div class="med-picker" id="medPicker"></div>
-        </div>
-
-        <div class="calc-section">
-          <div class="calc-label">Amount</div>
-          <div style="display:flex; gap:8px;">
-            <input type="number" class="chip-input" id="logAmount" step="0.05" style="flex:1; width:auto" placeholder="Amount">
-            <select id="logUnit" class="chip-input" style="width:80px">
+      <div class="section">
+        <div class="section-sub">Details</div>
+        <div class="form-list">
+          <div class="form-row">
+            <label>Amount</label>
+            <input type="number" id="logAmount" step="0.05" placeholder="0">
+          </div>
+          <div class="form-row">
+            <label>Unit</label>
+            <select id="logUnit">
               <option value="mg">mg</option>
               <option value="mcg">mcg</option>
               <option value="units">units</option>
             </select>
           </div>
+          <div class="form-row">
+            <label>When</label>
+            <input type="datetime-local" id="logTime">
+          </div>
+          <div class="form-row" id="logVialRow" style="display:none">
+            <label>From Vial</label>
+            <select id="logVial"><option value="">None</option></select>
+          </div>
+          <div class="form-row column">
+            <label>Notes</label>
+            <textarea id="logNotes" placeholder="Optional"></textarea>
+          </div>
         </div>
-
-        <div class="calc-section" id="logVialSection" style="display:none">
-          <div class="calc-label">From Vial (Optional)</div>
-          <select id="logVial" class="chip-input" style="width: 100%; font-family: var(--mono)">
-            <option value="">— No vial —</option>
-          </select>
-        </div>
-
-        <div class="calc-section">
-          <div class="calc-label">When</div>
-          <input type="datetime-local" class="chip-input" id="logTime" style="width:100%; font-family: var(--mono)">
-        </div>
-
-        <div class="calc-section">
-          <div class="calc-label">Notes (Optional)</div>
-          <textarea class="chip-input" id="logNotes" style="width:100%; font-family: var(--sans); resize: vertical; min-height: 60px"></textarea>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn" onclick="submitDose()">💉 Log Dose</button>
-        </div>
+        <button class="btn" onclick="submitDose()" style="width:100%">Log Dose</button>
       </div>
     </section>
 
     <!-- HISTORY -->
     <section class="panel" id="panel-history">
-      <div class="card">
-        <div class="card-h">Dose History</div>
-        <div style="margin-bottom: 12px;">
-          <select id="historyFilter" class="chip-input" style="width: 100%; font-family: var(--mono)" onchange="loadHistory()">
-            <option value="">All medications</option>
-          </select>
+      <div class="section">
+        <div class="section-sub">Filter</div>
+        <div class="form-list">
+          <div class="form-row">
+            <label>Medication</label>
+            <select id="historyFilter" onchange="loadHistory()">
+              <option value="">All</option>
+            </select>
+          </div>
         </div>
+      </div>
+      <div class="section">
+        <div class="section-h">All Doses</div>
         <div id="historyList"></div>
       </div>
     </section>
 
   </main>
+
+  <nav class="tabbar">
+    <button class="tabbar-item active" data-tab="summary">
+      <div class="icon">❤️</div><div>Summary</div>
+    </button>
+    <button class="tabbar-item" data-tab="calc">
+      <div class="icon">🧮</div><div>Calculate</div>
+    </button>
+    <button class="tabbar-item" data-tab="log">
+      <div class="icon">＋</div><div>Log</div>
+    </button>
+    <button class="tabbar-item" data-tab="vials">
+      <div class="icon">💊</div><div>Vials</div>
+    </button>
+    <button class="tabbar-item" data-tab="history">
+      <div class="icon">📋</div><div>History</div>
+    </button>
+  </nav>
 </div>
 
-<!-- VIAL CREATE MODAL -->
+<!-- Vial modal -->
 <div class="modal" id="vialModal">
-  <div class="modal-content">
-    <div class="modal-h">
-      <span>📦 New Vial</span>
-      <button class="modal-close" onclick="closeModal('vialModal')">×</button>
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-bar">
+      <button class="cancel" onclick="closeModal('vialModal')">Cancel</button>
+      <h2>New Vial</h2>
+      <button class="save" onclick="saveVial()">Save</button>
     </div>
-    <label>Medication</label>
-    <select id="vmMed" class="chip-input" style="width:100%; font-family: var(--mono)"></select>
-    <label>Vial mg</label>
-    <input type="number" id="vmMg" step="0.1" placeholder="e.g. 15">
-    <label>BAC Water (mL)</label>
-    <input type="number" id="vmBac" step="0.1" placeholder="e.g. 2">
-    <label>Syringe (mL : units)</label>
-    <select id="vmSyringe" class="chip-input" style="width:100%; font-family: var(--mono)">
-      <option value="0.3:30">0.3 mL · 30 units</option>
-      <option value="0.5:50" selected>0.5 mL · 50 units</option>
-      <option value="1.0:100">1.0 mL · 100 units</option>
-    </select>
-    <label>Reconstituted</label>
-    <input type="datetime-local" id="vmTime">
-    <label>Notes (Optional)</label>
-    <textarea id="vmNotes" placeholder="Lot #, source, etc."></textarea>
-    <div class="btn-row">
-      <button class="btn btn-secondary" onclick="closeModal('vialModal')">Cancel</button>
-      <button class="btn" onclick="saveVial()">Save Vial</button>
+    <div class="modal-body">
+      <div class="form-list">
+        <div class="form-row"><label>Medication</label><select id="vmMed"></select></div>
+        <div class="form-row"><label>Vial mg</label><input type="number" id="vmMg" step="0.1"></div>
+        <div class="form-row"><label>BAC Water</label><input type="number" id="vmBac" step="0.1"></div>
+        <div class="form-row"><label>Syringe</label>
+          <select id="vmSyringe">
+            <option value="0.3:30">0.3 mL · 30u</option>
+            <option value="0.5:50" selected>0.5 mL · 50u</option>
+            <option value="1.0:100">1.0 mL · 100u</option>
+          </select>
+        </div>
+        <div class="form-row"><label>Mixed</label><input type="datetime-local" id="vmTime"></div>
+        <div class="form-row column"><label>Notes</label><textarea id="vmNotes" placeholder="Lot #, source..."></textarea></div>
+      </div>
     </div>
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast">
+  <div class="check" id="toastCheck">✓</div>
+  <span id="toastMsg"></span>
+</div>
 
-<!-- Install prompt banner (auto-shown on supported browsers) -->
-<div id="installPrompt" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--card); border:1px solid var(--accent); border-radius:12px; padding:12px 14px; z-index:150; max-width:340px; box-shadow:0 10px 30px rgba(0,0,0,0.5); align-items:center; gap:10px;">
+<div id="installPrompt" style="display:none; position:fixed; bottom:calc(80px + var(--safe-bottom)); left:50%; transform:translateX(-50%); background:var(--surface); border-radius:14px; padding:12px 14px; z-index:150; max-width:340px; box-shadow:0 10px 30px rgba(0,0,0,0.15); align-items:center; gap:10px;">
   <img src="/health/icon-192.png" width="36" height="36" style="border-radius:8px; flex-shrink:0">
-  <div style="flex:1; font-size:12px; line-height:1.3;">
-    <div style="font-weight:600; margin-bottom:2px;">Install Foster Health</div>
-    <div style="color:var(--dim); font-size:11px;">One-tap access from home screen</div>
+  <div style="flex:1; font-size:13px; line-height:1.3;">
+    <div style="font-weight:600; margin-bottom:1px;">Add to Home Screen</div>
+    <div style="color:var(--label-secondary); font-size:12px;">Tap Share → Add to Home Screen</div>
   </div>
-  <button onclick="installPwa()" style="background:var(--accent); color:#001512; border:none; padding:6px 12px; border-radius:6px; font-weight:600; font-size:12px; cursor:pointer; font-family:var(--sans);">Install</button>
-  <button onclick="document.getElementById('installPrompt').style.display='none'; localStorage.setItem('fh_install_dismissed','1')" style="background:transparent; border:none; color:var(--dim); font-size:18px; cursor:pointer; padding:0 4px;">×</button>
+  <button onclick="installPwa()" id="installBtn" style="display:none; background:var(--tint); color:white; border:none; padding:6px 12px; border-radius:8px; font-weight:600; font-size:13px;">Install</button>
+  <button onclick="document.getElementById('installPrompt').style.display='none'; localStorage.setItem('fh_install_dismissed','1')" style="background:transparent; border:none; color:var(--label-tertiary); font-size:18px; padding:0 4px;">×</button>
 </div>
-
-<script>
-// Service worker
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/health/sw.js', { scope: '/health/' })
-      .catch(err => console.warn('SW register failed:', err));
-  });
-}
-
-// PWA install prompt (Chrome / Android / desktop)
-let deferredInstall = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  deferredInstall = e;
-  if (!localStorage.getItem('fh_install_dismissed') && AUTH) {
-    const banner = document.getElementById('installPrompt');
-    banner.style.display = 'flex';
-  }
-});
-
-async function installPwa() {
-  if (!deferredInstall) return;
-  deferredInstall.prompt();
-  const { outcome } = await deferredInstall.userChoice;
-  if (outcome === 'accepted') {
-    document.getElementById('installPrompt').style.display = 'none';
-  }
-  deferredInstall = null;
-}
-
-// iOS Safari "Add to Home Screen" hint (one-time)
-function maybeShowIOSInstall() {
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const isStandalone = window.navigator.standalone === true;
-  const dismissed = localStorage.getItem('fh_install_dismissed');
-  if (isIOS && !isStandalone && !dismissed && AUTH) {
-    const banner = document.getElementById('installPrompt');
-    banner.querySelector('div > div:first-child').textContent = 'Add to Home Screen';
-    banner.querySelector('div > div:last-child').textContent = 'Tap Share → Add to Home Screen';
-    banner.querySelector('button').style.display = 'none';
-    banner.style.display = 'flex';
-  }
-}
-window.addEventListener('load', () => setTimeout(maybeShowIOSInstall, 1500));
-</script>
 
 <script>
 const PASS_HASH = '5e7e5641da6bdceafb9ec94e6f1074cd98373f407890e23a01db3f3143ac426f';
@@ -617,20 +802,23 @@ let AUTH = null;
 let MEDS = [];
 let VIALS = [];
 let showAllVials = false;
-let calcState = {
-  syringe_ml: 0.5, syringe_units: 50,
-  vial_mg: 15,
-  bac_ml: 2,
-  dose: 2.5, dose_unit: 'mg'
-};
+let calcState = { syringe_ml: 0.5, syringe_units: 50, vial_mg: 15, bac_ml: 2, dose: 2.5, dose_unit: 'mg' };
 let selectedMed = 'Tirzepatide';
 
-// ===== AUTH =====
+const MED_VISUAL = {
+  'Tirzepatide':  { icon: '💉', bg: 'linear-gradient(135deg, #BF5AF2, #6E3FBF)' },
+  'Tesamorelin':  { icon: '💉', bg: 'linear-gradient(135deg, #AF52DE, #5856D6)' },
+  'BPC-157':      { icon: '🩹', bg: 'linear-gradient(135deg, #FF2D55, #BF5AF2)' },
+  'Adderall':     { icon: '💊', bg: 'linear-gradient(135deg, #007AFF, #5856D6)' },
+  'Zoloft':       { icon: '💊', bg: 'linear-gradient(135deg, #5856D6, #AF52DE)' },
+  'Omeprazole':   { icon: '💊', bg: 'linear-gradient(135deg, #FF9500, #FF6200)' },
+};
+const visualFor = (n) => MED_VISUAL[n] || { icon: '💊', bg: 'linear-gradient(135deg, var(--tint), #007AFF)' };
+
 async function sha256(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
 }
-
 async function tryAuth() {
   const pw = document.getElementById('pwInput').value;
   const h = await sha256(pw);
@@ -641,15 +829,17 @@ async function tryAuth() {
     document.getElementById('app').style.display = 'block';
     initApp();
   } else {
-    document.getElementById('gateErr').textContent = 'Wrong password.';
+    document.getElementById('gateErr').textContent = 'Wrong passcode.';
+    document.getElementById('pwInput').value = '';
   }
 }
+function logoutHealth() {
+  if (!confirm('Lock Foster Health?')) return;
+  sessionStorage.removeItem('fh_auth');
+  location.reload();
+}
+document.getElementById('pwInput').addEventListener('keypress', e => { if (e.key === 'Enter') tryAuth(); });
 
-document.getElementById('pwInput').addEventListener('keypress', e => {
-  if (e.key === 'Enter') tryAuth();
-});
-
-// Auto-unlock if session valid
 const saved = sessionStorage.getItem('fh_auth');
 if (saved === PASS_HASH) {
   AUTH = saved;
@@ -658,13 +848,9 @@ if (saved === PASS_HASH) {
   setTimeout(initApp, 0);
 }
 
-// ===== API =====
 async function api(action, opts = {}) {
   const url = `/api/health?action=${action}` + (opts.params ? '&' + opts.params : '');
-  const init = {
-    method: opts.method || 'GET',
-    headers: { 'X-Health-Auth': AUTH, 'Content-Type': 'application/json' }
-  };
+  const init = { method: opts.method || 'GET', headers: { 'X-Health-Auth': AUTH, 'Content-Type': 'application/json' } };
   if (opts.body) init.body = JSON.stringify(opts.body);
   const r = await fetch(url, init);
   if (!r.ok) {
@@ -674,9 +860,7 @@ async function api(action, opts = {}) {
   return r.json();
 }
 
-// ===== INIT =====
 async function initApp() {
-  // Set default datetime to now (local timezone)
   const nowLocal = () => {
     const d = new Date();
     d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -685,32 +869,22 @@ async function initApp() {
   document.getElementById('logTime').value = nowLocal();
   document.getElementById('vmTime').value = nowLocal();
 
-  // Tabs
-  document.querySelectorAll('.tab').forEach(t => {
-    t.addEventListener('click', () => switchTab(t.dataset.tab));
+  document.querySelectorAll('.tabbar-item').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+  document.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 32);
   });
 
-  // Calculator chips
-  bindChips('syringeChips', (val) => {
+  bindSeg('syringeSeg', val => {
     const [ml, u] = val.split(':');
     calcState.syringe_ml = parseFloat(ml);
     calcState.syringe_units = parseInt(u);
     recalc();
   });
-  bindChips('vialChips', (val) => {
-    calcState.vial_mg = parseFloat(val);
-    document.getElementById('vialOther').value = '';
-    recalc();
-  });
-  bindChips('bacChips', (val) => {
-    calcState.bac_ml = parseFloat(val);
-    document.getElementById('bacOther').value = '';
-    recalc();
-  });
-  bindChips('doseChips', (val) => {
+  bindChips('vialChips', val => { calcState.vial_mg = parseFloat(val); document.getElementById('vialOther').value = ''; recalc(); });
+  bindChips('bacChips', val => { calcState.bac_ml = parseFloat(val); document.getElementById('bacOther').value = ''; recalc(); });
+  bindChips('doseChips', val => {
     const [d, u] = val.split(':');
-    calcState.dose = parseFloat(d);
-    calcState.dose_unit = u;
+    calcState.dose = parseFloat(d); calcState.dose_unit = u;
     document.getElementById('doseOther').value = '';
     document.getElementById('doseUnit').value = u;
     recalc();
@@ -738,44 +912,51 @@ async function initApp() {
       recalc();
     }
   });
-  document.getElementById('doseUnit').addEventListener('change', e => {
-    calcState.dose_unit = e.target.value;
-    recalc();
-  });
+  document.getElementById('doseUnit').addEventListener('change', e => { calcState.dose_unit = e.target.value; recalc(); });
 
-  // Load data
   await loadMeds();
   await loadVials();
   recalc();
   loadDashboard();
 }
 
-function bindChips(containerId, onSelect) {
-  const container = document.getElementById(containerId);
-  container.querySelectorAll('.chip').forEach(chip => {
+function bindChips(id, fn) {
+  const c = document.getElementById(id);
+  c.querySelectorAll('.chip').forEach(chip => {
     chip.addEventListener('click', () => {
-      container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      c.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
       chip.classList.add('active');
-      const dataAttr = Object.keys(chip.dataset)[0];
-      onSelect(chip.dataset[dataAttr]);
+      fn(chip.dataset[Object.keys(chip.dataset)[0]]);
+    });
+  });
+}
+function bindSeg(id, fn) {
+  const c = document.getElementById(id);
+  c.querySelectorAll('.seg-item').forEach(item => {
+    item.addEventListener('click', () => {
+      c.querySelectorAll('.seg-item').forEach(x => x.classList.remove('active'));
+      item.classList.add('active');
+      fn(item.dataset[Object.keys(item.dataset)[0]]);
     });
   });
 }
 
+const HEADINGS = { summary: 'Summary', calc: 'Calculator', log: 'Log Dose', vials: 'Vials', history: 'History' };
 function switchTab(name) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.tabbar-item').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
-  if (name === 'dashboard') loadDashboard();
+  document.getElementById('navHeading').textContent = HEADINGS[name];
+  document.getElementById('navTitle').textContent = HEADINGS[name];
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  if (name === 'summary') loadDashboard();
   if (name === 'vials') loadVials();
   if (name === 'history') loadHistory();
   if (name === 'log') loadLogPicker();
 }
 
-// ===== CALCULATOR =====
 function recalc() {
   const { syringe_ml, syringe_units, vial_mg, bac_ml, dose, dose_unit } = calcState;
-  const concMgPerMl = vial_mg / bac_ml;             // mg/mL
-  const concMcgPerMl = concMgPerMl * 1000;          // mcg/mL
+  const concMgPerMl = vial_mg / bac_ml;
   const doseMg = dose_unit === 'mcg' ? dose / 1000 : dose;
   const volMl = doseMg / concMgPerMl;
   const units = (volMl / syringe_ml) * syringe_units;
@@ -785,117 +966,100 @@ function recalc() {
   const el = document.getElementById('calcResult');
   if (tooBig) {
     el.innerHTML = `
-      <div class="result-box result-warn">
-        <div class="result-headline">⚠ Volume Too Large</div>
-        <div class="result-big">${units.toFixed(1)} units needed</div>
-        <div class="result-detail">
-          Syringe holds only ${syringe_units} units.<br>
-          Use a larger syringe, more BAC water, or split the dose.
-        </div>
+      <div class="result warn">
+        <div class="result-eyebrow">Volume Too Large</div>
+        <div class="result-big">${units.toFixed(1)}<span class="unit">units needed</span></div>
+        <div class="result-detail">Syringe holds only ${syringe_units} units. Use larger syringe, more BAC water, or split.</div>
       </div>`;
   } else {
     el.innerHTML = `
-      <div class="result-box">
-        <div class="result-headline">Pull syringe to</div>
+      <div class="result">
+        <div class="result-eyebrow">Pull syringe to</div>
         <div class="result-big">${units.toFixed(1)}<span class="unit">units</span></div>
-        <div class="syringe-viz">
+        <div class="syringe">
           <div class="syringe-fill" style="width:${fillPct}%"></div>
           <div class="syringe-marks">
             <span>0</span><span>${Math.floor(syringe_units/4)}</span><span>${Math.floor(syringe_units/2)}</span><span>${Math.floor(syringe_units*3/4)}</span><span>${syringe_units}</span>
           </div>
-          <div class="syringe-units">${units.toFixed(1)} u</div>
         </div>
         <div class="result-detail">
-          Concentration: <strong style="color:var(--accent)">${concMgPerMl.toFixed(2)} mg/mL</strong> (${concMcgPerMl.toFixed(0)} mcg/mL)<br>
-          Volume per dose: ${volMl.toFixed(3)} mL<br>
-          Vial yields ~${Math.floor(vial_mg / doseMg)} doses at this strength
+          <strong>${concMgPerMl.toFixed(2)} mg/mL</strong> concentration · ${volMl.toFixed(3)} mL volume<br>
+          Vial yields ~${Math.floor(vial_mg / doseMg)} doses
         </div>
       </div>`;
   }
 }
 
-// ===== MEDS =====
 async function loadMeds() {
   const r = await api('meds');
   MEDS = r.meds;
-
-  // History filter
   const hf = document.getElementById('historyFilter');
-  hf.innerHTML = '<option value="">All medications</option>' +
-    MEDS.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
-
-  // Vial modal med picker
-  const vm = document.getElementById('vmMed');
-  vm.innerHTML = MEDS.filter(m => m.is_peptide).map(m =>
-    `<option value="${m.name}">${m.name}</option>`).join('');
+  hf.innerHTML = '<option value="">All</option>' + MEDS.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+  document.getElementById('vmMed').innerHTML = MEDS.filter(m => m.is_peptide).map(m => `<option value="${m.name}">${m.name}</option>`).join('');
 }
 
 function loadLogPicker() {
   const picker = document.getElementById('medPicker');
-  picker.innerHTML = MEDS.map(m => `
-    <button class="med-card ${m.is_peptide ? 'peptide' : ''} ${m.name === selectedMed ? 'active' : ''}"
-            onclick="selectMed('${m.name}')">
-      ${m.is_peptide ? '<span class="peptide-tag">PEPTIDE</span>' : ''}
-      <div class="med-name">${m.name}</div>
-      <div class="med-meta">${m.default_dose || '?'} ${m.default_unit} · ${m.schedule_notes || ''}</div>
-    </button>
-  `).join('');
+  picker.innerHTML = MEDS.map(m => {
+    const v = visualFor(m.name);
+    return `
+    <button class="med-card ${m.name === selectedMed ? 'active' : ''}" onclick="selectMed('${m.name}')">
+      <div class="med-card-icon" style="background:${v.bg}">${v.icon}</div>
+      <div class="med-card-name">${m.name}</div>
+      <div class="med-card-dose">${m.default_dose || '?'} ${m.default_unit}</div>
+    </button>`;
+  }).join('');
   selectMed(selectedMed);
 }
 
 function selectMed(name) {
   selectedMed = name;
   document.querySelectorAll('.med-card').forEach(c => {
-    c.classList.toggle('active', c.querySelector('.med-name').textContent === name);
+    c.classList.toggle('active', c.querySelector('.med-card-name')?.textContent === name);
   });
   const med = MEDS.find(m => m.name === name);
   if (med) {
     document.getElementById('logAmount').value = med.default_dose || '';
     document.getElementById('logUnit').value = med.default_unit;
-    // Show vial picker for peptides
-    const vialSec = document.getElementById('logVialSection');
-    vialSec.style.display = med.is_peptide ? 'block' : 'none';
+    document.getElementById('logVialRow').style.display = med.is_peptide ? 'flex' : 'none';
     if (med.is_peptide) {
       const sel = document.getElementById('logVial');
       const matching = VIALS.filter(v => v.med_name === name && v.active);
-      sel.innerHTML = '<option value="">— No vial —</option>' +
-        matching.map(v => `<option value="${v.id}">${v.vial_mg}mg in ${v.bac_water_ml}mL · ${new Date(v.reconstituted_at).toLocaleDateString()}</option>`).join('');
+      sel.innerHTML = '<option value="">None</option>' +
+        matching.map(v => `<option value="${v.id}">${v.vial_mg}mg / ${v.bac_water_ml}mL · ${new Date(v.reconstituted_at).toLocaleDateString()}</option>`).join('');
     }
   }
 }
 
-// ===== VIALS =====
 async function loadVials() {
   const r = await api('vials', { params: showAllVials ? 'all=1' : '' });
   VIALS = r.vials;
-  const container = document.getElementById('vialsList');
+  document.getElementById('archToggle').textContent = showAllVials ? 'Hide Archived' : 'Show Archived';
+
+  const c = document.getElementById('vialsList');
   if (!VIALS.length) {
-    container.innerHTML = `
-      <div class="empty">
-        <div class="empty-icon">📦</div>
-        No vials yet.<br>
-        Use the calculator and tap "Save as Vial" to track one.
-      </div>`;
+    c.innerHTML = `<div class="empty"><div class="empty-icon">💊</div><div class="empty-title">No vials yet</div><div class="empty-sub">Use the calculator and tap Save as Vial</div></div>`;
     return;
   }
-  container.innerHTML = VIALS.map(v => {
+  c.innerHTML = `<div class="form-list">${VIALS.map(v => {
     const conc = (v.vial_mg / v.bac_water_ml).toFixed(2);
+    const visual = visualFor(v.med_name);
     return `
-      <div class="vial-item ${v.active ? '' : 'archived'}">
+      <div class="vial ${v.active ? '' : 'archived'}">
+        <div class="vial-thumb" style="background:${visual.bg}">${visual.icon}</div>
         <div class="vial-info">
           <div class="vial-title">${v.med_name}</div>
-          <div class="vial-detail">
-            ${v.vial_mg}mg ÷ ${v.bac_water_ml}mL · ${v.syringe_total_ml}mL/${v.syringe_total_units}u syringe<br>
-            Mixed ${new Date(v.reconstituted_at).toLocaleString([], {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'})}
-            ${v.notes ? '· ' + v.notes : ''}
+          <div class="vial-meta">
+            ${v.vial_mg}mg in ${v.bac_water_ml}mL · ${v.syringe_total_units}u syringe<br>
+            Mixed ${formatDate(v.reconstituted_at)}${v.notes ? ' · ' + escapeHtml(v.notes) : ''}
           </div>
         </div>
         <div class="vial-conc">${conc} mg/mL</div>
         ${v.active
-          ? `<button class="btn-icon" onclick="archiveVial(${v.id})" title="Archive">📥</button>`
-          : `<button class="btn-icon" onclick="deleteVial(${v.id})" title="Delete forever">🗑</button>`}
+          ? `<button class="btn-icon" onclick="archiveVial(${v.id})">📥</button>`
+          : `<button class="btn-icon" onclick="deleteVial(${v.id})">🗑</button>`}
       </div>`;
-  }).join('');
+  }).join('')}</div>`;
 }
 
 function saveAsVial() {
@@ -916,32 +1080,30 @@ async function saveVial() {
     reconstituted_at: new Date(document.getElementById('vmTime').value).toISOString(),
     notes: document.getElementById('vmNotes').value || null
   };
-  if (!body.med_name || !body.vial_mg || !body.bac_water_ml) {
-    return toast('Fill in med, mg, and BAC water', true);
-  }
+  if (!body.med_name || !body.vial_mg || !body.bac_water_ml) return toast('Fill in med, mg, BAC water', true);
   try {
     await api('vial_create', { method: 'POST', body });
     closeModal('vialModal');
     document.getElementById('vmNotes').value = '';
     toast('Vial saved');
     await loadVials();
+    loadDashboard();
   } catch (e) { toast('Error: ' + e.message, true); }
 }
 
 async function archiveVial(id) {
-  if (!confirm('Archive this vial? It will be hidden from the active list.')) return;
+  if (!confirm('Archive this vial?')) return;
   await api('vial_archive', { method: 'POST', body: { id } });
-  toast('Vial archived');
-  loadVials();
+  toast('Archived');
+  loadVials(); loadDashboard();
 }
 async function deleteVial(id) {
-  if (!confirm('Permanently delete this vial? This cannot be undone.')) return;
+  if (!confirm('Permanently delete?')) return;
   await api('vial_delete', { method: 'POST', body: { id } });
-  toast('Vial deleted');
+  toast('Deleted');
   loadVials();
 }
 
-// ===== DOSE LOGGING =====
 function logDoseFromCalc() {
   switchTab('log');
   setTimeout(() => {
@@ -964,149 +1126,168 @@ async function submitDose() {
   const vialId = document.getElementById('logVial').value;
   if (vialId) {
     body.vial_id = parseInt(vialId);
-    // If from vial, calculate syringe units for record
     const vial = VIALS.find(v => v.id == vialId);
     if (vial) {
       const doseMg = body.dose_unit === 'mcg' ? body.dose_amount / 1000 : body.dose_amount;
       const conc = vial.vial_mg / vial.bac_water_ml;
-      const volMl = doseMg / conc;
-      body.syringe_units = (volMl / vial.syringe_total_ml) * vial.syringe_total_units;
+      body.syringe_units = ((doseMg / conc) / vial.syringe_total_ml) * vial.syringe_total_units;
     }
   }
   try {
     await api('dose_log', { method: 'POST', body });
     document.getElementById('logNotes').value = '';
     toast(`Logged ${amount}${body.dose_unit} ${selectedMed}`);
-    loadDashboard();
+    setTimeout(() => switchTab('summary'), 600);
   } catch (e) { toast('Error: ' + e.message, true); }
 }
 
-// ===== HISTORY =====
 async function loadHistory() {
   const filter = document.getElementById('historyFilter').value;
   const params = filter ? `med=${encodeURIComponent(filter)}&limit=200` : 'limit=200';
   const r = await api('doses', { params });
-  const container = document.getElementById('historyList');
+  const c = document.getElementById('historyList');
   if (!r.doses.length) {
-    container.innerHTML = '<div class="empty"><div class="empty-icon">📝</div>No doses logged.</div>';
+    c.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">No doses logged</div><div class="empty-sub">Tap Log to record your first</div></div>`;
     return;
   }
-  container.innerHTML = r.doses.map(d => `
-    <div class="dose-item">
-      <div class="dose-time">${formatDate(d.taken_at)}</div>
+  c.innerHTML = `<div class="form-list">${r.doses.map(d => doseRow(d)).join('')}</div>`;
+}
+
+function doseRow(d) {
+  const v = visualFor(d.med_name);
+  return `
+    <div class="dose">
+      <div class="dose-thumb" style="background:${v.bg}">${v.icon}</div>
       <div class="dose-info">
-        <div class="dose-med">${d.med_name}
-          <span class="dose-amount">${d.dose_amount} ${d.dose_unit}${d.syringe_units ? ` · ${d.syringe_units.toFixed(1)}u` : ''}</span>
-        </div>
-        ${d.notes ? `<div class="dose-notes">${escapeHtml(d.notes)}</div>` : ''}
+        <div class="dose-title">${d.med_name}</div>
+        <div class="dose-meta">${d.dose_amount} ${d.dose_unit}${d.syringe_units ? ` · ${d.syringe_units.toFixed(1)} units` : ''}${d.notes ? ' · ' + escapeHtml(d.notes) : ''}</div>
       </div>
+      <div class="dose-time">${formatDate(d.taken_at)}</div>
       <button class="btn-icon" onclick="deleteDose(${d.id})">🗑</button>
-    </div>
-  `).join('');
+    </div>`;
 }
 
 async function deleteDose(id) {
-  if (!confirm('Delete this dose record?')) return;
+  if (!confirm('Delete this dose?')) return;
   await api('dose_delete', { method: 'POST', body: { id } });
-  toast('Dose deleted');
-  loadHistory();
-  loadDashboard();
+  toast('Deleted');
+  loadHistory(); loadDashboard();
 }
 
-// ===== DASHBOARD =====
 async function loadDashboard() {
   const stats = await api('stats');
-  const sg = document.getElementById('statGrid');
-
   const tirz = stats.lastDoses.find(d => d.med_name === 'Tirzepatide');
-  const tirzLast = tirz ? hoursSince(tirz.last_taken) : null;
+  const tirzLastH = tirz ? hoursSince(tirz.last_taken) : null;
   const totalDoses30 = stats.lastDoses.reduce((s, d) => s + d.count_30d, 0);
 
-  sg.innerHTML = `
-    <div class="stat">
-      <div class="stat-label">Last Tirzepatide</div>
-      <div class="stat-value">${tirzLast !== null ? formatHours(tirzLast) : '—'}</div>
-      <div class="stat-sub">${tirz ? new Date(tirz.last_taken).toLocaleDateString() : 'Never logged'}</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Doses (30d)</div>
-      <div class="stat-value">${totalDoses30}</div>
-      <div class="stat-sub">across ${stats.lastDoses.length} meds</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Active Vials</div>
-      <div class="stat-value">${stats.activeVials.length}</div>
-      <div class="stat-sub">${stats.activeVials.reduce((s,v) => s + v.doses_drawn, 0)} doses drawn</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">Tirz Cadence</div>
-      <div class="stat-value">${tirz && tirz.count_30d ? (30/tirz.count_30d).toFixed(1) : '—'}<span style="font-size:13px;color:var(--dim)">d</span></div>
-      <div class="stat-sub">avg days between</div>
-    </div>
+  const today = new Date();
+  document.getElementById('heroEyebrow').textContent =
+    today.toLocaleDateString([], { weekday: 'long', month: 'long', day: 'numeric' });
+  document.getElementById('heroTitle').textContent =
+    totalDoses30 > 0 ? `${totalDoses30} dose${totalDoses30 === 1 ? '' : 's'} this month` : 'No doses logged yet';
+
+  document.getElementById('heroStats').innerHTML = `
+    <div class="hero-stat"><div class="v">${tirzLastH !== null ? formatHours(tirzLastH) : '—'}</div><div class="l">Last Tirz</div></div>
+    <div class="hero-stat"><div class="v">${tirz && tirz.count_30d ? (30/tirz.count_30d).toFixed(1) + 'd' : '—'}</div><div class="l">Cadence</div></div>
+    <div class="hero-stat"><div class="v">${stats.activeVials.length}</div><div class="l">Vials</div></div>
   `;
 
-  // Active vials
+  const dvSection = document.getElementById('dashVialsSection');
   const dv = document.getElementById('dashVials');
   if (!stats.activeVials.length) {
-    dv.innerHTML = '<div class="empty" style="padding:20px"><div class="empty-icon">📦</div>No active vials</div>';
+    dvSection.style.display = 'none';
   } else {
-    dv.innerHTML = stats.activeVials.map(v => {
+    dvSection.style.display = 'block';
+    dv.innerHTML = `<div class="form-list">${stats.activeVials.slice(0, 3).map(v => {
       const conc = (v.vial_mg / v.bac_water_ml).toFixed(2);
       const ageDays = Math.floor((Date.now() - new Date(v.reconstituted_at)) / 86400000);
       const warn = ageDays > 21;
+      const visual = visualFor(v.med_name);
       return `
-        <div class="vial-item">
+        <div class="vial">
+          <div class="vial-thumb" style="background:${visual.bg}">${visual.icon}</div>
           <div class="vial-info">
             <div class="vial-title">${v.med_name}</div>
-            <div class="vial-detail">
-              ${v.vial_mg}mg in ${v.bac_water_ml}mL · ${v.doses_drawn} doses drawn<br>
-              <span style="${warn ? 'color: var(--warn)' : ''}">Reconstituted ${ageDays}d ago${warn ? ' ⚠ check stability' : ''}</span>
+            <div class="vial-meta">${v.vial_mg}mg / ${v.bac_water_ml}mL · ${v.doses_drawn} dose${v.doses_drawn === 1 ? '' : 's'} drawn<br>
+              <span ${warn ? 'class="warn-text"' : ''}>${ageDays}d old${warn ? ' · check stability' : ''}</span>
             </div>
           </div>
           <div class="vial-conc">${conc} mg/mL</div>
         </div>`;
-    }).join('');
+    }).join('')}</div>`;
   }
 
-  // Recent doses
-  const rd = await api('doses', { params: 'limit=8' });
+  const rd = await api('doses', { params: 'limit=5' });
   const dd = document.getElementById('dashDoses');
   if (!rd.doses.length) {
-    dd.innerHTML = '<div class="empty" style="padding:20px"><div class="empty-icon">📝</div>No doses logged yet</div>';
+    dd.innerHTML = `<div class="empty"><div class="empty-icon">＋</div><div class="empty-title">No doses yet</div><div class="empty-sub">Tap the hero card or Log to start</div></div>`;
   } else {
-    dd.innerHTML = rd.doses.map(d => `
-      <div class="dose-item">
-        <div class="dose-time">${formatDate(d.taken_at)}</div>
-        <div class="dose-info">
-          <div class="dose-med">${d.med_name}
-            <span class="dose-amount">${d.dose_amount} ${d.dose_unit}</span>
-          </div>
-          ${d.notes ? `<div class="dose-notes">${escapeHtml(d.notes)}</div>` : ''}
-        </div>
-      </div>
-    `).join('');
+    dd.innerHTML = `<div class="form-list">${rd.doses.map(d => doseRow(d)).join('')}</div>`;
   }
+
+  const tirzCount = stats.lastDoses.find(d => d.med_name === 'Tirzepatide')?.count_30d || 0;
+  const tesCount = stats.lastDoses.find(d => d.med_name === 'Tesamorelin')?.count_30d || 0;
+  const bpcCount = stats.lastDoses.find(d => d.med_name === 'BPC-157')?.count_30d || 0;
+  const oralCount = stats.lastDoses.filter(d => ['Adderall','Zoloft','Omeprazole'].includes(d.med_name)).reduce((s, d) => s + d.count_30d, 0);
+
+  document.getElementById('catGrid').innerHTML = `
+    <button class="cat-tile" onclick="filterAndShow('Tirzepatide')">
+      <div class="cat-tile-icon" style="background:${visualFor('Tirzepatide').bg}">💉</div>
+      <div class="cat-tile-name">GLP-1</div>
+      <div class="cat-tile-meta">${tirzCount} this month</div>
+    </button>
+    <button class="cat-tile" onclick="filterAndShow('Tesamorelin')">
+      <div class="cat-tile-icon" style="background:${visualFor('Tesamorelin').bg}">💉</div>
+      <div class="cat-tile-name">GHRH Peptides</div>
+      <div class="cat-tile-meta">${tesCount} this month</div>
+    </button>
+    <button class="cat-tile" onclick="filterAndShow('BPC-157')">
+      <div class="cat-tile-icon" style="background:${visualFor('BPC-157').bg}">🩹</div>
+      <div class="cat-tile-name">Healing</div>
+      <div class="cat-tile-meta">${bpcCount} this month</div>
+    </button>
+    <button class="cat-tile" onclick="switchTab('history')">
+      <div class="cat-tile-icon" style="background:linear-gradient(135deg, var(--oral), var(--sleep))">💊</div>
+      <div class="cat-tile-name">Daily Meds</div>
+      <div class="cat-tile-meta">${oralCount} this month</div>
+    </button>
+    <button class="cat-tile" onclick="switchTab('vials')">
+      <div class="cat-tile-icon" style="background:linear-gradient(135deg, var(--tint), #007AFF)">💊</div>
+      <div class="cat-tile-name">Vials</div>
+      <div class="cat-tile-meta">${stats.activeVials.length} active</div>
+    </button>
+    <button class="cat-tile" onclick="switchTab('calc')">
+      <div class="cat-tile-icon" style="background:linear-gradient(135deg, var(--body), var(--activity))">🧮</div>
+      <div class="cat-tile-name">Calculator</div>
+      <div class="cat-tile-meta">Reconstitute</div>
+    </button>
+  `;
 }
 
-// ===== UTIL =====
+function filterAndShow(med) {
+  document.getElementById('historyFilter').value = med;
+  switchTab('history');
+  setTimeout(loadHistory, 50);
+}
+
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 function toast(msg, err) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.style.borderColor = err ? 'var(--danger)' : 'var(--accent)';
+  document.getElementById('toastMsg').textContent = msg;
+  document.getElementById('toastCheck').textContent = err ? '!' : '✓';
+  t.classList.toggle('error', !!err);
   t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2400);
 }
 function hoursSince(iso) { return (Date.now() - new Date(iso)) / 3600000; }
 function formatHours(h) {
   if (h < 1) return Math.floor(h * 60) + 'm';
-  if (h < 48) return h.toFixed(1) + 'h';
+  if (h < 48) return h.toFixed(0) + 'h';
   return Math.floor(h / 24) + 'd';
 }
 function formatDate(iso) {
   const d = new Date(iso);
-  const now = new Date();
-  const diff = (now - d) / 86400000;
+  const diff = (new Date() - d) / 86400000;
   if (diff < 1) return d.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'});
   if (diff < 7) return d.toLocaleDateString([], {weekday: 'short'}) + ' ' + d.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'});
   return d.toLocaleDateString([], {month: 'short', day: 'numeric'});
@@ -1114,6 +1295,35 @@ function formatDate(iso) {
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/health/sw.js', { scope: '/health/' }).catch(() => {});
+  });
+}
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstall = e;
+  if (!localStorage.getItem('fh_install_dismissed') && AUTH) {
+    document.getElementById('installPrompt').style.display = 'flex';
+    document.getElementById('installBtn').style.display = 'inline-block';
+  }
+});
+async function installPwa() {
+  if (!deferredInstall) return;
+  deferredInstall.prompt();
+  await deferredInstall.userChoice;
+  document.getElementById('installPrompt').style.display = 'none';
+  deferredInstall = null;
+}
+window.addEventListener('load', () => setTimeout(() => {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true || window.matchMedia('(display-mode: standalone)').matches;
+  if (isIOS && !isStandalone && !localStorage.getItem('fh_install_dismissed') && AUTH) {
+    document.getElementById('installPrompt').style.display = 'flex';
+  }
+}, 1500));
 </script>
 
 </body>

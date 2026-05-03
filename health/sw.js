@@ -1,4 +1,4 @@
-const CACHE = 'foster-health-v1';
+const CACHE = 'foster-health-v2';
 const SHELL_ASSETS = [
   '/health/',
   '/health/index.html',
