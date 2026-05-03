@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#08080d">
+<title>Foster Health | Skippy</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08080d;
+    --surface: #0f0f18;
+    --card: #161622;
+    --card-hover: #1e1e30;
+    --border: #252538;
+    --border-bright: #3a3a55;
+    --text: #e4e4f0;
+    --dim: #7878a0;
+    --accent: #00d4aa;
+    --accent-dim: rgba(0,212,170,0.12);
+    --warn: #ffaa00;
+    --warn-dim: rgba(255,170,0,0.1);
+    --danger: #ff4466;
+    --danger-dim: rgba(255,68,102,0.1);
+    --blue: #4488ff;
+    --blue-dim: rgba(68,136,255,0.1);
+    --purple: #aa66ff;
+    --purple-dim: rgba(170,102,255,0.1);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', -apple-system, sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: env(safe-area-inset-bottom); }
+
+  /* PASSWORD GATE */
+  #gate {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px;
+    background: radial-gradient(ellipse at 30% 20%, rgba(0,212,170,0.04) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(170,102,255,0.03) 0%, transparent 50%);
+  }
+  .gate-box {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 32px 28px; max-width: 380px; width: 100%;
+  }
+  .gate-box h1 { font-size: 22px; margin-bottom: 6px; letter-spacing: -0.02em; }
+  .gate-box .sub { color: var(--dim); font-size: 13px; margin-bottom: 20px; }
+  .gate-box input {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 12px 14px; border-radius: 10px;
+    font-family: var(--mono); font-size: 14px; margin-bottom: 12px;
+  }
+  .gate-box input:focus { outline: none; border-color: var(--accent); }
+  .gate-box button {
+    width: 100%; background: var(--accent); color: #001512; border: none;
+    padding: 12px; border-radius: 10px; font-weight: 600; font-size: 14px;
+    cursor: pointer; font-family: var(--sans);
+  }
+  .gate-err { color: var(--danger); font-size: 12px; margin-top: 8px; min-height: 16px; }
+
+  /* APP SHELL */
+  #app { display: none; }
+  .header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,13,0.85); backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 50;
+    padding-top: calc(16px + env(safe-area-inset-top));
+  }
+  .header h1 {
+    font-size: 18px; letter-spacing: -0.02em; font-weight: 600;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .header .pill {
+    font-size: 10px; padding: 3px 8px; border-radius: 6px;
+    background: var(--accent-dim); color: var(--accent);
+    font-family: var(--mono); font-weight: 500; letter-spacing: 0.05em;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex; gap: 4px; padding: 12px 16px; overflow-x: auto;
+    border-bottom: 1px solid var(--border); position: sticky; top: 53px; z-index: 49;
+    background: rgba(8,8,13,0.85); backdrop-filter: blur(12px);
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    padding: 8px 14px; border-radius: 8px; cursor: pointer;
+    font-size: 13px; font-weight: 500; color: var(--dim);
+    white-space: nowrap; border: 1px solid transparent;
+    background: transparent;
+  }
+  .tab.active { background: var(--card); color: var(--text); border-color: var(--border); }
+
+  /* MAIN */
+  main { padding: 16px; max-width: 720px; margin: 0 auto; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* CARDS */
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px; margin-bottom: 14px;
+  }
+  .card-h {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--dim); margin-bottom: 12px; font-weight: 600;
+  }
+
+  /* CALCULATOR */
+  .calc-section { margin-bottom: 18px; }
+  .calc-section:last-child { margin-bottom: 0; }
+  .calc-label {
+    font-size: 12px; color: var(--dim); margin-bottom: 8px;
+    text-transform: uppercase; letter-spacing: 0.05em; font-weight: 500;
+  }
+  .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+  .chip {
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 14px; border-radius: 10px;
+    font-family: var(--mono); font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+    flex: 0 0 auto; min-width: 56px; text-align: center;
+  }
+  .chip:hover { border-color: var(--border-bright); }
+  .chip.active {
+    background: var(--accent-dim); border-color: var(--accent); color: var(--accent);
+  }
+  .chip-input {
+    background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 12px; border-radius: 10px;
+    font-family: var(--mono); font-size: 13px; width: 90px;
+  }
+  .chip-input:focus { outline: none; border-color: var(--accent); }
+
+  /* RESULT */
+  .result-box {
+    background: linear-gradient(135deg, rgba(0,212,170,0.08), rgba(68,136,255,0.04));
+    border: 1px solid var(--accent); border-radius: 12px;
+    padding: 20px; margin-top: 8px;
+  }
+  .result-headline {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--accent); margin-bottom: 8px; font-weight: 600;
+  }
+  .result-big {
+    font-family: var(--mono); font-size: 42px; font-weight: 600;
+    color: var(--text); letter-spacing: -0.02em; line-height: 1;
+  }
+  .result-big .unit { font-size: 18px; color: var(--dim); margin-left: 6px; }
+  .result-detail {
+    margin-top: 10px; font-size: 12px; color: var(--dim);
+    font-family: var(--mono); line-height: 1.6;
+  }
+  .result-warn {
+    background: var(--danger-dim); border-color: var(--danger);
+  }
+  .result-warn .result-headline { color: var(--danger); }
+  .result-warn .result-big { font-size: 18px; }
+
+  /* SYRINGE VIZ */
+  .syringe-viz {
+    margin-top: 14px; height: 40px; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    position: relative; overflow: hidden;
+  }
+  .syringe-fill {
+    height: 100%; background: linear-gradient(90deg, var(--accent), var(--blue));
+    transition: width 0.3s; border-radius: 7px 0 0 7px;
+  }
+  .syringe-marks {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    display: flex; justify-content: space-between;
+    font-family: var(--mono); font-size: 9px; color: var(--dim);
+    align-items: flex-end; padding: 0 6px 4px; pointer-events: none;
+  }
+  .syringe-units {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    font-family: var(--mono); font-size: 14px; font-weight: 600;
+    color: var(--text); text-shadow: 0 0 8px var(--bg);
+  }
+
+  /* BUTTONS */
+  .btn-row { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .btn {
+    background: var(--accent); color: #001512; border: none;
+    padding: 12px 18px; border-radius: 10px; font-weight: 600; font-size: 13px;
+    cursor: pointer; font-family: var(--sans); flex: 1;
+    transition: opacity 0.15s;
+  }
+  .btn:hover { opacity: 0.9; }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-secondary {
+    background: var(--card); border: 1px solid var(--border); color: var(--text);
+  }
+  .btn-secondary:hover { background: var(--card-hover); }
+  .btn-danger { background: var(--danger-dim); color: var(--danger); border: 1px solid var(--danger); }
+  .btn-small { padding: 6px 12px; font-size: 11px; flex: 0 0 auto; }
+  .btn-icon {
+    background: transparent; border: none; color: var(--dim); cursor: pointer;
+    padding: 4px 6px; font-size: 14px; border-radius: 4px;
+  }
+  .btn-icon:hover { color: var(--danger); background: var(--danger-dim); }
+
+  /* MED PICKER */
+  .med-picker { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  @media (min-width: 480px) { .med-picker { grid-template-columns: repeat(3, 1fr); } }
+  .med-card {
+    background: var(--bg); border: 1px solid var(--border);
+    padding: 14px 12px; border-radius: 10px; cursor: pointer;
+    text-align: left; position: relative;
+  }
+  .med-card.active {
+    border-color: var(--accent); background: var(--accent-dim);
+  }
+  .med-card.peptide { border-left: 3px solid var(--purple); }
+  .med-card.peptide.active { border-color: var(--accent); border-left-color: var(--accent); }
+  .med-name { font-size: 14px; font-weight: 600; margin-bottom: 2px; }
+  .med-meta { font-size: 11px; color: var(--dim); font-family: var(--mono); }
+  .peptide-tag {
+    position: absolute; top: 6px; right: 6px;
+    font-size: 9px; padding: 2px 5px; border-radius: 4px;
+    background: var(--purple-dim); color: var(--purple);
+    font-family: var(--mono); font-weight: 500;
+  }
+
+  /* VIAL LIST */
+  .vial-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 10px; margin-bottom: 8px;
+  }
+  .vial-item.archived { opacity: 0.5; }
+  .vial-info { flex: 1; min-width: 0; }
+  .vial-title { font-size: 13px; font-weight: 600; margin-bottom: 2px; }
+  .vial-detail { font-size: 11px; color: var(--dim); font-family: var(--mono); }
+  .vial-conc {
+    background: var(--accent-dim); color: var(--accent);
+    padding: 4px 8px; border-radius: 6px; font-family: var(--mono);
+    font-size: 11px; font-weight: 600; white-space: nowrap;
+  }
+
+  /* DOSE LOG */
+  .dose-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 12px; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; margin-bottom: 6px;
+  }
+  .dose-time {
+    font-family: var(--mono); font-size: 11px; color: var(--dim);
+    min-width: 75px;
+  }
+  .dose-info { flex: 1; min-width: 0; }
+  .dose-med { font-size: 13px; font-weight: 500; }
+  .dose-amount { font-family: var(--mono); font-size: 11px; color: var(--accent); }
+  .dose-notes { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+  /* DASHBOARD */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .stat {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px;
+  }
+  .stat-label {
+    font-size: 10px; text-transform: uppercase; color: var(--dim);
+    letter-spacing: 0.08em; margin-bottom: 6px; font-weight: 600;
+  }
+  .stat-value { font-family: var(--mono); font-size: 22px; font-weight: 600; }
+  .stat-sub { font-size: 11px; color: var(--dim); margin-top: 2px; }
+
+  /* MODAL */
+  .modal {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+    z-index: 100; align-items: flex-end; justify-content: center;
+    padding: 0;
+  }
+  .modal.active { display: flex; }
+  .modal-content {
+    background: var(--card); border-top: 1px solid var(--border);
+    border-radius: 16px 16px 0 0; width: 100%; max-width: 480px;
+    padding: 20px 18px calc(20px + env(safe-area-inset-bottom));
+    max-height: 85vh; overflow-y: auto;
+  }
+  @media (min-width: 600px) {
+    .modal { align-items: center; padding: 20px; }
+    .modal-content { border-radius: 16px; border: 1px solid var(--border); }
+  }
+  .modal-h {
+    font-size: 16px; font-weight: 600; margin-bottom: 16px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .modal-close {
+    background: var(--bg); border: 1px solid var(--border); color: var(--dim);
+    padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 16px;
+  }
+  .modal label {
+    display: block; font-size: 11px; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--dim); margin: 12px 0 6px;
+    font-weight: 600;
+  }
+  .modal input, .modal textarea, .modal select {
+    width: 100%; background: var(--bg); border: 1px solid var(--border);
+    color: var(--text); padding: 10px 12px; border-radius: 8px;
+    font-family: var(--mono); font-size: 13px;
+  }
+  .modal input:focus, .modal textarea:focus, .modal select:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .modal textarea { font-family: var(--sans); resize: vertical; min-height: 70px; }
+
+  /* EMPTY */
+  .empty {
+    text-align: center; padding: 40px 20px; color: var(--dim);
+    font-size: 13px;
+  }
+  .empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.5; }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+    background: var(--card); border: 1px solid var(--accent);
+    color: var(--text); padding: 12px 18px; border-radius: 10px;
+    font-size: 13px; font-weight: 500; z-index: 200;
+    transition: transform 0.25s; box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <h1>🧬 Foster Health</h1>
+    <div class="sub">Skippy's medical & peptide tracker</div>
+    <input type="password" id="pwInput" placeholder="Password" autocomplete="off">
+    <button onclick="tryAuth()">Unlock</button>
+    <div class="gate-err" id="gateErr"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="header">
+    <h1>🧬 Foster Health <span class="pill">SKIPPY</span></h1>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="dashboard">Dashboard</button>
+    <button class="tab" data-tab="calc">Calculator</button>
+    <button class="tab" data-tab="vials">Vials</button>
+    <button class="tab" data-tab="log">Log Dose</button>
+    <button class="tab" data-tab="history">History</button>
+  </div>
+
+  <main>
+
+    <!-- DASHBOARD -->
+    <section class="panel active" id="panel-dashboard">
+      <div class="stat-grid" id="statGrid"></div>
+      <div class="card">
+        <div class="card-h">Active Vials</div>
+        <div id="dashVials"></div>
+      </div>
+      <div class="card">
+        <div class="card-h">Recent Doses</div>
+        <div id="dashDoses"></div>
+      </div>
+    </section>
+
+    <!-- CALCULATOR -->
+    <section class="panel" id="panel-calc">
+      <div class="card">
+        <div class="card-h">Peptide Reconstitution Calculator</div>
+
+        <div class="calc-section">
+          <div class="calc-label">1. Syringe Size</div>
+          <div class="chip-row" id="syringeChips">
+            <button class="chip" data-syringe="0.3:30">0.3 mL · 30u</button>
+            <button class="chip active" data-syringe="0.5:50">0.5 mL · 50u</button>
+            <button class="chip" data-syringe="1.0:100">1.0 mL · 100u</button>
+          </div>
+        </div>
+
+        <div class="calc-section">
+          <div class="calc-label">2. Vial Quantity (mg)</div>
+          <div class="chip-row" id="vialChips">
+            <button class="chip" data-vial="5">5 mg</button>
+            <button class="chip" data-vial="10">10 mg</button>
+            <button class="chip active" data-vial="15">15 mg</button>
+            <input type="number" class="chip-input" id="vialOther" placeholder="Other" step="0.1">
+          </div>
+        </div>
+
+        <div class="calc-section">
+          <div class="calc-label">3. Bacteriostatic Water (mL)</div>
+          <div class="chip-row" id="bacChips">
+            <button class="chip" data-bac="1">1 mL</button>
+            <button class="chip active" data-bac="2">2 mL</button>
+            <button class="chip" data-bac="3">3 mL</button>
+            <button class="chip" data-bac="5">5 mL</button>
+            <input type="number" class="chip-input" id="bacOther" placeholder="Other" step="0.1">
+          </div>
+        </div>
+
+        <div class="calc-section">
+          <div class="calc-label">4. Desired Dose</div>
+          <div class="chip-row" id="doseChips">
+            <button class="chip" data-dose="1.25:mg">1.25 mg</button>
+            <button class="chip active" data-dose="2.5:mg">2.5 mg</button>
+            <button class="chip" data-dose="5:mg">5 mg</button>
+            <button class="chip" data-dose="7.5:mg">7.5 mg</button>
+            <button class="chip" data-dose="10:mg">10 mg</button>
+            <input type="number" class="chip-input" id="doseOther" placeholder="Other" step="0.05">
+            <select id="doseUnit" class="chip-input" style="width:80px">
+              <option value="mg">mg</option>
+              <option value="mcg">mcg</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="calcResult"></div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="saveAsVial()">📦 Save as New Vial</button>
+          <button class="btn" onclick="logDoseFromCalc()">💉 Log This Dose</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h">Quick Reference</div>
+        <div style="font-size: 12px; color: var(--dim); line-height: 1.7; font-family: var(--mono);">
+          Concentration = vial_mg ÷ bac_water_mL<br>
+          Volume per dose = dose ÷ concentration<br>
+          Syringe units = volume × (total_units ÷ total_mL)<br><br>
+          <span style="color: var(--warn);">⚠ Tilt vial to 45°. Slow stream down sidewall.<br>
+          Don't shake. Refrigerate after reconstitution.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIALS -->
+    <section class="panel" id="panel-vials">
+      <div class="card">
+        <div class="card-h">
+          Active Vials
+          <button class="btn btn-secondary btn-small" style="float:right; margin-top:-4px" onclick="showAllVials = !showAllVials; loadVials()">Toggle Archived</button>
+        </div>
+        <div id="vialsList"></div>
+      </div>
+    </section>
+
+    <!-- LOG DOSE -->
+    <section class="panel" id="panel-log">
+      <div class="card">
+        <div class="card-h">Log a Dose</div>
+
+        <div class="calc-section">
+          <div class="calc-label">Medication</div>
+          <div class="med-picker" id="medPicker"></div>
+        </div>
+
+        <div class="calc-section">
+          <div class="calc-label">Amount</div>
+          <div style="display:flex; gap:8px;">
+            <input type="number" class="chip-input" id="logAmount" step="0.05" style="flex:1; width:auto" placeholder="Amount">
+            <select id="logUnit" class="chip-input" style="width:80px">
+              <option value="mg">mg</option>
+              <option value="mcg">mcg</option>
+              <option value="units">units</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="calc-section" id="logVialSection" style="display:none">
+          <div class="calc-label">From Vial (Optional)</div>
+          <select id="logVial" class="chip-input" style="width: 100%; font-family: var(--mono)">
+            <option value="">— No vial —</option>
+          </select>
+        </div>
+
+        <div class="calc-section">
+          <div class="calc-label">When</div>
+          <input type="datetime-local" class="chip-input" id="logTime" style="width:100%; font-family: var(--mono)">
+        </div>
+
+        <div class="calc-section">
+          <div class="calc-label">Notes (Optional)</div>
+          <textarea class="chip-input" id="logNotes" style="width:100%; font-family: var(--sans); resize: vertical; min-height: 60px"></textarea>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn" onclick="submitDose()">💉 Log Dose</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="panel" id="panel-history">
+      <div class="card">
+        <div class="card-h">Dose History</div>
+        <div style="margin-bottom: 12px;">
+          <select id="historyFilter" class="chip-input" style="width: 100%; font-family: var(--mono)" onchange="loadHistory()">
+            <option value="">All medications</option>
+          </select>
+        </div>
+        <div id="historyList"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- VIAL CREATE MODAL -->
+<div class="modal" id="vialModal">
+  <div class="modal-content">
+    <div class="modal-h">
+      <span>📦 New Vial</span>
+      <button class="modal-close" onclick="closeModal('vialModal')">×</button>
+    </div>
+    <label>Medication</label>
+    <select id="vmMed" class="chip-input" style="width:100%; font-family: var(--mono)"></select>
+    <label>Vial mg</label>
+    <input type="number" id="vmMg" step="0.1" placeholder="e.g. 15">
+    <label>BAC Water (mL)</label>
+    <input type="number" id="vmBac" step="0.1" placeholder="e.g. 2">
+    <label>Syringe (mL : units)</label>
+    <select id="vmSyringe" class="chip-input" style="width:100%; font-family: var(--mono)">
+      <option value="0.3:30">0.3 mL · 30 units</option>
+      <option value="0.5:50" selected>0.5 mL · 50 units</option>
+      <option value="1.0:100">1.0 mL · 100 units</option>
+    </select>
+    <label>Reconstituted</label>
+    <input type="datetime-local" id="vmTime">
+    <label>Notes (Optional)</label>
+    <textarea id="vmNotes" placeholder="Lot #, source, etc."></textarea>
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="closeModal('vialModal')">Cancel</button>
+      <button class="btn" onclick="saveVial()">Save Vial</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PASS_HASH = '5e7e5641da6bdceafb9ec94e6f1074cd98373f407890e23a01db3f3143ac426f';
+let AUTH = null;
+let MEDS = [];
+let VIALS = [];
+let showAllVials = false;
+let calcState = {
+  syringe_ml: 0.5, syringe_units: 50,
+  vial_mg: 15,
+  bac_ml: 2,
+  dose: 2.5, dose_unit: 'mg'
+};
+let selectedMed = 'Tirzepatide';
+
+// ===== AUTH =====
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,'0')).join('');
+}
+
+async function tryAuth() {
+  const pw = document.getElementById('pwInput').value;
+  const h = await sha256(pw);
+  if (h === PASS_HASH) {
+    sessionStorage.setItem('fh_auth', h);
+    AUTH = h;
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    initApp();
+  } else {
+    document.getElementById('gateErr').textContent = 'Wrong password.';
+  }
+}
+
+document.getElementById('pwInput').addEventListener('keypress', e => {
+  if (e.key === 'Enter') tryAuth();
+});
+
+// Auto-unlock if session valid
+const saved = sessionStorage.getItem('fh_auth');
+if (saved === PASS_HASH) {
+  AUTH = saved;
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  setTimeout(initApp, 0);
+}
+
+// ===== API =====
+async function api(action, opts = {}) {
+  const url = `/api/health?action=${action}` + (opts.params ? '&' + opts.params : '');
+  const init = {
+    method: opts.method || 'GET',
+    headers: { 'X-Health-Auth': AUTH, 'Content-Type': 'application/json' }
+  };
+  if (opts.body) init.body = JSON.stringify(opts.body);
+  const r = await fetch(url, init);
+  if (!r.ok) {
+    const err = await r.json().catch(() => ({}));
+    throw new Error(err.error || `HTTP ${r.status}`);
+  }
+  return r.json();
+}
+
+// ===== INIT =====
+async function initApp() {
+  // Set default datetime to now (local timezone)
+  const nowLocal = () => {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 16);
+  };
+  document.getElementById('logTime').value = nowLocal();
+  document.getElementById('vmTime').value = nowLocal();
+
+  // Tabs
+  document.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => switchTab(t.dataset.tab));
+  });
+
+  // Calculator chips
+  bindChips('syringeChips', (val) => {
+    const [ml, u] = val.split(':');
+    calcState.syringe_ml = parseFloat(ml);
+    calcState.syringe_units = parseInt(u);
+    recalc();
+  });
+  bindChips('vialChips', (val) => {
+    calcState.vial_mg = parseFloat(val);
+    document.getElementById('vialOther').value = '';
+    recalc();
+  });
+  bindChips('bacChips', (val) => {
+    calcState.bac_ml = parseFloat(val);
+    document.getElementById('bacOther').value = '';
+    recalc();
+  });
+  bindChips('doseChips', (val) => {
+    const [d, u] = val.split(':');
+    calcState.dose = parseFloat(d);
+    calcState.dose_unit = u;
+    document.getElementById('doseOther').value = '';
+    document.getElementById('doseUnit').value = u;
+    recalc();
+  });
+
+  document.getElementById('vialOther').addEventListener('input', e => {
+    if (e.target.value) {
+      calcState.vial_mg = parseFloat(e.target.value);
+      document.querySelectorAll('#vialChips .chip').forEach(c => c.classList.remove('active'));
+      recalc();
+    }
+  });
+  document.getElementById('bacOther').addEventListener('input', e => {
+    if (e.target.value) {
+      calcState.bac_ml = parseFloat(e.target.value);
+      document.querySelectorAll('#bacChips .chip').forEach(c => c.classList.remove('active'));
+      recalc();
+    }
+  });
+  document.getElementById('doseOther').addEventListener('input', e => {
+    if (e.target.value) {
+      calcState.dose = parseFloat(e.target.value);
+      calcState.dose_unit = document.getElementById('doseUnit').value;
+      document.querySelectorAll('#doseChips .chip').forEach(c => c.classList.remove('active'));
+      recalc();
+    }
+  });
+  document.getElementById('doseUnit').addEventListener('change', e => {
+    calcState.dose_unit = e.target.value;
+    recalc();
+  });
+
+  // Load data
+  await loadMeds();
+  await loadVials();
+  recalc();
+  loadDashboard();
+}
+
+function bindChips(containerId, onSelect) {
+  const container = document.getElementById(containerId);
+  container.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      container.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const dataAttr = Object.keys(chip.dataset)[0];
+      onSelect(chip.dataset[dataAttr]);
+    });
+  });
+}
+
+function switchTab(name) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+  if (name === 'dashboard') loadDashboard();
+  if (name === 'vials') loadVials();
+  if (name === 'history') loadHistory();
+  if (name === 'log') loadLogPicker();
+}
+
+// ===== CALCULATOR =====
+function recalc() {
+  const { syringe_ml, syringe_units, vial_mg, bac_ml, dose, dose_unit } = calcState;
+  const concMgPerMl = vial_mg / bac_ml;             // mg/mL
+  const concMcgPerMl = concMgPerMl * 1000;          // mcg/mL
+  const doseMg = dose_unit === 'mcg' ? dose / 1000 : dose;
+  const volMl = doseMg / concMgPerMl;
+  const units = (volMl / syringe_ml) * syringe_units;
+  const tooBig = units > syringe_units;
+  const fillPct = Math.min(100, (units / syringe_units) * 100);
+
+  const el = document.getElementById('calcResult');
+  if (tooBig) {
+    el.innerHTML = `
+      <div class="result-box result-warn">
+        <div class="result-headline">⚠ Volume Too Large</div>
+        <div class="result-big">${units.toFixed(1)} units needed</div>
+        <div class="result-detail">
+          Syringe holds only ${syringe_units} units.<br>
+          Use a larger syringe, more BAC water, or split the dose.
+        </div>
+      </div>`;
+  } else {
+    el.innerHTML = `
+      <div class="result-box">
+        <div class="result-headline">Pull syringe to</div>
+        <div class="result-big">${units.toFixed(1)}<span class="unit">units</span></div>
+        <div class="syringe-viz">
+          <div class="syringe-fill" style="width:${fillPct}%"></div>
+          <div class="syringe-marks">
+            <span>0</span><span>${Math.floor(syringe_units/4)}</span><span>${Math.floor(syringe_units/2)}</span><span>${Math.floor(syringe_units*3/4)}</span><span>${syringe_units}</span>
+          </div>
+          <div class="syringe-units">${units.toFixed(1)} u</div>
+        </div>
+        <div class="result-detail">
+          Concentration: <strong style="color:var(--accent)">${concMgPerMl.toFixed(2)} mg/mL</strong> (${concMcgPerMl.toFixed(0)} mcg/mL)<br>
+          Volume per dose: ${volMl.toFixed(3)} mL<br>
+          Vial yields ~${Math.floor(vial_mg / doseMg)} doses at this strength
+        </div>
+      </div>`;
+  }
+}
+
+// ===== MEDS =====
+async function loadMeds() {
+  const r = await api('meds');
+  MEDS = r.meds;
+
+  // History filter
+  const hf = document.getElementById('historyFilter');
+  hf.innerHTML = '<option value="">All medications</option>' +
+    MEDS.map(m => `<option value="${m.name}">${m.name}</option>`).join('');
+
+  // Vial modal med picker
+  const vm = document.getElementById('vmMed');
+  vm.innerHTML = MEDS.filter(m => m.is_peptide).map(m =>
+    `<option value="${m.name}">${m.name}</option>`).join('');
+}
+
+function loadLogPicker() {
+  const picker = document.getElementById('medPicker');
+  picker.innerHTML = MEDS.map(m => `
+    <button class="med-card ${m.is_peptide ? 'peptide' : ''} ${m.name === selectedMed ? 'active' : ''}"
+            onclick="selectMed('${m.name}')">
+      ${m.is_peptide ? '<span class="peptide-tag">PEPTIDE</span>' : ''}
+      <div class="med-name">${m.name}</div>
+      <div class="med-meta">${m.default_dose || '?'} ${m.default_unit} · ${m.schedule_notes || ''}</div>
+    </button>
+  `).join('');
+  selectMed(selectedMed);
+}
+
+function selectMed(name) {
+  selectedMed = name;
+  document.querySelectorAll('.med-card').forEach(c => {
+    c.classList.toggle('active', c.querySelector('.med-name').textContent === name);
+  });
+  const med = MEDS.find(m => m.name === name);
+  if (med) {
+    document.getElementById('logAmount').value = med.default_dose || '';
+    document.getElementById('logUnit').value = med.default_unit;
+    // Show vial picker for peptides
+    const vialSec = document.getElementById('logVialSection');
+    vialSec.style.display = med.is_peptide ? 'block' : 'none';
+    if (med.is_peptide) {
+      const sel = document.getElementById('logVial');
+      const matching = VIALS.filter(v => v.med_name === name && v.active);
+      sel.innerHTML = '<option value="">— No vial —</option>' +
+        matching.map(v => `<option value="${v.id}">${v.vial_mg}mg in ${v.bac_water_ml}mL · ${new Date(v.reconstituted_at).toLocaleDateString()}</option>`).join('');
+    }
+  }
+}
+
+// ===== VIALS =====
+async function loadVials() {
+  const r = await api('vials', { params: showAllVials ? 'all=1' : '' });
+  VIALS = r.vials;
+  const container = document.getElementById('vialsList');
+  if (!VIALS.length) {
+    container.innerHTML = `
+      <div class="empty">
+        <div class="empty-icon">📦</div>
+        No vials yet.<br>
+        Use the calculator and tap "Save as Vial" to track one.
+      </div>`;
+    return;
+  }
+  container.innerHTML = VIALS.map(v => {
+    const conc = (v.vial_mg / v.bac_water_ml).toFixed(2);
+    return `
+      <div class="vial-item ${v.active ? '' : 'archived'}">
+        <div class="vial-info">
+          <div class="vial-title">${v.med_name}</div>
+          <div class="vial-detail">
+            ${v.vial_mg}mg ÷ ${v.bac_water_ml}mL · ${v.syringe_total_ml}mL/${v.syringe_total_units}u syringe<br>
+            Mixed ${new Date(v.reconstituted_at).toLocaleString([], {month:'short', day:'numeric', hour:'numeric', minute:'2-digit'})}
+            ${v.notes ? '· ' + v.notes : ''}
+          </div>
+        </div>
+        <div class="vial-conc">${conc} mg/mL</div>
+        ${v.active
+          ? `<button class="btn-icon" onclick="archiveVial(${v.id})" title="Archive">📥</button>`
+          : `<button class="btn-icon" onclick="deleteVial(${v.id})" title="Delete forever">🗑</button>`}
+      </div>`;
+  }).join('');
+}
+
+function saveAsVial() {
+  document.getElementById('vmMg').value = calcState.vial_mg;
+  document.getElementById('vmBac').value = calcState.bac_ml;
+  document.getElementById('vmSyringe').value = `${calcState.syringe_ml}:${calcState.syringe_units}`;
+  document.getElementById('vialModal').classList.add('active');
+}
+
+async function saveVial() {
+  const [ml, u] = document.getElementById('vmSyringe').value.split(':');
+  const body = {
+    med_name: document.getElementById('vmMed').value,
+    vial_mg: parseFloat(document.getElementById('vmMg').value),
+    bac_water_ml: parseFloat(document.getElementById('vmBac').value),
+    syringe_total_ml: parseFloat(ml),
+    syringe_total_units: parseInt(u),
+    reconstituted_at: new Date(document.getElementById('vmTime').value).toISOString(),
+    notes: document.getElementById('vmNotes').value || null
+  };
+  if (!body.med_name || !body.vial_mg || !body.bac_water_ml) {
+    return toast('Fill in med, mg, and BAC water', true);
+  }
+  try {
+    await api('vial_create', { method: 'POST', body });
+    closeModal('vialModal');
+    document.getElementById('vmNotes').value = '';
+    toast('Vial saved');
+    await loadVials();
+  } catch (e) { toast('Error: ' + e.message, true); }
+}
+
+async function archiveVial(id) {
+  if (!confirm('Archive this vial? It will be hidden from the active list.')) return;
+  await api('vial_archive', { method: 'POST', body: { id } });
+  toast('Vial archived');
+  loadVials();
+}
+async function deleteVial(id) {
+  if (!confirm('Permanently delete this vial? This cannot be undone.')) return;
+  await api('vial_delete', { method: 'POST', body: { id } });
+  toast('Vial deleted');
+  loadVials();
+}
+
+// ===== DOSE LOGGING =====
+function logDoseFromCalc() {
+  switchTab('log');
+  setTimeout(() => {
+    selectMed('Tirzepatide');
+    document.getElementById('logAmount').value = calcState.dose;
+    document.getElementById('logUnit').value = calcState.dose_unit;
+  }, 50);
+}
+
+async function submitDose() {
+  const amount = parseFloat(document.getElementById('logAmount').value);
+  if (!amount) return toast('Enter an amount', true);
+  const body = {
+    med_name: selectedMed,
+    dose_amount: amount,
+    dose_unit: document.getElementById('logUnit').value,
+    taken_at: new Date(document.getElementById('logTime').value).toISOString(),
+    notes: document.getElementById('logNotes').value || null
+  };
+  const vialId = document.getElementById('logVial').value;
+  if (vialId) {
+    body.vial_id = parseInt(vialId);
+    // If from vial, calculate syringe units for record
+    const vial = VIALS.find(v => v.id == vialId);
+    if (vial) {
+      const doseMg = body.dose_unit === 'mcg' ? body.dose_amount / 1000 : body.dose_amount;
+      const conc = vial.vial_mg / vial.bac_water_ml;
+      const volMl = doseMg / conc;
+      body.syringe_units = (volMl / vial.syringe_total_ml) * vial.syringe_total_units;
+    }
+  }
+  try {
+    await api('dose_log', { method: 'POST', body });
+    document.getElementById('logNotes').value = '';
+    toast(`Logged ${amount}${body.dose_unit} ${selectedMed}`);
+    loadDashboard();
+  } catch (e) { toast('Error: ' + e.message, true); }
+}
+
+// ===== HISTORY =====
+async function loadHistory() {
+  const filter = document.getElementById('historyFilter').value;
+  const params = filter ? `med=${encodeURIComponent(filter)}&limit=200` : 'limit=200';
+  const r = await api('doses', { params });
+  const container = document.getElementById('historyList');
+  if (!r.doses.length) {
+    container.innerHTML = '<div class="empty"><div class="empty-icon">📝</div>No doses logged.</div>';
+    return;
+  }
+  container.innerHTML = r.doses.map(d => `
+    <div class="dose-item">
+      <div class="dose-time">${formatDate(d.taken_at)}</div>
+      <div class="dose-info">
+        <div class="dose-med">${d.med_name}
+          <span class="dose-amount">${d.dose_amount} ${d.dose_unit}${d.syringe_units ? ` · ${d.syringe_units.toFixed(1)}u` : ''}</span>
+        </div>
+        ${d.notes ? `<div class="dose-notes">${escapeHtml(d.notes)}</div>` : ''}
+      </div>
+      <button class="btn-icon" onclick="deleteDose(${d.id})">🗑</button>
+    </div>
+  `).join('');
+}
+
+async function deleteDose(id) {
+  if (!confirm('Delete this dose record?')) return;
+  await api('dose_delete', { method: 'POST', body: { id } });
+  toast('Dose deleted');
+  loadHistory();
+  loadDashboard();
+}
+
+// ===== DASHBOARD =====
+async function loadDashboard() {
+  const stats = await api('stats');
+  const sg = document.getElementById('statGrid');
+
+  const tirz = stats.lastDoses.find(d => d.med_name === 'Tirzepatide');
+  const tirzLast = tirz ? hoursSince(tirz.last_taken) : null;
+  const totalDoses30 = stats.lastDoses.reduce((s, d) => s + d.count_30d, 0);
+
+  sg.innerHTML = `
+    <div class="stat">
+      <div class="stat-label">Last Tirzepatide</div>
+      <div class="stat-value">${tirzLast !== null ? formatHours(tirzLast) : '—'}</div>
+      <div class="stat-sub">${tirz ? new Date(tirz.last_taken).toLocaleDateString() : 'Never logged'}</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Doses (30d)</div>
+      <div class="stat-value">${totalDoses30}</div>
+      <div class="stat-sub">across ${stats.lastDoses.length} meds</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Active Vials</div>
+      <div class="stat-value">${stats.activeVials.length}</div>
+      <div class="stat-sub">${stats.activeVials.reduce((s,v) => s + v.doses_drawn, 0)} doses drawn</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">Tirz Cadence</div>
+      <div class="stat-value">${tirz && tirz.count_30d ? (30/tirz.count_30d).toFixed(1) : '—'}<span style="font-size:13px;color:var(--dim)">d</span></div>
+      <div class="stat-sub">avg days between</div>
+    </div>
+  `;
+
+  // Active vials
+  const dv = document.getElementById('dashVials');
+  if (!stats.activeVials.length) {
+    dv.innerHTML = '<div class="empty" style="padding:20px"><div class="empty-icon">📦</div>No active vials</div>';
+  } else {
+    dv.innerHTML = stats.activeVials.map(v => {
+      const conc = (v.vial_mg / v.bac_water_ml).toFixed(2);
+      const ageDays = Math.floor((Date.now() - new Date(v.reconstituted_at)) / 86400000);
+      const warn = ageDays > 21;
+      return `
+        <div class="vial-item">
+          <div class="vial-info">
+            <div class="vial-title">${v.med_name}</div>
+            <div class="vial-detail">
+              ${v.vial_mg}mg in ${v.bac_water_ml}mL · ${v.doses_drawn} doses drawn<br>
+              <span style="${warn ? 'color: var(--warn)' : ''}">Reconstituted ${ageDays}d ago${warn ? ' ⚠ check stability' : ''}</span>
+            </div>
+          </div>
+          <div class="vial-conc">${conc} mg/mL</div>
+        </div>`;
+    }).join('');
+  }
+
+  // Recent doses
+  const rd = await api('doses', { params: 'limit=8' });
+  const dd = document.getElementById('dashDoses');
+  if (!rd.doses.length) {
+    dd.innerHTML = '<div class="empty" style="padding:20px"><div class="empty-icon">📝</div>No doses logged yet</div>';
+  } else {
+    dd.innerHTML = rd.doses.map(d => `
+      <div class="dose-item">
+        <div class="dose-time">${formatDate(d.taken_at)}</div>
+        <div class="dose-info">
+          <div class="dose-med">${d.med_name}
+            <span class="dose-amount">${d.dose_amount} ${d.dose_unit}</span>
+          </div>
+          ${d.notes ? `<div class="dose-notes">${escapeHtml(d.notes)}</div>` : ''}
+        </div>
+      </div>
+    `).join('');
+  }
+}
+
+// ===== UTIL =====
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function toast(msg, err) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderColor = err ? 'var(--danger)' : 'var(--accent)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2400);
+}
+function hoursSince(iso) { return (Date.now() - new Date(iso)) / 3600000; }
+function formatHours(h) {
+  if (h < 1) return Math.floor(h * 60) + 'm';
+  if (h < 48) return h.toFixed(1) + 'h';
+  return Math.floor(h / 24) + 'd';
+}
+function formatDate(iso) {
+  const d = new Date(iso);
+  const now = new Date();
+  const diff = (now - d) / 86400000;
+  if (diff < 1) return d.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'});
+  if (diff < 7) return d.toLocaleDateString([], {weekday: 'short'}) + ' ' + d.toLocaleTimeString([], {hour: 'numeric', minute: '2-digit'});
+  return d.toLocaleDateString([], {month: 'short', day: 'numeric'});
+}
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+</script>
+
+</body>
+</html>
