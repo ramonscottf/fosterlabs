@@ -4,9 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Health">
 <meta name="theme-color" content="#08080d">
+<meta name="mobile-web-app-capable" content="yes">
 <title>Foster Health | Skippy</title>
 <meta name="robots" content="noindex, nofollow">
+<link rel="manifest" href="/health/manifest.json">
+<link rel="apple-touch-icon" href="/health/apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="/health/icon-512.svg">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
@@ -547,6 +553,63 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- Install prompt banner (auto-shown on supported browsers) -->
+<div id="installPrompt" style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--card); border:1px solid var(--accent); border-radius:12px; padding:12px 14px; z-index:150; max-width:340px; box-shadow:0 10px 30px rgba(0,0,0,0.5); align-items:center; gap:10px;">
+  <img src="/health/icon-192.png" width="36" height="36" style="border-radius:8px; flex-shrink:0">
+  <div style="flex:1; font-size:12px; line-height:1.3;">
+    <div style="font-weight:600; margin-bottom:2px;">Install Foster Health</div>
+    <div style="color:var(--dim); font-size:11px;">One-tap access from home screen</div>
+  </div>
+  <button onclick="installPwa()" style="background:var(--accent); color:#001512; border:none; padding:6px 12px; border-radius:6px; font-weight:600; font-size:12px; cursor:pointer; font-family:var(--sans);">Install</button>
+  <button onclick="document.getElementById('installPrompt').style.display='none'; localStorage.setItem('fh_install_dismissed','1')" style="background:transparent; border:none; color:var(--dim); font-size:18px; cursor:pointer; padding:0 4px;">×</button>
+</div>
+
+<script>
+// Service worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/health/sw.js', { scope: '/health/' })
+      .catch(err => console.warn('SW register failed:', err));
+  });
+}
+
+// PWA install prompt (Chrome / Android / desktop)
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredInstall = e;
+  if (!localStorage.getItem('fh_install_dismissed') && AUTH) {
+    const banner = document.getElementById('installPrompt');
+    banner.style.display = 'flex';
+  }
+});
+
+async function installPwa() {
+  if (!deferredInstall) return;
+  deferredInstall.prompt();
+  const { outcome } = await deferredInstall.userChoice;
+  if (outcome === 'accepted') {
+    document.getElementById('installPrompt').style.display = 'none';
+  }
+  deferredInstall = null;
+}
+
+// iOS Safari "Add to Home Screen" hint (one-time)
+function maybeShowIOSInstall() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const dismissed = localStorage.getItem('fh_install_dismissed');
+  if (isIOS && !isStandalone && !dismissed && AUTH) {
+    const banner = document.getElementById('installPrompt');
+    banner.querySelector('div > div:first-child').textContent = 'Add to Home Screen';
+    banner.querySelector('div > div:last-child').textContent = 'Tap Share → Add to Home Screen';
+    banner.querySelector('button').style.display = 'none';
+    banner.style.display = 'flex';
+  }
+}
+window.addEventListener('load', () => setTimeout(maybeShowIOSInstall, 1500));
+</script>
 
 <script>
 const PASS_HASH = '5e7e5641da6bdceafb9ec94e6f1074cd98373f407890e23a01db3f3143ac426f';

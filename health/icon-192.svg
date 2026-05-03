@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bg" cx="0.3" cy="0.2" r="1.2">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="60%" stop-color="#08080d"/>
+      <stop offset="100%" stop-color="#000"/>
+    </radialGradient>
+    <linearGradient id="strand1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00d4aa"/>
+      <stop offset="100%" stop-color="#00a085"/>
+    </linearGradient>
+    <linearGradient id="strand2" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4488ff"/>
+      <stop offset="100%" stop-color="#aa66ff"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect x="0" y="0" width="512" height="512" rx="112" ry="112" fill="url(#bg)"/>
+
+  <!-- Subtle grid texture -->
+  <g opacity="0.06" stroke="#00d4aa" stroke-width="1">
+    <line x1="0" y1="128" x2="512" y2="128"/>
+    <line x1="0" y1="256" x2="512" y2="256"/>
+    <line x1="0" y1="384" x2="512" y2="384"/>
+    <line x1="128" y1="0" x2="128" y2="512"/>
+    <line x1="256" y1="0" x2="256" y2="512"/>
+    <line x1="384" y1="0" x2="384" y2="512"/>
+  </g>
+
+  <!-- DNA double helix - centered, with rungs -->
+  <g transform="translate(256 256)" filter="url(#glow)">
+    <!-- Backbone strand 1 (teal) - sine wave -->
+    <path d="M -100 -150 Q -50 -100 -100 -50 Q -150 0 -100 50 Q -50 100 -100 150"
+          fill="none" stroke="url(#strand1)" stroke-width="14" stroke-linecap="round"/>
+
+    <!-- Backbone strand 2 (blue/purple) - inverse sine wave -->
+    <path d="M 100 -150 Q 50 -100 100 -50 Q 150 0 100 50 Q 50 100 100 150"
+          fill="none" stroke="url(#strand2)" stroke-width="14" stroke-linecap="round"/>
+
+    <!-- Rungs (base pairs) -->
+    <line x1="-100" y1="-150" x2="100" y2="-150" stroke="#e4e4f0" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
+    <line x1="-75"  y1="-100" x2="75"  y2="-100" stroke="#e4e4f0" stroke-width="6" stroke-linecap="round" opacity="0.65"/>
+    <line x1="-100" y1="-50"  x2="100" y2="-50"  stroke="#e4e4f0" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
+    <line x1="-150" y1="0"    x2="150" y2="0"    stroke="#e4e4f0" stroke-width="6" stroke-linecap="round" opacity="1"/>
+    <line x1="-100" y1="50"   x2="100" y2="50"   stroke="#e4e4f0" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
+    <line x1="-75"  y1="100"  x2="75"  y2="100"  stroke="#e4e4f0" stroke-width="6" stroke-linecap="round" opacity="0.65"/>
+    <line x1="-100" y1="150"  x2="100" y2="150"  stroke="#e4e4f0" stroke-width="6" stroke-linecap="round" opacity="0.85"/>
+
+    <!-- Helix dots (at strand peaks for emphasis) -->
+    <circle cx="-100" cy="-150" r="9" fill="#00d4aa"/>
+    <circle cx="-150" cy="0"    r="9" fill="#00d4aa"/>
+    <circle cx="-100" cy="150"  r="9" fill="#00d4aa"/>
+    <circle cx="100"  cy="-150" r="9" fill="#aa66ff"/>
+    <circle cx="150"  cy="0"    r="9" fill="#4488ff"/>
+    <circle cx="100"  cy="150"  r="9" fill="#aa66ff"/>
+  </g>
+</svg>
