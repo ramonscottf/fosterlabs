@@ -885,14 +885,18 @@
     const adminToken = document.getElementById('adminToken').value.trim();
     const botToken = document.getElementById('botToken').value.trim();
     const signingSecret = document.getElementById('signingSecret').value.trim();
-    if (!adminToken || !botToken || !signingSecret) return;
-    await postSecrets({
-      admin_token: adminToken,
-      secrets: {
-        SLACK_BOT_TOKEN: botToken,
-        SLACK_SIGNING_SECRET: signingSecret
-      }
-    }, document.getElementById('formStatus'));
+    if (!adminToken) return;
+    // Only push fields that have values — allows re-pushing just the bot token
+    // after a Slack reinstall without needing the signing secret again
+    const secrets = {};
+    if (botToken) secrets.SLACK_BOT_TOKEN = botToken;
+    if (signingSecret) secrets.SLACK_SIGNING_SECRET = signingSecret;
+    if (Object.keys(secrets).length === 0) {
+      document.getElementById('formStatus').textContent = '✗ Need at least one secret to push';
+      document.getElementById('formStatus').className = 'form-status err';
+      return;
+    }
+    await postSecrets({ admin_token: adminToken, secrets }, document.getElementById('formStatus'));
   });
 
   document.getElementById('twilioForm').addEventListener('submit', async e => {
