@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Helpline Setup | Skippy</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #08080d;
+    --surface: #0f0f18;
+    --card: #161622;
+    --card-hover: #1e1e30;
+    --border: #252538;
+    --text: #e4e4f0;
+    --dim: #7878a0;
+    --accent: #00d4aa;
+    --accent-dim: rgba(0,212,170,0.12);
+    --warn: #ffaa00;
+    --warn-dim: rgba(255,170,0,0.1);
+    --danger: #ff4466;
+    --danger-dim: rgba(255,68,102,0.1);
+    --blue: #4488ff;
+    --blue-dim: rgba(68,136,255,0.1);
+    --purple: #aa66ff;
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', -apple-system, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.55;
+    min-height: 100vh;
+    padding: 24px 16px 80px;
+  }
+  .container { max-width: 920px; margin: 0 auto; }
+  header { margin-bottom: 32px; }
+  .crumb {
+    color: var(--dim);
+    font-size: 13px;
+    font-family: var(--mono);
+    margin-bottom: 8px;
+  }
+  .crumb a { color: var(--dim); text-decoration: none; }
+  .crumb a:hover { color: var(--accent); }
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: var(--dim); font-size: 15px; max-width: 640px; }
+
+  .progress-bar {
+    margin: 24px 0 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 8px;
+    background: var(--card);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #00b894);
+    transition: width 0.3s ease;
+  }
+  .progress-label {
+    font-family: var(--mono);
+    font-size: 13px;
+    color: var(--dim);
+    white-space: nowrap;
+  }
+  .progress-label .done { color: var(--accent); font-weight: 600; }
+
+  .phase {
+    margin-top: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .phase-head {
+    padding: 18px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .phase-head:hover { background: var(--card); }
+  .phase-title { font-size: 18px; font-weight: 600; }
+  .phase-meta {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--dim);
+  }
+  .pill {
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .pill.skippy { background: var(--accent-dim); color: var(--accent); }
+  .pill.scott  { background: var(--warn-dim); color: var(--warn); }
+  .pill.both   { background: var(--blue-dim); color: var(--blue); }
+  .chevron {
+    transition: transform 0.2s;
+    color: var(--dim);
+  }
+  .phase.open .chevron { transform: rotate(90deg); }
+
+  .phase-body {
+    display: none;
+    padding: 4px 22px 22px;
+    border-top: 1px solid var(--border);
+  }
+  .phase.open .phase-body { display: block; }
+
+  .step {
+    display: flex;
+    gap: 14px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .step:last-child { border-bottom: none; }
+  .step-check {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    border: 1.5px solid var(--border);
+    background: var(--card);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+    margin-top: 1px;
+  }
+  .step-check:hover { border-color: var(--accent); }
+  .step-check.checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .step-check.checked::after {
+    content: '✓';
+    color: var(--bg);
+    font-weight: 700;
+    font-size: 14px;
+  }
+  .step-content { flex: 1; min-width: 0; }
+  .step-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+  .step.done .step-title {
+    text-decoration: line-through;
+    color: var(--dim);
+  }
+  .step-detail {
+    color: var(--dim);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .step-detail code {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .step-detail a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--accent-dim);
+  }
+  .step-detail a:hover { border-bottom-color: var(--accent); }
+
+  .secret-form {
+    margin-top: 12px;
+    padding: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .secret-form label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--dim);
+    margin-bottom: 6px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .secret-form input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+  .secret-form input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+  .secret-form button {
+    background: var(--accent);
+    color: var(--bg);
+    border: none;
+    padding: 9px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+  .secret-form button:hover { background: #00b894; }
+  .secret-form .form-status {
+    font-size: 12px;
+    color: var(--dim);
+    margin-top: 8px;
+    font-family: var(--mono);
+    min-height: 16px;
+  }
+  .secret-form .form-status.ok { color: var(--accent); }
+  .secret-form .form-status.err { color: var(--danger); }
+
+  .callout {
+    margin: 12px 0 6px;
+    padding: 12px 14px;
+    background: var(--warn-dim);
+    border-left: 3px solid var(--warn);
+    border-radius: 6px;
+    font-size: 13.5px;
+    color: var(--text);
+  }
+  .callout.info {
+    background: var(--blue-dim);
+    border-left-color: var(--blue);
+  }
+  .callout strong { color: var(--warn); }
+  .callout.info strong { color: var(--blue); }
+
+  ol.inline-steps {
+    margin: 8px 0 4px 18px;
+    color: var(--dim);
+    font-size: 14px;
+  }
+  ol.inline-steps li { padding: 3px 0; }
+
+  .reset-btn {
+    margin-top: 32px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--dim);
+    padding: 10px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 12px;
+    transition: all 0.15s;
+  }
+  .reset-btn:hover {
+    color: var(--danger);
+    border-color: var(--danger);
+  }
+
+  .footer-note {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    color: var(--dim);
+    font-size: 13px;
+  }
+  .footer-note a { color: var(--dim); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div class="crumb"><a href="/">fosterlabs</a> / help-setup</div>
+  <h1>Helpline Setup</h1>
+  <p class="subtitle">
+    One-time setup for the omnichannel helpline. Routes in-app chat, SMS, and
+    email into Slack as a unified inbox. Scott does the bits Skippy can't
+    (Slack &amp; Twilio logins). Skippy does everything else. Steps marked
+    <span class="pill scott" style="display:inline-block;vertical-align:middle">Scott</span>
+    need you. Steps marked
+    <span class="pill skippy" style="display:inline-block;vertical-align:middle">Skippy</span>
+    are already done or will be done automatically.
+  </p>
+
+  <div class="progress-bar">
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label">
+      <span class="done" id="doneCount">0</span>
+      / <span id="totalCount">0</span> complete
+    </div>
+  </div>
+</header>
+
+<!-- ============================ PHASE 1 ============================ -->
+<div class="phase open" data-phase="1">
+  <div class="phase-head">
+    <div class="phase-title">Phase 1 · Cloudflare scaffolding</div>
+    <div class="phase-meta">
+      <span class="pill skippy">Skippy</span>
+      <span>~30 min</span>
+      <span class="chevron">▶</span>
+    </div>
+  </div>
+  <div class="phase-body">
+
+    <div class="step" data-step="p1-worker">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Create Worker <code>helpline</code></div>
+        <div class="step-detail">
+          Routes inbound from all sources, posts to Slack, handles Slack reply
+          events. Custom domain: <code>helpline.fosterlabs.org</code>.
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p1-d1">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Create D1 <code>helpline-db</code></div>
+        <div class="step-detail">
+          Tables: <code>threads</code>, <code>messages</code>, <code>sources</code>.
+          Source-of-truth for "who do I reply to."
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p1-r2">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Create R2 bucket <code>helpline-attachments</code></div>
+        <div class="step-detail">
+          For image/file uploads from in-app chat (deferred, but the bucket
+          gets created now).
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p1-kv">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">KV namespace <code>HELPLINE_KV</code></div>
+        <div class="step-detail">Rate limiting and Slack event dedupe.</div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p1-domain">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Custom domain <code>helpline.fosterlabs.org</code></div>
+        <div class="step-detail">
+          Worker route on the fosterlabs.org zone.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ PHASE 2 ============================ -->
+<div class="phase" data-phase="2">
+  <div class="phase-head">
+    <div class="phase-title">Phase 2 · Slack app (DEF workspace)</div>
+    <div class="phase-meta">
+      <span class="pill scott">Scott</span>
+      <span>~10 min</span>
+      <span class="chevron">▶</span>
+    </div>
+  </div>
+  <div class="phase-body">
+
+    <div class="callout info">
+      <strong>Heads-up:</strong> If Sherry hasn't already created the DEF Slack
+      workspace, you need to coordinate with her first. She should be the workspace
+      owner, not you — that way it survives if you're ever out.
+    </div>
+
+    <div class="step" data-step="p2-create-app">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Create Slack app at api.slack.com</div>
+        <div class="step-detail">
+          <ol class="inline-steps">
+            <li>Open <a href="https://api.slack.com/apps?new_app=1" target="_blank">api.slack.com/apps</a></li>
+            <li>Click <strong>Create New App</strong> → <strong>From scratch</strong></li>
+            <li>App name: <code>Helpline</code></li>
+            <li>Workspace: <strong>DEF</strong> (the one you and Karah use)</li>
+            <li>Click <strong>Create App</strong></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p2-scopes">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Add bot scopes</div>
+        <div class="step-detail">
+          In the left sidebar, click <strong>OAuth &amp; Permissions</strong>. Scroll to
+          <strong>Bot Token Scopes</strong>, click <strong>Add an OAuth Scope</strong>, and add each:
+          <ol class="inline-steps">
+            <li><code>chat:write</code> — post messages</li>
+            <li><code>chat:write.public</code> — post to channels without joining</li>
+            <li><code>channels:read</code> — list channels</li>
+            <li><code>channels:history</code> — read replies</li>
+            <li><code>users:read</code> — resolve user names on replies</li>
+            <li><code>files:read</code> — handle attachments</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p2-events">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Enable Events API</div>
+        <div class="step-detail">
+          <ol class="inline-steps">
+            <li>Sidebar → <strong>Event Subscriptions</strong> → toggle <strong>Enable Events</strong> on</li>
+            <li>Request URL: <code>https://helpline.fosterlabs.org/slack/events</code></li>
+            <li>Slack will ping the URL — wait for the green ✓ Verified</li>
+            <li>Subscribe to bot events: <code>message.channels</code></li>
+            <li>Click <strong>Save Changes</strong> at bottom</li>
+          </ol>
+          <div class="callout" style="margin-top: 10px">
+            <strong>Wait!</strong> The verification ping will fail until Skippy has
+            deployed the Worker. Do Phase 1 first, ping me ("phase 1 done"), then
+            come back to this step.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p2-install">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Install to DEF workspace</div>
+        <div class="step-detail">
+          <ol class="inline-steps">
+            <li>Sidebar → <strong>Install App</strong> (or <strong>OAuth &amp; Permissions</strong>)</li>
+            <li>Click <strong>Install to Workspace</strong></li>
+            <li>Click <strong>Allow</strong></li>
+            <li>You'll get a <strong>Bot User OAuth Token</strong> starting with <code>xoxb-...</code> — copy it</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p2-paste-tokens">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Paste tokens here</div>
+        <div class="step-detail">
+          These get pushed straight to the Worker as encrypted secrets via the
+          Cloudflare API. Never stored in this page or in any chat log.
+        </div>
+
+        <form class="secret-form" id="secretForm">
+          <label for="botToken">Bot User OAuth Token (xoxb-…)</label>
+          <input type="password" id="botToken" autocomplete="off" placeholder="xoxb-...">
+
+          <label for="signingSecret">Signing Secret</label>
+          <div class="step-detail" style="font-size: 12px; margin-bottom: 6px">
+            Find this on the Slack app's <strong>Basic Information</strong> page,
+            under <strong>App Credentials</strong>.
+          </div>
+          <input type="password" id="signingSecret" autocomplete="off" placeholder="...">
+
+          <label for="adminToken">Admin Token (Skippy gives you this)</label>
+          <div class="step-detail" style="font-size: 12px; margin-bottom: 6px">
+            One-time token to authenticate this submission. Skippy will paste it
+            in chat after Phase 1 deploys.
+          </div>
+          <input type="password" id="adminToken" autocomplete="off" placeholder="...">
+
+          <button type="submit">Push to Worker</button>
+          <div class="form-status" id="formStatus"></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="step" data-step="p2-channels">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Create channels in Slack &amp; invite the bot</div>
+        <div class="step-detail">
+          In Slack itself (not api.slack.com), create:
+          <ol class="inline-steps">
+            <li><code>#help-firehose</code> — every inbound, all sources</li>
+            <li><code>#help-childspree</code> — Child Spree threads (invite Karah here)</li>
+            <li><code>#help-kara</code> — Kara campaign threads</li>
+            <li><code>#help-cte</code> — CTE platform (invite Karah Crosby if she joins later)</li>
+            <li><code>#help-aaron</code> — Aaron portal flags</li>
+            <li><code>#help-priority</code> — AI-flagged urgent</li>
+          </ol>
+          Then in each channel, type <code>/invite @Helpline</code> and hit enter.
+          The bot needs to be a member to post.
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p2-test">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Test: Skippy posts "hello world" to #help-firehose</div>
+        <div class="step-detail">
+          Tell me "test slack" in chat. I'll trigger the Worker to post a test
+          message. If you see it in <code>#help-firehose</code>, Phase 2 is done.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ PHASE 3 ============================ -->
+<div class="phase" data-phase="3">
+  <div class="phase-head">
+    <div class="phase-title">Phase 3 · In-app chat (Child Spree, two-way)</div>
+    <div class="phase-meta">
+      <span class="pill skippy">Skippy</span>
+      <span>~90 min</span>
+      <span class="chevron">▶</span>
+    </div>
+  </div>
+  <div class="phase-body">
+
+    <div class="step" data-step="p3-helptab">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Build <code>&lt;HelpTab /&gt;</code> React component</div>
+        <div class="step-detail">
+          Form + transcript view. Sends to <code>helpline.fosterlabs.org/inbound</code>.
+          Polls <code>/thread/:id/messages</code> for replies.
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p3-childspree">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Wire HelpTab into Child Spree</div>
+        <div class="step-detail">
+          Add a Help tab to the parent intake flow and the sponsor portal.
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p3-events">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Slack Events API → reply routes back to in-app</div>
+        <div class="step-detail">
+          Worker verifies Slack signature, looks up thread in D1, persists the
+          reply. HelpTab polls and shows it.
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p3-test">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">End-to-end test</div>
+        <div class="step-detail">
+          Open Child Spree on your phone, send a help message, watch it land in
+          <code>#help-firehose</code> + <code>#help-childspree</code>, reply in
+          the Slack thread, watch the reply appear in the HelpTab on your phone.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ PHASE 4 ============================ -->
+<div class="phase" data-phase="4">
+  <div class="phase-head">
+    <div class="phase-title">Phase 4 · Roll to Kara campaign</div>
+    <div class="phase-meta">
+      <span class="pill skippy">Skippy</span>
+      <span>~20 min</span>
+      <span class="chevron">▶</span>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="step" data-step="p4-kara">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Drop HelpTab into kara.wickowaypoint.com</div>
+        <div class="step-detail">
+          Same component, different <code>source_app=kara</code>. Routes to <code>#help-kara</code>.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ PHASE 5 ============================ -->
+<div class="phase" data-phase="5">
+  <div class="phase-head">
+    <div class="phase-title">Phase 5 · SMS source (Twilio)</div>
+    <div class="phase-meta">
+      <span class="pill both">Skippy + Scott</span>
+      <span>~45 min</span>
+      <span class="chevron">▶</span>
+    </div>
+  </div>
+  <div class="phase-body">
+
+    <div class="callout">
+      <strong>Blocked on:</strong> Wicko A2P 10DLC campaign approval (in review for
+      801-690-7449). Until then, we'll use the DEF Twilio number for inbound testing.
+    </div>
+
+    <div class="step" data-step="p5-twilio-webhook">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title"><span class="pill scott" style="margin-right:6px">Scott</span>Configure Twilio inbound webhook</div>
+        <div class="step-detail">
+          <ol class="inline-steps">
+            <li>Open <a href="https://console.twilio.com/" target="_blank">console.twilio.com</a></li>
+            <li>Phone Numbers → Active Numbers → click the help line number</li>
+            <li>Messaging Configuration → "A message comes in"</li>
+            <li>Webhook: <code>https://helpline.fosterlabs.org/inbound/sms</code></li>
+            <li>Method: HTTP POST. Save.</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+
+    <div class="step" data-step="p5-twilio-secret">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title"><span class="pill scott" style="margin-right:6px">Scott</span>Paste Twilio Auth Token</div>
+        <div class="step-detail">
+          Twilio Console → Account → API keys &amp; tokens → copy <strong>Auth Token</strong>.
+          (We already have the SID in memories.) Paste below.
+        </div>
+
+        <form class="secret-form" id="twilioForm">
+          <label for="twilioToken">Twilio Auth Token</label>
+          <input type="password" id="twilioToken" autocomplete="off">
+          <label for="twilioAdmin">Admin Token</label>
+          <input type="password" id="twilioAdmin" autocomplete="off">
+          <button type="submit">Push to Worker</button>
+          <div class="form-status" id="twilioStatus"></div>
+        </form>
+      </div>
+    </div>
+
+    <div class="step" data-step="p5-test">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Test SMS round-trip</div>
+        <div class="step-detail">
+          Text the help line from your phone. It lands in
+          <code>#help-firehose</code>. Reply in Slack thread. Your phone gets the
+          reply as SMS.
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================ PHASE 6 ============================ -->
+<div class="phase" data-phase="6">
+  <div class="phase-head">
+    <div class="phase-title">Phase 6 · Email source</div>
+    <div class="phase-meta">
+      <span class="pill skippy">Skippy</span>
+      <span>~45 min</span>
+      <span class="chevron">▶</span>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="step" data-step="p6-routing">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Cloudflare Email Routing → Worker</div>
+        <div class="step-detail">
+          <code>help@daviskids.org</code>, <code>help@kara.wickowaypoint.com</code>,
+          <code>help@wickowaypoint.com</code> all forward to the Worker.
+        </div>
+      </div>
+    </div>
+    <div class="step" data-step="p6-out">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Outbound email via mail.fosterlabs.org/send</div>
+        <div class="step-detail">
+          Reuse the existing send Worker. Reply-To uses thread token so replies
+          thread correctly.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ PHASE 7 ============================ -->
+<div class="phase" data-phase="7">
+  <div class="phase-head">
+    <div class="phase-title">Phase 7 · Smart routing + AI urgency</div>
+    <div class="phase-meta">
+      <span class="pill skippy">Skippy</span>
+      <span>~30 min</span>
+      <span class="chevron">▶</span>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="step" data-step="p7-urgency">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Workers AI urgency classification</div>
+        <div class="step-detail">
+          Each inbound runs through a tiny model. "ASAP", "emergency", angry tone
+          → tag <code>#help-priority</code>.
+        </div>
+      </div>
+    </div>
+    <div class="step" data-step="p7-translate">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Auto-translate non-English</div>
+        <div class="step-detail">
+          Spanish-speaking Child Spree parents get original + English translation
+          posted to Slack thread.
+        </div>
+      </div>
+    </div>
+    <div class="step" data-step="p7-draft">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">Suggested reply draft</div>
+        <div class="step-detail">
+          AI reads the message + context, posts a suggested reply as a thread
+          comment Karah can copy/edit.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ PHASE 8 ============================ -->
+<div class="phase" data-phase="8">
+  <div class="phase-head">
+    <div class="phase-title">Phase 8 · CTE + Aaron rollout</div>
+    <div class="phase-meta">
+      <span class="pill skippy">Skippy</span>
+      <span>~40 min</span>
+      <span class="chevron">▶</span>
+    </div>
+  </div>
+  <div class="phase-body">
+    <div class="step" data-step="p8-cte">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">HelpTab into cte.daviskids.org</div>
+        <div class="step-detail">Routes to <code>#help-cte</code>.</div>
+      </div>
+    </div>
+    <div class="step" data-step="p8-aaron">
+      <div class="step-check"></div>
+      <div class="step-content">
+        <div class="step-title">HelpTab into aaron.wickowaypoint.com</div>
+        <div class="step-detail">Routes to <code>#help-aaron</code>.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<button class="reset-btn" onclick="if(confirm('Clear all checkbox state?')){localStorage.removeItem('helpline-setup-progress');location.reload()}">↺ Reset progress</button>
+
+<div class="footer-note">
+  Plan: <a href="https://github.com/ramonscottf/skippy-plans/blob/main/plans/2026-05-04-omnichannel-helpline.md" target="_blank">2026-05-04-omnichannel-helpline.md</a>
+  · Worker: <code>helpline.fosterlabs.org</code>
+  · DB: <code>helpline-db</code> (D1)
+</div>
+
+</div>
+
+<script>
+  // Persistent checkbox state in localStorage
+  const STORAGE_KEY = 'helpline-setup-progress';
+  const state = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+  const checks = document.querySelectorAll('.step-check');
+  const phases = document.querySelectorAll('.phase');
+
+  function refreshProgress() {
+    const total = checks.length;
+    let done = 0;
+    checks.forEach(c => {
+      if (c.classList.contains('checked')) done++;
+    });
+    document.getElementById('doneCount').textContent = done;
+    document.getElementById('totalCount').textContent = total;
+    document.getElementById('progressFill').style.width = (total ? (done/total*100) : 0) + '%';
+  }
+
+  // Hydrate from state
+  checks.forEach(check => {
+    const step = check.closest('.step');
+    const id = step.dataset.step;
+    if (state[id]) {
+      check.classList.add('checked');
+      step.classList.add('done');
+    }
+    check.addEventListener('click', () => {
+      check.classList.toggle('checked');
+      step.classList.toggle('done');
+      state[id] = check.classList.contains('checked');
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      refreshProgress();
+    });
+  });
+
+  // Phase collapse/expand
+  phases.forEach(phase => {
+    const head = phase.querySelector('.phase-head');
+    head.addEventListener('click', () => phase.classList.toggle('open'));
+  });
+
+  refreshProgress();
+
+  // Secret form handlers — POST to Worker secrets endpoint (will exist after Phase 1)
+  async function postSecrets(payload, statusEl) {
+    statusEl.textContent = 'Pushing to Worker…';
+    statusEl.className = 'form-status';
+    try {
+      const res = await fetch('https://helpline.fosterlabs.org/admin/secrets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        statusEl.textContent = '✓ Secrets stored. Worker can now talk to Slack.';
+        statusEl.className = 'form-status ok';
+      } else {
+        const t = await res.text();
+        statusEl.textContent = '✗ ' + t.slice(0, 200);
+        statusEl.className = 'form-status err';
+      }
+    } catch (e) {
+      statusEl.textContent = '✗ Worker not reachable yet — finish Phase 1 first.';
+      statusEl.className = 'form-status err';
+    }
+  }
+
+  document.getElementById('secretForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const adminToken = document.getElementById('adminToken').value.trim();
+    const botToken = document.getElementById('botToken').value.trim();
+    const signingSecret = document.getElementById('signingSecret').value.trim();
+    if (!adminToken || !botToken || !signingSecret) return;
+    await postSecrets({
+      admin_token: adminToken,
+      secrets: {
+        SLACK_BOT_TOKEN: botToken,
+        SLACK_SIGNING_SECRET: signingSecret
+      }
+    }, document.getElementById('formStatus'));
+  });
+
+  document.getElementById('twilioForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const adminToken = document.getElementById('twilioAdmin').value.trim();
+    const twilioToken = document.getElementById('twilioToken').value.trim();
+    if (!adminToken || !twilioToken) return;
+    await postSecrets({
+      admin_token: adminToken,
+      secrets: { TWILIO_AUTH_TOKEN: twilioToken }
+    }, document.getElementById('twilioStatus'));
+  });
+</script>
+</body>
+</html>
