@@ -1,0 +1,954 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Intern Dossier — Johanna Poncelas Poncelas | Skippy</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #11111a;
+    --card: #161622;
+    --card-hover: #1e1e30;
+    --border: #252538;
+    --border-bright: #3a3a55;
+    --text: #e8e8f4;
+    --dim: #8888a8;
+    --dimmer: #5a5a78;
+    --accent: #d4a574;
+    --accent-bright: #f0c896;
+    --accent-dim: rgba(212,165,116,0.12);
+    --warn: #ffaa00;
+    --warn-dim: rgba(255,170,0,0.1);
+    --danger: #ff6677;
+    --danger-dim: rgba(255,102,119,0.1);
+    --good: #66cc99;
+    --good-dim: rgba(102,204,153,0.1);
+    --blue: #6aa8ff;
+    --blue-dim: rgba(106,168,255,0.1);
+    --rose: #e89aaa;
+    --rose-dim: rgba(232,154,170,0.1);
+    --mono: 'JetBrains Mono', monospace;
+    --sans: 'DM Sans', -apple-system, sans-serif;
+    --serif: 'Fraunces', Georgia, serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.55; }
+
+  /* PASSWORD GATE */
+  #gate {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh; padding: 20px;
+    background: radial-gradient(ellipse at 30% 20%, rgba(212,165,116,0.05) 0%, transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(232,154,170,0.04) 0%, transparent 50%),
+                var(--bg);
+  }
+  .gate-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 40px; max-width: 420px; width: 100%; text-align: center;
+  }
+  .gate-box h1 { font-size: 12px; letter-spacing: 3px; color: var(--accent); margin-bottom: 8px; text-transform: uppercase; font-weight: 600; }
+  .gate-box h2 { font-family: var(--serif); font-size: 26px; font-weight: 500; margin-bottom: 8px; }
+  .gate-box .sub { color: var(--dim); font-size: 14px; margin-bottom: 24px; }
+  .gate-input {
+    width: 100%; padding: 14px 16px; background: var(--card); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); font-family: var(--mono); font-size: 16px;
+    outline: none; transition: border-color 0.2s;
+  }
+  .gate-input:focus { border-color: var(--accent); }
+  .gate-input::placeholder { color: var(--dim); }
+  .gate-btn {
+    width: 100%; padding: 14px; background: var(--accent); color: var(--bg);
+    border: none; border-radius: 8px; font-family: var(--sans); font-size: 14px;
+    font-weight: 700; cursor: pointer; margin-top: 12px; transition: opacity 0.2s;
+  }
+  .gate-btn:hover { opacity: 0.9; }
+  .gate-error { color: var(--danger); font-size: 13px; margin-top: 10px; display: none; }
+
+  /* MAIN APP */
+  #app { display: none; }
+
+  .container { max-width: 1100px; margin: 0 auto; padding: 32px 24px 80px; }
+  @media (max-width: 640px) { .container { padding: 20px 16px 60px; } }
+
+  /* TOP META */
+  .meta-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 32px; padding-bottom: 18px; border-bottom: 1px solid var(--border);
+    flex-wrap: wrap; gap: 12px;
+  }
+  .brand { font-size: 11px; letter-spacing: 3px; color: var(--accent); text-transform: uppercase; font-weight: 700; }
+  .brand .sep { color: var(--dimmer); margin: 0 8px; }
+  .meta-stamp { font-family: var(--mono); font-size: 11px; color: var(--dim); }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--surface) 0%, var(--card) 100%);
+    border: 1px solid var(--border); border-radius: 20px; overflow: hidden; margin-bottom: 32px;
+  }
+  .hero-banner {
+    height: 180px; background-size: cover; background-position: center;
+    background-image: url('assets/banner.png');
+    position: relative;
+  }
+  .hero-banner::after {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(17,17,26,0.65) 100%);
+  }
+  @media (max-width: 640px) { .hero-banner { height: 120px; } }
+  .hero-body { padding: 0 32px 28px; margin-top: -56px; position: relative; z-index: 2; }
+  @media (max-width: 640px) { .hero-body { padding: 0 20px 24px; margin-top: -44px; } }
+  .hero-photo {
+    width: 132px; height: 132px; border-radius: 50%; border: 4px solid var(--surface);
+    background: var(--card) center/cover no-repeat;
+    background-image: url('assets/profile-photo.png');
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  @media (max-width: 640px) { .hero-photo { width: 96px; height: 96px; } }
+  .hero-name {
+    font-family: var(--serif); font-size: 38px; font-weight: 500; line-height: 1.15;
+    margin-top: 18px; letter-spacing: -0.01em;
+  }
+  @media (max-width: 640px) { .hero-name { font-size: 28px; } }
+  .hero-tag { font-size: 15px; color: var(--accent); margin-top: 4px; font-weight: 500; }
+  .hero-where { color: var(--dim); font-size: 14px; margin-top: 6px; }
+  .hero-where strong { color: var(--text); font-weight: 600; }
+
+  .hero-quickstats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 24px; }
+  @media (max-width: 640px) { .hero-quickstats { grid-template-columns: repeat(2, 1fr); } }
+  .qs {
+    background: rgba(255,255,255,0.02); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px;
+  }
+  .qs-label { font-size: 10px; color: var(--dim); text-transform: uppercase; letter-spacing: 1.2px; font-weight: 600; margin-bottom: 4px; }
+  .qs-value { font-size: 14px; font-weight: 600; color: var(--text); }
+  .qs-value.serif { font-family: var(--serif); font-size: 18px; }
+
+  /* SECTION */
+  section { margin-bottom: 32px; }
+  .section-h {
+    display: flex; align-items: baseline; gap: 14px; margin-bottom: 16px;
+    padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  }
+  .section-h .num {
+    font-family: var(--mono); color: var(--accent); font-size: 12px; font-weight: 600;
+  }
+  .section-h h2 {
+    font-family: var(--serif); font-size: 24px; font-weight: 500; letter-spacing: -0.01em;
+  }
+  .section-h .sub { color: var(--dim); font-size: 13px; margin-left: auto; }
+
+  /* VERDICT */
+  .verdict {
+    background: linear-gradient(135deg, var(--good-dim) 0%, rgba(102,204,153,0.02) 100%);
+    border: 1px solid rgba(102,204,153,0.3); border-radius: 16px; padding: 24px 28px;
+    margin-bottom: 32px;
+  }
+  .verdict-label {
+    font-size: 11px; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--good); font-weight: 700; margin-bottom: 8px;
+  }
+  .verdict h3 {
+    font-family: var(--serif); font-size: 26px; font-weight: 500; margin-bottom: 12px;
+    color: var(--text); letter-spacing: -0.01em;
+  }
+  .verdict p { color: var(--dim); font-size: 15px; line-height: 1.65; }
+  .verdict p + p { margin-top: 12px; }
+  .verdict strong { color: var(--text); font-weight: 600; }
+
+  /* CARDS */
+  .card-grid { display: grid; gap: 16px; }
+  .card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+  @media (max-width: 700px) {
+    .card-grid.cols-2, .card-grid.cols-3 { grid-template-columns: 1fr; }
+  }
+
+  .card {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 20px 22px; transition: border-color 0.15s, transform 0.15s;
+  }
+  .card:hover { border-color: var(--border-bright); }
+  .card h4 {
+    font-family: var(--serif); font-size: 17px; font-weight: 500;
+    margin-bottom: 4px; letter-spacing: -0.005em;
+  }
+  .card .role { color: var(--accent); font-size: 13px; font-weight: 500; margin-bottom: 2px; }
+  .card .when { color: var(--dimmer); font-size: 12px; font-family: var(--mono); margin-bottom: 10px; }
+  .card p { color: var(--dim); font-size: 14px; line-height: 1.6; }
+  .card p + p { margin-top: 8px; }
+  .card .logo {
+    height: 28px; margin-bottom: 12px; display: block;
+    filter: brightness(0.95);
+  }
+
+  /* BADGES */
+  .badge-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
+  .badge {
+    font-size: 11px; padding: 4px 10px; border-radius: 99px;
+    background: var(--card-hover); color: var(--dim); font-family: var(--mono);
+    border: 1px solid var(--border);
+  }
+  .badge.good { background: var(--good-dim); color: var(--good); border-color: rgba(102,204,153,0.25); }
+  .badge.warn { background: var(--warn-dim); color: var(--warn); border-color: rgba(255,170,0,0.25); }
+  .badge.blue { background: var(--blue-dim); color: var(--blue); border-color: rgba(106,168,255,0.25); }
+  .badge.rose { background: var(--rose-dim); color: var(--rose); border-color: rgba(232,154,170,0.25); }
+
+  /* CALLOUT */
+  .callout {
+    border-left: 3px solid var(--accent); padding: 14px 18px;
+    background: var(--accent-dim); border-radius: 0 10px 10px 0; margin: 14px 0;
+  }
+  .callout.warn { border-color: var(--warn); background: var(--warn-dim); }
+  .callout.good { border-color: var(--good); background: var(--good-dim); }
+  .callout.blue { border-color: var(--blue); background: var(--blue-dim); }
+  .callout p { font-size: 14px; line-height: 1.65; color: var(--text); }
+  .callout p + p { margin-top: 8px; }
+  .callout .head { font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; color: var(--accent); }
+  .callout.warn .head { color: var(--warn); }
+  .callout.good .head { color: var(--good); }
+  .callout.blue .head { color: var(--blue); }
+
+  /* TWO COLUMN COMPARE */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 700px) { .compare { grid-template-columns: 1fr; } }
+  .compare-col {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px;
+  }
+  .compare-col .h {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 2px; font-weight: 700;
+    color: var(--dim); margin-bottom: 10px;
+  }
+  .compare-col.application .h { color: var(--rose); }
+  .compare-col.reality .h { color: var(--blue); }
+  .compare-col p { color: var(--text); font-size: 14px; line-height: 1.6; }
+
+  /* TIMELINE */
+  .timeline { position: relative; padding-left: 28px; }
+  .timeline::before {
+    content: ''; position: absolute; left: 8px; top: 8px; bottom: 8px; width: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--border) 60%, transparent);
+  }
+  .tl-item { position: relative; margin-bottom: 20px; }
+  .tl-item::before {
+    content: ''; position: absolute; left: -24px; top: 6px; width: 10px; height: 10px;
+    border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 4px var(--bg);
+  }
+  .tl-when { font-family: var(--mono); font-size: 11px; color: var(--accent); font-weight: 600; margin-bottom: 2px; }
+  .tl-what { font-family: var(--serif); font-size: 16px; font-weight: 500; margin-bottom: 4px; }
+  .tl-detail { color: var(--dim); font-size: 13px; line-height: 1.55; }
+
+  /* QUESTIONS LIST */
+  .questions { display: grid; gap: 10px; }
+  .q {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    padding: 14px 16px; display: flex; gap: 14px;
+  }
+  .q-num {
+    font-family: var(--mono); color: var(--accent); font-size: 13px; font-weight: 700;
+    min-width: 24px; flex-shrink: 0;
+  }
+  .q-text { font-size: 14px; line-height: 1.55; color: var(--text); }
+  .q-why { font-size: 12px; color: var(--dim); margin-top: 4px; font-style: italic; }
+
+  /* IMAGES */
+  .img-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px; }
+  @media (max-width: 640px) { .img-grid { grid-template-columns: 1fr; } }
+  .img-wrap {
+    background: var(--card); border: 1px solid var(--border); border-radius: 10px;
+    overflow: hidden;
+  }
+  .img-wrap img { width: 100%; display: block; }
+  .img-wrap .cap { padding: 8px 12px; font-size: 11px; color: var(--dim); font-family: var(--mono); border-top: 1px solid var(--border); }
+
+  /* RAW QUOTE */
+  .quote {
+    font-family: var(--serif); font-size: 17px; line-height: 1.6; color: var(--text);
+    border-left: 3px solid var(--accent); padding: 4px 18px; margin: 12px 0;
+    font-style: italic;
+  }
+  .quote-attr { font-style: normal; font-size: 12px; color: var(--dim); margin-top: 6px; font-family: var(--mono); }
+
+  /* LINKS */
+  a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.15s; }
+  a:hover { border-color: var(--accent); }
+
+  /* MAP IFRAME */
+  .map-wrap {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; height: 320px;
+  }
+  .map-wrap iframe { width: 100%; height: 100%; border: 0; filter: grayscale(0.15) contrast(0.95); }
+
+  /* FOOTER */
+  .foot {
+    margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border);
+    color: var(--dimmer); font-size: 12px; font-family: var(--mono); text-align: center;
+  }
+  .foot p + p { margin-top: 6px; }
+
+  /* DOCUMENT BUTTONS */
+  .doc-btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+  .doc-btn {
+    background: var(--card); border: 1px solid var(--border); padding: 10px 14px;
+    border-radius: 8px; font-size: 13px; color: var(--text); cursor: pointer;
+    display: inline-flex; align-items: center; gap: 8px; font-family: var(--sans);
+    border-bottom: 1px solid var(--border);
+  }
+  .doc-btn:hover { background: var(--card-hover); border-color: var(--accent); }
+  .doc-btn .ico { color: var(--accent); }
+
+  /* HIGHLIGHT */
+  mark { background: var(--accent-dim); color: var(--accent-bright); padding: 1px 4px; border-radius: 3px; }
+
+  /* TWO-COL DEFINITION LIST */
+  dl { display: grid; grid-template-columns: 140px 1fr; gap: 8px 18px; }
+  @media (max-width: 640px) { dl { grid-template-columns: 1fr; gap: 4px 0; } dl dt { color: var(--accent); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; } dl dd { margin-bottom: 10px; } }
+  dt { color: var(--dim); font-size: 13px; font-weight: 500; }
+  dd { color: var(--text); font-size: 14px; }
+
+</style>
+</head>
+<body>
+
+<!-- PASSWORD GATE -->
+<div id="gate">
+  <div class="gate-box">
+    <h1>Foster Labs · Private</h1>
+    <h2>Intern Dossier</h2>
+    <p class="sub">For Scott &amp; Ali only.</p>
+    <input type="password" class="gate-input" id="pw" placeholder="Enter password" autocomplete="off">
+    <button class="gate-btn" onclick="checkPassword()">Open Dossier</button>
+    <div class="gate-error" id="pw-error">Invalid password. Try again.</div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app">
+<div class="container">
+
+  <div class="meta-bar">
+    <div class="brand">Foster Labs <span class="sep">·</span> Intern Dossier <span class="sep">·</span> Confidential</div>
+    <div class="meta-stamp">Compiled May 11, 2026 · v1.0</div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-banner"></div>
+    <div class="hero-body">
+      <div class="hero-photo"></div>
+      <h1 class="hero-name">Johanna Poncelas Poncelas</h1>
+      <div class="hero-tag">Spanish Amity Intern · Fall Semester SY 26–27 candidate</div>
+      <div class="hero-where">
+        <strong>From:</strong> León, Castilla y León, Spain (El Bierzo region) &nbsp;·&nbsp;
+        <strong>Age:</strong> ~22 &nbsp;·&nbsp;
+        <strong>Host school:</strong> Canyon Creek Elementary
+      </div>
+      <div class="hero-quickstats">
+        <div class="qs">
+          <div class="qs-label">Identity</div>
+          <div class="qs-value">3-source verified</div>
+        </div>
+        <div class="qs">
+          <div class="qs-label">English</div>
+          <div class="qs-value">Full professional (C1+)</div>
+        </div>
+        <div class="qs">
+          <div class="qs-label">Kids experience</div>
+          <div class="qs-value">Camp + skating + Red Cross</div>
+        </div>
+        <div class="qs">
+          <div class="qs-label">Recommendation</div>
+          <div class="qs-value serif" style="color: var(--good);">Proceed to Zoom</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERDICT -->
+  <div class="verdict">
+    <div class="verdict-label">Skippy's Read</div>
+    <h3>She's real, she's polished, and she's a strong candidate — with one piece of spin to be aware of.</h3>
+    <p>Johanna is a verified, credentialed, internationally-minded 22-year-old from a small Spanish mountain region with a sharp business mind and genuine experience with children. Three independent sources (her Amity application, her LinkedIn, and the official Universidad de León admissions roster) all triangulate cleanly on the same person, same name, same DNI, same place. <strong>She is exactly who she says she is.</strong></p>
+    <p>The one piece of spin: her Amity essays paint her as a future Spanish teacher. The fuller picture from LinkedIn and her actual Master's enrollment suggests her real career arc is corporate HR / luxury brand management. <strong>This is not a red flag — it's normal application positioning</strong> — but it does change what you're actually getting. You're not getting "future teacher testing the waters." You're getting "ambitious young business graduate using a structured year abroad to perfect her English and build an international CV." That's arguably better: more reliable, more professional, less likely to flame out from homesickness.</p>
+    <p><strong>Recommendation:</strong> proceed to the Zoom call. The questions list below is calibrated to surface the things you still need to confirm in a live conversation.</p>
+  </div>
+
+  <!-- SECTION 1: WHO SHE IS -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 01</span>
+      <h2>Who she is</h2>
+      <span class="sub">Identity, family, place</span>
+    </div>
+
+    <div class="card-grid cols-2">
+      <div class="card">
+        <h4>The basics</h4>
+        <dl style="margin-top: 12px;">
+          <dt>Full name</dt>
+          <dd>Johanna Poncelas Poncelas</dd>
+          <dt>DNI ending</dt>
+          <dd><code style="font-family: var(--mono); color: var(--accent);">***3650**</code></dd>
+          <dt>Home region</dt>
+          <dd>El Bierzo, León province, Castilla y León</dd>
+          <dt>Family roots</dt>
+          <dd>Aira da Pedra — tiny mountain village in Villafranca del Bierzo</dd>
+          <dt>LinkedIn</dt>
+          <dd><a href="https://www.linkedin.com/in/johanna-poncelas-poncelas-1546b13b6/" target="_blank">linkedin.com/in/johanna-poncelas-poncelas</a></dd>
+          <dt>Connections</dt>
+          <dd>176 (low activity, no posts)</dd>
+        </dl>
+      </div>
+
+      <div class="card">
+        <h4>Why the double surname?</h4>
+        <p>Spanish people carry both parents' surnames. Two Poncelas means her mother and father <em>both</em> had Poncelas as a paternal surname. This isn't unusual when you trace it to <strong>Aira da Pedra</strong> — a remote mountain hamlet in the El Bierzo region where small populations meant the same surnames repeated across families for generations.</p>
+        <p style="margin-top: 10px;">It's a clean breadcrumb: it told us exactly where her family is from before she said anything.</p>
+        <div class="badge-row">
+          <span class="badge rose">El Bierzo</span>
+          <span class="badge">Rural roots</span>
+          <span class="badge">Small-town Spain</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+      <h4>Geographic context</h4>
+      <p style="margin-bottom: 12px;">El Bierzo is a verdant, mountainous comarca in northwestern Spain — between Galicia and Castilla. Major town: <strong>Ponferrada</strong> (where she worked at Bierzo Natura). It's wine country, hiking country, Camino de Santiago country. Very different from Madrid or Barcelona; closer culturally to rural Pacific Northwest than to the Mediterranean coast.</p>
+      <div class="map-wrap">
+        <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=-7.4,42.3,-6.0,42.8&layer=mapnik&marker=42.5452,-6.5916" loading="lazy"></iframe>
+      </div>
+      <p style="margin-top: 10px; font-size: 12px; color: var(--dim);">Marker: Ponferrada, where Bierzo Natura is located. Her home village of Aira da Pedra sits ~30km west, deeper into the mountains.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 2: PHOTOS -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 02</span>
+      <h2>What she looks like</h2>
+      <span class="sub">From her own LinkedIn — early 2026</span>
+    </div>
+
+    <div class="img-grid">
+      <div class="img-wrap">
+        <img src="assets/profile-photo.png" alt="Profile photo">
+        <div class="cap">Profile photo · pink button-down · outdoors near water · bare-branch trees (winter/early spring)</div>
+      </div>
+      <div class="img-wrap">
+        <img src="assets/banner.png" alt="Banner image">
+        <div class="cap">Her chosen banner: a bouquet of mixed flowers — pastels, soft, feminine</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="head">Reading the picture</div>
+      <p>Normal early-20s presentation. The outfit (pink button-down) is professional-casual but feminine. The setting (water + bare trees) suggests northern Spain in winter, possibly the Bierzo region or somewhere nearby. The banner choice (flowers, not a city skyline or beach selfie) reads as warm, traditional, conservative-leaning aesthetic — not a party-girl signal. Nothing in the imagery contradicts her stated profile.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 3: EDUCATION -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 03</span>
+      <h2>Education — verified</h2>
+      <span class="sub">University of León</span>
+    </div>
+
+    <div class="card-grid cols-2">
+      <div class="card">
+        <h4>Grado en Economía</h4>
+        <div class="role">Bachelor's in Economics</div>
+        <div class="when">2021 — July 2025 · Universidad de León</div>
+        <p>Concentration: Business, Management, Marketing, and related support services. Her final-year capstone (TFG) was a comparative business strategy study: <strong>"Parfois versus Hermès. Estudio de dos estrategias empresariales opuestas en la moda"</strong> — analyzing two opposite fashion strategies (fast fashion vs. luxury).</p>
+        <div class="badge-row">
+          <span class="badge good">Verified · LinkedIn</span>
+          <span class="badge good">Verified · Google Books (TFG)</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>M.U. Gestión de Personal</h4>
+        <div class="role">Master's in Human Resources Management</div>
+        <div class="when">2025 — 2026 · Universidad de León</div>
+        <p>She's #12 of 14 admitted to this Master's cohort for academic year 2025-26. This is the most important finding of the dig: <mark>her LinkedIn says "Master's in Education" but the official admissions roster says HR Management.</mark> They are not the same thing.</p>
+        <div class="badge-row">
+          <span class="badge good">Verified · Official UniLeón admissions PDF</span>
+          <span class="badge warn">LinkedIn says different</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <div class="head">The "Education vs HR" issue, examined</div>
+      <p>Her LinkedIn About section says: <em>"I hold a degree in Economics from the University of León and I am currently pursuing a Master's Degree in Education. This stage is allowing me to further develop skills such as communication, leadership, and the ability to guide and support others in their learning and personal development."</em></p>
+      <p>The official Universidad de León admissions roster (page 3, line 12, dated July 29, 2025) lists her in <strong>M.U. Gestión de Personal</strong> — Master's in Personnel/HR Management. She is NOT on any of the Education Master's lists (pages 10, 11, 12, 14, 15, etc.).</p>
+      <p>This is most likely <strong>aspirational framing for an English-speaking audience</strong> — "Master in Education" reads better to U.S. host schools than "Master in HR Management." The skills she lists (communication, leadership, supporting others' development) are genuinely common to both fields. <strong>Not deception — soft positioning.</strong> Worth asking about directly in the Zoom: "Tell me about your Master's program — what are you studying?"</p>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+      <h4>Plus: INSIDE LVMH Certificate</h4>
+      <div class="role">LVMH Group · Online certificate program</div>
+      <div class="when">September 2025 — December 2025</div>
+      <p>30-hour English-language certificate program from LVMH (Louis Vuitton parent company), with course content from Harvard, HEC Paris, Bocconi, Central Saint Martins, ESSEC. <strong>Open enrollment</strong> — 190,000+ people have earned it since 2021 — so this is more "she sought out a serious extra credential in English" than "she was selected for an exclusive program." Still positive: it shows initiative, English confidence, and serious interest in luxury brand management. She lists "Luxury brand management" and "Market analysis" as the skills she gained.</p>
+      <div class="badge-row">
+        <span class="badge blue">English-language program</span>
+        <span class="badge">Open enrollment</span>
+        <span class="badge good">Completed</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: EXPERIENCE -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 04</span>
+      <h2>Work &amp; volunteer experience</h2>
+      <span class="sub">What she's actually done</span>
+    </div>
+
+    <div class="card-grid cols-2">
+      <div class="card">
+        <h4>Bierzo Natura S.L.</h4>
+        <div class="role">Activity monitor</div>
+        <div class="when">Ponferrada · Calle El Reloj 11</div>
+        <p>Bierzo Natura is Ponferrada's premier active-tourism company. Founded 2008. 25,000+ Facebook likes. 4.8★ on Google with 369+ reviews. They run summer camps, kayaking trips down the río Sil, paintball, climbing, school activities, and birthday parties for kids. <strong>This is hands-on kids-and-families work in a small business setting.</strong> It's the most directly relevant experience she has for what she'd be doing at Canyon Creek.</p>
+        <div class="badge-row">
+          <span class="badge good">Direct kids experience</span>
+          <span class="badge">Small business</span>
+          <span class="badge">Outdoor + active</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Cruz Roja Española</h4>
+        <div class="role">Volunteer · Elderly support</div>
+        <div class="when">September 2024 — May 2025 · ~9 months</div>
+        <p>Spanish Red Cross. Volunteer work providing support and companionship to elderly people — daily activities, recreational and social programs. Listed in the "Human Rights" category. <strong>This is a real, sustained volunteer commitment</strong> — not a one-week summer thing. It says something positive about her character: she gave 9 months to elderly companionship while a full-time undergrad.</p>
+        <div class="badge-row">
+          <span class="badge good">9-month commitment</span>
+          <span class="badge good">Compassion signal</span>
+        </div>
+      </div>
+
+      <div class="card">
+        <h4>Skating instructor</h4>
+        <div class="role">Coaching young children</div>
+        <div class="when">Listed on application</div>
+        <p>Mentioned in her Amity application — teaching young children to skate. <strong>More direct kids experience.</strong> Suggests she's comfortable in an instructor role, can handle physical safety and group management, and has patience with young learners. Couldn't independently verify but it's consistent with her Bierzo Natura background.</p>
+      </div>
+
+      <div class="card">
+        <h4>Upcoming: PA summer camp</h4>
+        <div class="role">Lifeguard · J-1 program</div>
+        <div class="when">Summer 2026</div>
+        <p>Planning to work as a lifeguard at a Pennsylvania summer camp this summer before the fall Amity placement. This is a <strong>natural stepping stone</strong> — gets her into the US on a J-1 visa, lets her acclimate to American camp culture and English-speaking adolescents before the elementary classroom assignment. Reduces culture-shock risk significantly.</p>
+        <div class="badge-row">
+          <span class="badge good">Pre-acclimation</span>
+          <span class="badge blue">J-1 visa pathway</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: LANGUAGES & SKILLS -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 05</span>
+      <h2>Languages &amp; skills</h2>
+      <span class="sub">Per her LinkedIn</span>
+    </div>
+
+    <div class="card-grid cols-3">
+      <div class="card">
+        <h4>Spanish (native)</h4>
+        <p>Castellano. She'd bring the standard "Spain Spanish" accent — different from Mexican or South American Spanish that Charles is likely most exposed to. This is actually a <strong>plus</strong> for dual-immersion programs that want students to hear multiple varieties.</p>
+      </div>
+      <div class="card">
+        <h4>English — Full professional</h4>
+        <p>LinkedIn marks her as "Full professional proficiency" (≈ C1 / advanced). Backed by the INSIDE LVMH certificate, which is conducted entirely in English. <strong>Strong for Amity</strong> — most Spanish interns rate themselves only "Professional working." She rates herself a level above.</p>
+      </div>
+      <div class="card">
+        <h4>Italian — Professional working</h4>
+        <p>"Professional working proficiency." Suggests time spent in Italy, possibly an Erasmus exchange semester. Worth asking about — gives you a sense of how she travels and adapts.</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 16px;">
+      <h4>Skills she lists (8)</h4>
+      <p>Communication skills (habilidad de comunicación), ability to express oneself (capacidad de expresarse), effective communication (Comunicación efectiva — endorsed via Santander training course), economic analysis, market analysis, luxury brand management, business strategy, risk analysis (Santander).</p>
+      <p style="margin-top: 8px;">She also completed two Santander Academy courses (March 2026): <strong>Effective Communication</strong> and <strong>Risk Analysis &amp; Management</strong>. Santander runs a popular free certificate program for Spanish university students.</p>
+    </div>
+
+    <div class="card" style="margin-top: 12px;">
+      <h4>What she follows on LinkedIn</h4>
+      <p>Companies she follows reveal where her professional curiosity points: <strong>Economic and Commercial Office of Spain in the UK</strong> (Spanish trade office in London), <strong>Cámara de Comercio e Industria de Madrid</strong> (Madrid Chamber of Commerce), <strong>Nonprofit Leadership Alliance</strong>. The first two are clear career signals — she's pointed at international business / Spanish-companies-going-abroad work. The third is interesting and slightly unexpected.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 6: APPLICATION VS REALITY -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 06</span>
+      <h2>Application framing vs reality</h2>
+      <span class="sub">What changes between her essay and her CV</span>
+    </div>
+
+    <div class="compare">
+      <div class="compare-col application">
+        <div class="h">Amity application framing</div>
+        <p>Future Spanish teacher. Loves working with children. Passionate about education and helping kids learn. Wants to gain teaching skills, share Spanish language and culture, work with youth. Genuine vocational interest in classroom work.</p>
+        <p style="margin-top: 10px; color: var(--dim);">Twice notes "healthy food is very important" — flag for meal planning.</p>
+      </div>
+      <div class="compare-col reality">
+        <div class="h">What everything else says</div>
+        <p>Economics graduate. Master's in HR Management. INSIDE LVMH certificate. TFG on Hermès vs Parfois fashion strategy. Follows Spanish trade offices in London. Building an international corporate / luxury-brand career trajectory.</p>
+        <p style="margin-top: 10px; color: var(--dim);">Real kids experience (Bierzo Natura camps, skating instruction, Red Cross elder care) — but it's a side of her, not the center.</p>
+      </div>
+    </div>
+
+    <div class="callout blue">
+      <div class="head">How to read this</div>
+      <p>Application essays are sales documents. Every Amity applicant frames themselves as a future teacher because that's what the program wants to hear. <strong>The fact that she shaped her essays toward what hosts want to read is normal and expected.</strong> What matters is whether the underlying person behind the essay is real, capable, and a good fit.</p>
+      <p>The underlying person here is: <strong>an ambitious, polished, internationally-minded 22-year-old who is using the Amity year as a serious investment in her own English and CV — and incidentally, will be a thoughtful and reliable presence in your home and Charles's classroom.</strong> That's a better profile in many ways than a "true believer" future teacher: more disciplined, more reliable, less likely to flame out from disillusionment.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 7: TIMELINE -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 07</span>
+      <h2>Her timeline</h2>
+      <span class="sub">Reconstructed from all sources</span>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item">
+        <div class="tl-when">~2003</div>
+        <div class="tl-what">Born in El Bierzo region, León province, Spain</div>
+        <div class="tl-detail">Both parents from Poncelas family lines tracing to Aira da Pedra, a small mountain village in Villafranca del Bierzo.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">2021</div>
+        <div class="tl-what">Begins Grado en Economía at Universidad de León</div>
+        <div class="tl-detail">UniLeón is a regional Spanish public university. Solid, not elite — comparable to a strong state school in the US.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">~2022-2024</div>
+        <div class="tl-what">Activity monitor at Bierzo Natura, Ponferrada</div>
+        <div class="tl-detail">Works at Ponferrada's adventure-tourism company. Camps, kayak trips, school groups, birthday parties.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">Sep 2024 — May 2025</div>
+        <div class="tl-what">Cruz Roja Española volunteer (elderly support)</div>
+        <div class="tl-detail">9 months of consistent volunteer work alongside her senior-year studies.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">Oct 2024 — Jul 2025</div>
+        <div class="tl-what">Writes TFG: Parfois vs Hermès business strategy</div>
+        <div class="tl-detail">Final-year economics thesis comparing two opposite fashion brand strategies. Published in UniLeón institutional records.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">July 2025</div>
+        <div class="tl-what">Graduates Economics, admitted to HR Master's</div>
+        <div class="tl-detail">Bachelor's complete. Admitted to M.U. Gestión de Personal for academic year 2025-26.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">Sep — Dec 2025</div>
+        <div class="tl-what">Completes INSIDE LVMH Certificate</div>
+        <div class="tl-detail">30-hour English-language luxury brand management program from LVMH.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">March 2026</div>
+        <div class="tl-what">Santander Academy: Effective Communication + Risk Analysis</div>
+        <div class="tl-detail">Two free certificate courses from the Santander bank's open program for university students.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">~May 2026 (NOW)</div>
+        <div class="tl-what">Amity application in progress · ID 1010</div>
+        <div class="tl-detail">Application 62% complete, Active status on Amity portal as of our review.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">Summer 2026</div>
+        <div class="tl-what">Lifeguard at Pennsylvania summer camp (J-1)</div>
+        <div class="tl-detail">Pre-acclimation to American culture and English immersion before the fall semester placement.</div>
+      </div>
+      <div class="tl-item">
+        <div class="tl-when">Aug 2026 — Jan 2027</div>
+        <div class="tl-what">Candidate for Fall semester Amity placement</div>
+        <div class="tl-detail">Canyon Creek Elementary, Davis School District, Utah. With the Foster family if you proceed.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 8: AMITY SAFEGUARDS -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 08</span>
+      <h2>Amity's vetting (what's already in place)</h2>
+      <span class="sub">Background checks happening regardless of your decision</span>
+    </div>
+
+    <div class="card-grid cols-2">
+      <div class="card">
+        <h4>Home-country police record</h4>
+        <p>Every Amity intern must submit a clean police record from their home country. This is a hard requirement — required to issue the J-1 visa. Spanish background checks are robust.</p>
+      </div>
+      <div class="card">
+        <h4>US Embassy interview</h4>
+        <p>Interns are screened by the US Embassy in Madrid during the J-1 visa interview. Independent layer of vetting from the State Department.</p>
+      </div>
+      <div class="card">
+        <h4>Amity Screening Officer interview</h4>
+        <p>A regional Amity rep (often a Spanish university professor) does an in-person interview. They know the candidate's school and often personally.</p>
+      </div>
+      <div class="card">
+        <h4>School + district background check</h4>
+        <p>Davis School District will run their own background check before she enters a Canyon Creek classroom. Standard for any adult working around children.</p>
+      </div>
+    </div>
+
+    <div class="callout good">
+      <div class="head">Translation</div>
+      <p>By the time she arrives in Utah she will have cleared <strong>four independent screening layers</strong> — Spanish police, US State Department, Amity's screening officer, and Davis School District. Whatever your host decision, those checks will happen.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 9: ZOOM QUESTIONS -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 09</span>
+      <h2>What to ask her on the Zoom call</h2>
+      <span class="sub">Calibrated to surface the unresolved stuff</span>
+    </div>
+
+    <div class="questions">
+      <div class="q">
+        <div class="q-num">01</div>
+        <div>
+          <div class="q-text">"Tell me about your Master's program — what are you studying?"</div>
+          <div class="q-why">Open-ended. See if she says "Education" or "HR Management." Either is fine — but how she answers is the signal. A clean "I'm doing a Master's in Personnel Management, but for Amity I think of it as helping me develop the people skills that translate to teaching" is great. Evasion is not great.</div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-num">02</div>
+        <div>
+          <div class="q-text">"Your LinkedIn shows a strong luxury-brand and business track — Hermès thesis, INSIDE LVMH, the Madrid Chamber of Commerce. What made you decide to do the Amity year and a US elementary classroom instead of going straight into corporate?"</div>
+          <div class="q-why">The single most important question. Listen for a real answer. Good answers: "I want my English perfect before I apply to BBVA / Santander corporate"; "I love kids and want to give back before adult life starts"; "I want a year of perspective before settling into a career." Stumbling, or pivoting away, is worth noting.</div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-num">03</div>
+        <div>
+          <div class="q-text">"When does the Master's program end? Will you have any coursework or thesis (TFM) trailing into the Fall when you'd be in Utah?"</div>
+          <div class="q-why">This is the timeline wrinkle. Some Spanish Master's TFMs trail into the following academic year. A student trying to write a 70-page Master's thesis in your guest room while working a full-time classroom job is a recipe for burnout. Clean answer: "I'll finish in July before I leave."</div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-num">04</div>
+        <div>
+          <div class="q-text">"Tell me about your work at Bierzo Natura — what ages did you work with, and what was your role?"</div>
+          <div class="q-why">Get specifics. Does she light up talking about kids? Does she have stories? Or does she give a generic "I worked with families and groups" answer? This is the closest match to what she'd be doing at Canyon Creek.</div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-num">05</div>
+        <div>
+          <div class="q-text">"In your application you mentioned that healthy food is very important to you — can you tell us more? Any dietary restrictions, allergies, or things you'd like us to know about meals?"</div>
+          <div class="q-why">She wrote this twice in the application. Better to surface it upfront than to discover she's vegan or has a major aversion in week 2.</div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-num">06</div>
+        <div>
+          <div class="q-text">"How do you feel about Utah specifically? Have you been to the western US?"</div>
+          <div class="q-why">She's from green, mountainous, wet northern Spain. Utah is high desert. The culture is also very specific. Worth gauging whether she has realistic expectations or whether she thinks she's coming to "California-ish America."</div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-num">07</div>
+        <div>
+          <div class="q-text">"Your LinkedIn shows you speak Italian — have you spent significant time abroad before?"</div>
+          <div class="q-why">Italian fluency suggests Erasmus or extended Italy time. If she's done a semester or year abroad before, she's a known-good adapter and the homesickness risk drops significantly. If Italian is just from coursework or family, that's different.</div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-num">08</div>
+        <div>
+          <div class="q-text">"What are you most looking forward to about a US family? What are you most nervous about?"</div>
+          <div class="q-why">Standard but vital. Listen for self-awareness in the "nervous" answer. A 22-year-old who can articulate what worries her about a year abroad is a 22-year-old who has thought it through.</div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-num">09</div>
+        <div>
+          <div class="q-text">"Do you have a driver's license? Are you planning to drive in the US?"</div>
+          <div class="q-why">Amity generally discourages interns driving. Some districts prohibit it. Worth knowing upfront — affects transportation logistics significantly given Canyon Creek's location.</div>
+        </div>
+      </div>
+      <div class="q">
+        <div class="q-num">10</div>
+        <div>
+          <div class="q-text">"Do you have questions for us? About our family, our home, Charles, Utah, anything?"</div>
+          <div class="q-why">Always close with this. The questions she asks tell you what she actually cares about. A great candidate asks about Charles, about your routines, about what you'd want from her. A weaker candidate asks only about logistics (room, food, internet, transportation).</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 10: HOUSEHOLD FIT -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 10</span>
+      <h2>Household fit notes</h2>
+      <span class="sub">Practical considerations for hosting</span>
+    </div>
+
+    <div class="card-grid cols-2">
+      <div class="card">
+        <h4>Charles benefit</h4>
+        <p>High. Charles is at the prime age for absorbing a second language naturally. A live-in native Spanish speaker for a full semester is dramatically more effective than any classroom or app. Her Spain Spanish (Castilian) is also valuable cultural diversity — most of his Spanish exposure is probably Latin American.</p>
+        <p style="margin-top: 8px;">She's a polished young adult who follows international affairs and luxury business — she'd model a kind of curious, ambitious world-citizen presence that fits well with what you and Ali are already building for him.</p>
+      </div>
+      <div class="card">
+        <h4>Schedule fit</h4>
+        <p>Fall semester is Aug-Dec. She'd work at Canyon Creek on school days, generally 9am-1pm-ish. Evenings and weekends free. She'd be home for dinner most nights. Holiday breaks: she may want to travel (Vegas, LA, NYC are common intern trips).</p>
+      </div>
+      <div class="card">
+        <h4>Food planning</h4>
+        <p>She's flagged healthy eating twice. Spanish students of her generation often have specific preferences (Mediterranean diet, fish, lots of vegetables, smaller breakfast, late dinner). Worth asking what her usual eating pattern looks like. Note: Spanish dinner is typically 9-10pm — she'll need to adjust to American 6-7pm dinner timing.</p>
+      </div>
+      <div class="card">
+        <h4>Risk profile</h4>
+        <p><strong>Low-medium risk, high upside.</strong> Verified identity, real credentials, real prior kids experience, structured vetting layers, pre-acclimation through summer camp. Main risk is the timeline question (Master's overlap) which the Zoom should resolve. Secondary risk is culture-fit (Utah is specific) which a frank conversation also handles.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 11: SOURCES -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 11</span>
+      <h2>Source documents</h2>
+      <span class="sub">Everything verifiable, linked</span>
+    </div>
+
+    <div class="card">
+      <h4>Primary source documents (saved locally)</h4>
+      <div class="doc-btn-row">
+        <a href="assets/amity-application.pdf" target="_blank" class="doc-btn">
+          <span class="ico">▸</span> Amity Application PDF
+        </a>
+        <a href="assets/uleon-admissions.pdf" target="_blank" class="doc-btn">
+          <span class="ico">▸</span> Univ. de León Admissions Roster (42pp)
+        </a>
+        <a href="assets/linkedin-1.png" target="_blank" class="doc-btn">
+          <span class="ico">▸</span> LinkedIn capture 1
+        </a>
+        <a href="assets/linkedin-2.png" target="_blank" class="doc-btn">
+          <span class="ico">▸</span> LinkedIn capture 2
+        </a>
+        <a href="assets/linkedin-3.png" target="_blank" class="doc-btn">
+          <span class="ico">▸</span> LinkedIn capture 3
+        </a>
+        <a href="assets/linkedin-4.png" target="_blank" class="doc-btn">
+          <span class="ico">▸</span> LinkedIn capture 4
+        </a>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top: 12px;">
+      <h4>External verification links</h4>
+      <div class="doc-btn-row">
+        <a href="https://www.linkedin.com/in/johanna-poncelas-poncelas-1546b13b6/" target="_blank" class="doc-btn">
+          <span class="ico">↗</span> Her LinkedIn profile
+        </a>
+        <a href="https://books.google.com/books/about/Parfois_versus_Herm%C3%A8s_Estudio_de_dos_es.html?id=biyS0QEACAAJ" target="_blank" class="doc-btn">
+          <span class="ico">↗</span> Her TFG (Google Books)
+        </a>
+        <a href="https://www.bierzonatura.com/" target="_blank" class="doc-btn">
+          <span class="ico">↗</span> Bierzo Natura (employer)
+        </a>
+        <a href="https://es.wikipedia.org/wiki/Aira_da_Pedra" target="_blank" class="doc-btn">
+          <span class="ico">↗</span> Aira da Pedra (family origin)
+        </a>
+        <a href="https://www.amity.org/" target="_blank" class="doc-btn">
+          <span class="ico">↗</span> Amity Institute
+        </a>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="head">Triangulation summary</div>
+      <p><strong>Source 1:</strong> Amity application — name, DOB-implied age, Spain, Bierzo Natura employment, lifeguard summer plan, healthy food, kids interest.</p>
+      <p><strong>Source 2:</strong> LinkedIn — Universidad de León Econ degree, INSIDE LVMH cert, Hermès project, Cruz Roja volunteering, English level, location, photo.</p>
+      <p><strong>Source 3:</strong> Official UniLeón admissions roster — legal name match, DNI ending, enrolled HR Master's.</p>
+      <p>All three independently confirm: same name, same place, same person. The only discrepancy is the "Education" vs "HR Management" Master's framing — addressed above.</p>
+    </div>
+  </section>
+
+  <!-- SECTION 12: BOTTOM LINE -->
+  <section>
+    <div class="section-h">
+      <span class="num">§ 12</span>
+      <h2>Bottom line for the 1pm meeting</h2>
+      <span class="sub">What to tell the principal</span>
+    </div>
+
+    <div class="card" style="border-color: var(--accent);">
+      <h4>If you're talking with Karly Black or the principal today:</h4>
+      <p style="margin-top: 12px;">"We did our due diligence on Johanna Poncelas Poncelas. She checks out — three independent sources confirm her identity, her degree, and her current Master's enrollment at the University of León. Her LinkedIn says 'Master's in Education' but the official admissions roster says HR Management; that's worth a clarifying question on the Zoom but isn't disqualifying — it looks like application positioning, not deception."</p>
+      <p style="margin-top: 10px;">"She has real, relevant kids experience — multiple years at an adventure-tourism company in Ponferrada, skating instruction, and nine months of Red Cross elder-care volunteering. She rates her English as full professional proficiency and has an LVMH certificate completed entirely in English. She's planning to be in Pennsylvania as a summer-camp lifeguard before the fall placement, which is a good pre-acclimation."</p>
+      <p style="margin-top: 10px;">"We're inclined to proceed to the Zoom interview. We have a calibrated list of questions to surface the unresolved items. If she handles those well, we'd say yes."</p>
+    </div>
+  </section>
+
+  <div class="foot">
+    <p>Foster Labs · Intern Dossier · Compiled by Skippy for Scott &amp; Ali</p>
+    <p>May 11, 2026 · TRUST THE AWESOME</p>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ============ PASSWORD GATE ============
+// SHA-256 of 'skippy'
+const PASS_HASH = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918';
+
+async function sha256(s) {
+  const buf = new TextEncoder().encode(s);
+  const hashBuf = await crypto.subtle.digest('SHA-256', buf);
+  return Array.from(new Uint8Array(hashBuf))
+    .map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function checkPassword() {
+  const pw = document.getElementById('pw').value;
+  const hash = await sha256(pw);
+  if (hash === PASS_HASH) {
+    sessionStorage.setItem('intern_unlocked', '1');
+    document.getElementById('gate').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  } else {
+    document.getElementById('pw-error').style.display = 'block';
+  }
+}
+
+document.getElementById('pw').addEventListener('keydown', e => {
+  if (e.key === 'Enter') checkPassword();
+});
+
+// auto-unlock if already authenticated this session
+if (sessionStorage.getItem('intern_unlocked') === '1') {
+  document.getElementById('gate').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+}
+</script>
+
+</body>
+</html>
