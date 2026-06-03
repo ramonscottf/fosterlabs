@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gala Items · Copy Tool</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --navy:#11194a; --red:#d72846; --indigo:#4d54b3; --gold:#f4b942;
+    --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f5f7fb; --card:#fff;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45;padding-bottom:40px;}
+  a{color:var(--red);}
+
+  header.bar{position:sticky;top:0;z-index:20;background:var(--navy);color:#fff;padding:max(10px,env(safe-area-inset-top)) 14px 12px;box-shadow:0 4px 18px rgba(8,9,22,.18);}
+  header .title{font-weight:800;font-size:16px;display:flex;align-items:center;gap:8px;}
+  header .title .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);}
+  .search{margin-top:10px;display:flex;gap:8px;}
+  .search input{flex:1;min-width:0;font-size:16px;padding:11px 14px;border-radius:11px;border:0;background:rgba(255,255,255,.14);color:#fff;}
+  .search input::placeholder{color:rgba(255,255,255,.6);}
+  .toolrow{margin-top:10px;display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px;color:rgba(255,255,255,.85);}
+  .toolrow .count b{color:#fff;}
+  .toolrow label{display:inline-flex;align-items:center;gap:6px;cursor:pointer;user-select:none;}
+  .toolrow input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);}
+
+  .wrap{max-width:680px;margin:0 auto;padding:14px;}
+  .empty{padding:50px 16px;text-align:center;color:var(--muted);}
+
+  .item{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;margin-bottom:16px;box-shadow:0 2px 10px rgba(13,27,61,.05);transition:opacity .2s;}
+  .item.done{opacity:.5;}
+  .item .top{display:flex;align-items:flex-start;gap:10px;padding:12px 14px 8px;}
+  .item .num{font-size:12px;font-weight:800;color:#fff;background:var(--navy);border-radius:7px;padding:3px 8px;white-space:nowrap;}
+  .item .ttl{font-weight:700;font-size:15.5px;flex:1;min-width:0;}
+  .item .donebox{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);cursor:pointer;user-select:none;}
+  .item .donebox input{width:18px;height:18px;accent-color:#16a34a;}
+  .item .meta{padding:0 14px 6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;}
+  .item .val{font-weight:800;color:var(--navy);font-size:13px;}
+  .item .tag{font-size:10.5px;font-weight:600;color:var(--muted);background:#f1f5f9;border-radius:6px;padding:2px 7px;}
+
+  .photo{position:relative;background:#0b1020;}
+  .photo img.main{display:block;width:100%;aspect-ratio:16/9;object-fit:contain;background:#0b1020;}
+  .photo .nodesc{display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;color:#475569;font-size:13px;background:#e2e8f0;}
+  .thumbs{display:flex;gap:6px;padding:8px 10px;overflow-x:auto;background:#0b1020;}
+  .thumbs img{width:54px;height:34px;object-fit:cover;border-radius:6px;border:2px solid transparent;flex:0 0 auto;opacity:.6;cursor:pointer;}
+  .thumbs img.sel{border-color:var(--gold);opacity:1;}
+
+  .desc{padding:11px 14px 4px;font-size:13.5px;color:#334155;max-height:120px;overflow:auto;}
+  .desc.empty-d{color:#94a3b8;font-style:italic;}
+
+  .btns{display:flex;gap:8px;padding:12px 14px 14px;}
+  .btn{flex:1;font-family:inherit;font-weight:800;font-size:14px;padding:13px 10px;border-radius:12px;border:0;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px;transition:transform .1s,background .15s;}
+  .btn:active{transform:scale(.97);}
+  .btn.desc-b{background:#eef2ff;color:var(--indigo);}
+  .btn.img-b{background:linear-gradient(95deg,var(--red),#883bb5 76%,var(--indigo));color:#fff;}
+  .btn.ok{background:#16a34a!important;color:#fff!important;}
+  .copytitle{display:block;width:100%;text-align:center;background:none;border:0;color:var(--muted);font-size:12px;padding:0 14px 12px;cursor:pointer;}
+
+  #toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);background:var(--navy);color:#fff;padding:11px 20px;border-radius:999px;font-size:14px;font-weight:700;opacity:0;pointer-events:none;transition:.25s;z-index:50;box-shadow:0 10px 30px rgba(0,0,0,.3);}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+<header class="bar">
+  <div class="title"><span class="dot"></span> Gala Items · Copy Tool</div>
+  <div class="search"><input id="q" type="search" placeholder="Search by #, title, or tag…" autocomplete="off"></div>
+  <div class="toolrow">
+    <span class="count" id="count">Loading…</span>
+    <label><input type="checkbox" id="hidedone"> Hide done</label>
+  </div>
+</header>
+
+<div class="wrap"><div id="list"><div class="empty">Loading items…</div></div></div>
+<div id="toast"></div>
+
+<script>
+const DATA_URL = "https://gala.daviskids.org/data/auction-items.json";
+const PROXY = u => "/api/img?u=" + encodeURIComponent(u);
+let ITEMS = [];
+const DONE = new Set(JSON.parse(localStorage.getItem("galaItemsDone") || "[]"));
+const saveDone = () => localStorage.setItem("galaItemsDone", JSON.stringify([...DONE]));
+const esc = s => (s==null?"":String(s)).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+let toastT;
+function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),1600); }
+function flash(btn,label){ const o=btn.dataset.label||btn.textContent; btn.dataset.label=o; btn.textContent=label; btn.classList.add("ok"); setTimeout(()=>{btn.textContent=o;btn.classList.remove("ok");},1400); }
+
+async function copyText(txt, btn, okLabel){
+  try{ await navigator.clipboard.writeText(txt); }
+  catch(e){ const ta=document.createElement("textarea"); ta.value=txt; ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta); ta.focus(); ta.select(); try{document.execCommand("copy");}catch(_){} ta.remove(); }
+  flash(btn, okLabel); toast(okLabel);
+}
+
+function pngFrom(blob){
+  if(blob.type==="image/png") return Promise.resolve(blob);
+  return createImageBitmap(blob).then(bmp=>{ const c=document.createElement("canvas"); c.width=bmp.width; c.height=bmp.height; c.getContext("2d").drawImage(bmp,0,0); return new Promise(r=>c.toBlob(r,"image/png")); });
+}
+async function copyImage(url, btn){
+  if(navigator.clipboard && window.ClipboardItem){
+    try{
+      const png = fetch(PROXY(url)).then(r=>{ if(!r.ok) throw new Error("proxy"); return r.blob(); }).then(pngFrom);
+      await navigator.clipboard.write([ new ClipboardItem({ "image/png": png }) ]);
+      flash(btn,"Photo copied ✓"); toast("Photo copied ✓"); return;
+    }catch(e){ /* fall through */ }
+  }
+  // Fallback: copy the image URL + tell them to long-press
+  try{ await navigator.clipboard.writeText(url); }catch(_){}
+  flash(btn,"URL copied"); toast("Long-press the photo to copy it");
+}
+
+function render(){
+  const q = document.getElementById("q").value.trim().toLowerCase();
+  const hide = document.getElementById("hidedone").checked;
+  let list = ITEMS;
+  if(q) list = list.filter(it => (it.number+" "+it.title+" "+(it.tags||[]).join(" ")).toLowerCase().includes(q));
+  if(hide) list = list.filter(it => !DONE.has(String(it.id)));
+
+  document.getElementById("count").innerHTML = `Showing <b>${list.length}</b> · Done <b>${DONE.size}</b>/${ITEMS.length}`;
+  const wrap = document.getElementById("list");
+  if(!list.length){ wrap.innerHTML = `<div class="empty">No items match.</div>`; return; }
+
+  wrap.innerHTML = list.map(it=>{
+    const id = String(it.id);
+    const done = DONE.has(id);
+    const imgs = it.images||[];
+    const main = imgs.length ? `<img class="main" src="${esc(imgs[0])}" alt="" loading="lazy">` : `<div class="nodesc">No photo</div>`;
+    const thumbs = imgs.length>1 ? `<div class="thumbs">${imgs.map((u,i)=>`<img src="${esc(u)}" data-u="${esc(u)}" class="${i===0?'sel':''}" alt="">`).join("")}</div>` : "";
+    const tags = (it.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
+    const desc = it.desc ? esc(it.desc) : "No description.";
+    return `<div class="item ${done?'done':''}" data-id="${id}">
+      <div class="top">
+        <span class="num">#${esc(it.number||"?")}</span>
+        <div class="ttl">${esc(it.title)}</div>
+        <label class="donebox"><input type="checkbox" class="done-cb" ${done?'checked':''}> done</label>
+      </div>
+      <div class="meta">${it.value?`<span class="val">${esc(it.value)}</span>`:""}${tags}</div>
+      <div class="photo">${main}</div>
+      ${thumbs}
+      <div class="desc ${it.desc?'':'empty-d'}">${desc}</div>
+      <div class="btns">
+        <button class="btn desc-b" data-act="desc">📋 Copy description</button>
+        <button class="btn img-b" data-act="img" ${imgs.length?'':'disabled style=opacity:.4'}>🖼 Copy photo</button>
+      </div>
+      <button class="copytitle" data-act="title">copy title only</button>
+    </div>`;
+  }).join("");
+}
+
+document.addEventListener("click", e=>{
+  const card = e.target.closest(".item"); if(!card) return;
+  const id = card.dataset.id;
+  const it = ITEMS.find(x=>String(x.id)===id); if(!it) return;
+
+  const thumb = e.target.closest(".thumbs img");
+  if(thumb){ card.querySelector("img.main").src = thumb.dataset.u; card.querySelectorAll(".thumbs img").forEach(t=>t.classList.toggle("sel",t===thumb)); return; }
+
+  const btn = e.target.closest("[data-act]");
+  if(btn){
+    const act = btn.dataset.act;
+    if(act==="desc") copyText(it.desc||"", btn, "Description copied ✓");
+    else if(act==="title") copyText(it.title||"", btn, "Title copied ✓");
+    else if(act==="img"){ const cur = (card.querySelector("img.main")||{}).src || (it.images||[])[0]; if(cur) copyImage(cur, btn); }
+    return;
+  }
+});
+
+document.addEventListener("change", e=>{
+  if(e.target.classList.contains("done-cb")){
+    const card = e.target.closest(".item"); const id = card.dataset.id;
+    if(e.target.checked){ DONE.add(id); card.classList.add("done"); } else { DONE.delete(id); card.classList.remove("done"); }
+    saveDone();
+    document.getElementById("count").innerHTML = `Showing <b>${document.querySelectorAll(".item").length}</b> · Done <b>${DONE.size}</b>/${ITEMS.length}`;
+    if(document.getElementById("hidedone").checked && e.target.checked) setTimeout(render,250);
+  }
+  if(e.target.id==="hidedone") render();
+});
+document.getElementById("q").addEventListener("input", ()=>{ clearTimeout(window.__qt); window.__qt=setTimeout(render,120); });
+
+(async ()=>{
+  try{
+    const r = await fetch(DATA_URL, {cache:"no-store"});
+    const d = await r.json();
+    ITEMS = (d.items||[]).slice().sort((a,b)=> (parseInt(a.number)||0)-(parseInt(b.number)||0));
+    render();
+  }catch(e){
+    document.getElementById("list").innerHTML = `<div class="empty">Couldn't load items.<br><small>${esc(e.message||e)}</small></div>`;
+    document.getElementById("count").textContent = "Error";
+  }
+})();
+</script>
+</body>
+</html>
