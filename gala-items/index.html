@@ -66,6 +66,9 @@
   .adtile figcaption{font-size:12px;color:var(--muted);padding-top:5px;}
   .adtile a{color:var(--indigo);font-weight:700;text-decoration:none;}
   .adtile .adcopy{font:inherit;font-size:12px;font-weight:700;color:var(--indigo);background:none;border:0;cursor:pointer;padding:0;}
+  .adtile .adfixrow{margin-top:6px;display:flex;gap:8px;flex-wrap:wrap;}
+  .adtile .adfix{font:inherit;font-size:11.5px;font-weight:700;color:#6d28d9;background:#f3f0ff;border:0;border-radius:7px;padding:4px 9px;cursor:pointer;}
+  .adtile .adfix:active{transform:scale(.96);}
   .airow{padding:0 14px 0;}
   .btn.ok{background:#16a34a!important;color:#fff!important;}
   .copytitle{display:block;width:100%;text-align:center;background:none;border:0;color:var(--muted);font-size:12px;padding:0 14px 12px;cursor:pointer;}
@@ -217,24 +220,63 @@ async function enhanceImage(it, card, btn){
   }finally{ btn.disabled = false; }
 }
 
-function adCopyParts(it){
-  const md = (typeof toMarkdown==='function' ? toMarkdown(it.desc_html||"") : "") || it.desc || "";
-  const bold = md.match(/\*\*(.+?)\*\*/);
-  let headline = (bold ? bold[1] : (it.title||"")).replace(/\s+/g,' ').trim();
-  headline = headline.split(/\s+[—–-]\s+/)[0].trim();
-  const ital = md.match(/(?:^|\n)\*([^*\n]{3,})\*\s*(?:\n|$)/);
-  const tagline = ital ? ital[1].replace(/\s+/g,' ').trim() : "";
-  const subhead = (it.title||"").replace(/\s+/g,' ').trim();
-  return { headline, subhead, tagline };
+// Structured product brief pulled from the item's rewritten copy (product-ad-pair-generator skill)
+function adBrief(it){
+  const doc = new DOMParser().parseFromString(it.desc_html || "", "text/html");
+  let headline = "";
+  const firstStrong = doc.querySelector("p strong, strong");
+  if(firstStrong) headline = firstStrong.textContent;
+  if(!headline) headline = it.title || "";
+  headline = headline.replace(/\s+/g,' ').trim().split(/\s+[—–-]\s+/)[0].trim();
+  const ems = [...doc.querySelectorAll("em, i")];
+  const tagline = ems.length ? ems[ems.length-1].textContent.replace(/\s+/g,' ').trim() : "";
+  const bullets = [...doc.querySelectorAll("li")].map(li=>{
+    const lab = li.querySelector("strong, b");
+    return { label: lab ? lab.textContent.replace(/\s+/g,' ').trim() : "", text: li.textContent.replace(/\s+/g,' ').trim() };
+  });
+  const items = bullets.map(b=>b.text).filter(Boolean).slice(0,8);
+  const subline = (bullets[0] && bullets[0].label) ? bullets[0].label : (it.title||"").replace(/\s+/g,' ').trim();
+  return { title:(it.title||"").trim(), headline, subline, tagline, items };
 }
+const PRESERVE = "Use the reference image as the SOURCE OF TRUTH for product identity. Preserve the exact product identity, brand logos, labels, packaging, colors, proportions and included items. Do not redesign, recolor, simplify or replace any product, logo, label or packaging. Do not invent extra products.";
 const AD_SCENE = (it, hint)=>{
-  const {headline, subhead, tagline} = adCopyParts(it);
-  return `Aspirational 16:9 product advertisement, premium brand-hero style, cinematic golden-hour lighting, photorealistic, high-end commercial quality. Feature the EXACT product from the reference image ${hint && hint.trim() ? ("in this setting: "+hint.trim()) : "in an attractive real-world setting that suits it"}. If a person appears, an attractive model in stylish, flattering clothing, happy and relaxed. Preserve the product's real design, colors, branding, logos and labels precisely — do not invent or alter anything. Add clean, elegant advertising text, rendered crisply and spelled EXACTLY as written, placed tastefully with generous negative space (upper-left works well): large bold headline "${headline}"; small subhead "${subhead}"${tagline?('; small tagline "'+tagline+'"'):''}. Keep text minimal and uncluttered. Use the product's real brand logo if recognizable. No watermark, no gibberish text.`;
+  const b = adBrief(it);
+  const itemsBlock = b.items.length ? `\nIncluded items (show accurately, do not add or omit):\n- ${b.items.join("\n- ")}` : "";
+  return `Please create a premium 16:9 aspirational product advertisement. ${PRESERVE} (Preserve all real logos and packaging — this matters.)
+
+Product: ${b.title}${itemsBlock}
+Setting: ${hint ? hint : "an attractive real-world setting that suits the product"}, warm polished golden-hour commercial lighting.
+
+Show the product being used naturally or just-finished, prominent and accurate. If a person is included, one attractive adult in stylish, natural, believable clothing, secondary to the product and clearly enjoying it. Clean, elevated, photorealistic retail-ad feel.
+
+Minimal ad copy only — render text crisply and spell it EXACTLY as written, placed tastefully with generous negative space (upper-left works well):
+Headline: "${b.headline}"
+Subline: "${b.subline}"${b.tagline ? `\nSmall detail line: "${b.tagline}"` : ""}
+No clutter, no gibberish text, no watermark. ${PRESERVE}`;
 };
 const AD_WHITE = (it)=>{
-  const {subhead} = adCopyParts(it);
-  return `Clean 16:9 commercial studio product photograph on a pure white seamless background with soft realistic drop shadows. Arrange the EXACT product(s) from the reference image together, faithfully reproduced — preserve every logo, label, color, package and text detail exactly; do not alter, redesign or fabricate anything. Bright, even professional e-commerce lighting, crisp focus, premium catalog quality. You may add a small, clean product title in the upper-left, rendered crisply and spelled EXACTLY: "${subhead}". No other text or graphics.`;
+  const b = adBrief(it);
+  const itemsBlock = b.items.length ? `\nArrange ALL included items clearly, front-facing labels where possible:\n- ${b.items.join("\n- ")}` : "";
+  return `Please create a clean 16:9 studio product hero image on a seamless white background with soft realistic shadowing. ${PRESERVE} (Preserve all real logos and packaging — this matters.)
+
+Product: ${b.title}${itemsBlock}
+
+Balanced, premium, catalog-ready and uncluttered, with clean spacing and no lifestyle props. Little or no text — at most a small, clean product title rendered crisply and spelled EXACTLY in the upper-left: "${b.title}". No other text or graphics. ${PRESERVE}`;
 };
+
+const AD_JOBS = {};
+const AD_FIX = {
+  fidelity: "Regenerate with stricter product fidelity. The product must match the reference image more closely. Preserve the exact shape, colors, logos, labels and packaging. Do not invent or alter the product.",
+  text: "Regenerate with less text. Keep only the headline and one short subline. Remove any feature blocks or long copy.",
+  labels: "Regenerate with packaging treated as visual branding rather than rewritten text. Keep labels recognizable and front-facing, but do not invent new words."
+};
+
+function renderTileCaption(fig, rr){
+  const cap = fig.querySelector("figcaption"); if(!cap) return;
+  const fn = "gala-"+esc(String(rr.id))+"-"+esc(String(rr.label).toLowerCase().replace(/\s+/g,"-"))+".png";
+  cap.innerHTML = `<b>${esc(rr.label)}</b> · <a href="${PROXY(rr.url)}" download="${fn}">download</a> · <button class="adcopy" data-u="${esc(rr.url)}">copy</button>`
+    + `<div class="adfixrow"><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="fidelity">↻ fidelity</button><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="text">↻ less text</button><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="labels">↻ labels</button></div>`;
+}
 
 async function aiAdPair(it, card, btn){
   const imgs = it.images||[];
@@ -254,20 +296,44 @@ async function aiAdPair(it, card, btn){
       return { ...j, taskId:d.taskId };
     }));
     btn.textContent = "✨ Generating 2…";
-    const results = await Promise.all(submitted.map(j => pollImage(j.taskId).then(url=>({label:j.label, url}))));
+    const results = await Promise.all(submitted.map(j => pollImage(j.taskId).then(url=>({label:j.label, url, taskId:j.taskId, basePrompt:j.prompt}))));
     if(out){
-      out.innerHTML = results.map(rr=>{
-        const fn = "gala-"+esc(String(it.id))+"-"+esc(rr.label.toLowerCase().replace(/\s+/g,"-"))+".png";
-        return `<figure class="adtile">
-          <img src="${esc(rr.url)}" alt="">
-          <figcaption><b>${esc(rr.label)}</b> · <a href="${PROXY(rr.url)}" download="${fn}">download</a> · <button class="adcopy" data-u="${esc(rr.url)}">copy</button></figcaption>
-        </figure>`;
-      }).join("");
+      out.innerHTML = "";
+      results.forEach(rr=>{
+        AD_JOBS[rr.taskId] = { basePrompt: rr.basePrompt, src, label: rr.label, id: it.id };
+        const fig = document.createElement("figure"); fig.className = "adtile"; fig.dataset.tid = rr.taskId;
+        const im = document.createElement("img"); im.src = rr.url; im.alt = "";
+        fig.appendChild(im); fig.appendChild(document.createElement("figcaption"));
+        out.appendChild(fig);
+        renderTileCaption(fig, {label:rr.label, url:rr.url, taskId:rr.taskId, id:it.id});
+      });
     }
     toast("2 ad images ready ✓"); btn.textContent = "✨ Make 2 again";
   }catch(e){
     toast("Ad gen failed — "+(e.message||e)); btn.textContent = orig;
   }finally{ btn.disabled = false; }
+}
+
+async function adCorrect(tid, kind, card){
+  const job = AD_JOBS[tid]; if(!job){ toast("Can't find that image to redo"); return; }
+  const fig = card.querySelector('.adtile[data-tid="'+tid+'"]'); if(!fig) return;
+  const cap = fig.querySelector("figcaption"); const old = cap ? cap.innerHTML : "";
+  if(cap) cap.innerHTML = "↻ regenerating…";
+  try{
+    const prompt = job.basePrompt + "\n\n" + (AD_FIX[kind] || AD_FIX.fidelity);
+    const r = await fetch("/api/gala-image", {method:"POST",headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ id:job.id, imageUrl:job.src, model:"nano-banana-pro", aspect_ratio:"16:9", resolution:"2K", prompt })});
+    const d = await r.json();
+    if(!r.ok || !d.taskId) throw new Error(d.error || ("HTTP "+r.status));
+    const url = await pollImage(d.taskId);
+    AD_JOBS[d.taskId] = { basePrompt: job.basePrompt, src: job.src, label: job.label, id: job.id };
+    fig.dataset.tid = d.taskId;
+    const im = fig.querySelector("img"); if(im) im.src = url;
+    renderTileCaption(fig, {label:job.label, url, taskId:d.taskId, id:job.id});
+    toast("Redone ✓");
+  }catch(e){
+    toast("Redo failed — "+(e.message||e)); if(cap) cap.innerHTML = old;
+  }
 }
 
 function render(){
@@ -326,6 +392,9 @@ document.addEventListener("click", e=>{
 
   const ac = e.target.closest(".adcopy");
   if(ac){ copyImage(ac.dataset.u, ac); return; }
+
+  const fx = e.target.closest(".adfix");
+  if(fx){ adCorrect(fx.dataset.tid, fx.dataset.kind, card); return; }
 
   const btn = e.target.closest("[data-act]");
   if(btn){
