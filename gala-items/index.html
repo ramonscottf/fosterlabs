@@ -71,6 +71,7 @@
   <div class="search"><input id="q" type="search" placeholder="Search by #, title, or tag…" autocomplete="off"></div>
   <div class="toolrow">
     <span class="count" id="count">Loading…</span>
+    <label><input type="checkbox" id="rwonly"> ✨ Rewritten only</label>
     <label><input type="checkbox" id="hidedone"> Hide done</label>
   </div>
 </header>
@@ -137,11 +138,14 @@ async function copyImage(url, btn){
 function render(){
   const q = document.getElementById("q").value.trim().toLowerCase();
   const hide = document.getElementById("hidedone").checked;
+  const rwonly = document.getElementById("rwonly").checked;
   let list = ITEMS;
   if(q) list = list.filter(it => (it.number+" "+it.title+" "+(it.tags||[]).join(" ")).toLowerCase().includes(q));
   if(hide) list = list.filter(it => !DONE.has(String(it.id)));
+  if(rwonly) list = list.filter(it => it._rw);
 
-  document.getElementById("count").innerHTML = `Showing <b>${list.length}</b> · Done <b>${DONE.size}</b>/${ITEMS.length}`;
+  const rwCount = ITEMS.filter(it=>it._rw).length;
+  document.getElementById("count").innerHTML = `Showing <b>${list.length}</b> · ✨ <b>${rwCount}</b> · Done <b>${DONE.size}</b>/${ITEMS.length}`;
   const wrap = document.getElementById("list");
   if(!list.length){ wrap.innerHTML = `<div class="empty">No items match.</div>`; return; }
 
@@ -159,7 +163,7 @@ function render(){
         <div class="ttl">${esc(it.title)}</div>
         <label class="donebox"><input type="checkbox" class="done-cb" ${done?'checked':''}> done</label>
       </div>
-      <div class="meta">${it.value?`<span class="val">${esc(it.value)}</span>`:""}${tags}</div>
+      <div class="meta">${it.value?`<span class="val">${esc(it.value)}</span>`:""}${it._rw?`<span class="tag" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a">✨ rewritten</span>`:""}${tags}</div>
       <div class="photo">${main}</div>
       ${thumbs}
       <div class="desc ${it.desc?'':'empty-d'}">${desc}</div>
@@ -198,7 +202,7 @@ document.addEventListener("change", e=>{
     document.getElementById("count").innerHTML = `Showing <b>${document.querySelectorAll(".item").length}</b> · Done <b>${DONE.size}</b>/${ITEMS.length}`;
     if(document.getElementById("hidedone").checked && e.target.checked) setTimeout(render,250);
   }
-  if(e.target.id==="hidedone") render();
+  if(e.target.id==="hidedone" || e.target.id==="rwonly") render();
 });
 document.getElementById("q").addEventListener("input", ()=>{ clearTimeout(window.__qt); window.__qt=setTimeout(render,120); });
 
@@ -207,6 +211,13 @@ document.getElementById("q").addEventListener("input", ()=>{ clearTimeout(window
     const r = await fetch(DATA_URL, {cache:"no-store"});
     const d = await r.json();
     ITEMS = (d.items||[]).slice().sort((a,b)=> (parseInt(a.number)||0)-(parseInt(b.number)||0));
+    try{
+      const rr = await fetch("./rewrites.json", {cache:"no-store"});
+      if(rr.ok){
+        const rw = await rr.json();
+        ITEMS.forEach(it=>{ const o = rw[String(it.id)]; if(o){ if(o.desc_html) it.desc_html = o.desc_html; if(o.desc!=null) it.desc = o.desc; it._rw = true; } });
+      }
+    }catch(_){}
     render();
   }catch(e){
     document.getElementById("list").innerHTML = `<div class="empty">Couldn't load items.<br><small>${esc(e.message||e)}</small></div>`;
