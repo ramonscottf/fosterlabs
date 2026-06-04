@@ -95,6 +95,7 @@
 const DATA_URL = "https://gala.daviskids.org/data/auction-items.json";
 const PROXY = u => "/api/img?u=" + encodeURIComponent(u);
 let ITEMS = [];
+let SAVED_IMAGES = {};
 const DONE = new Set(JSON.parse(localStorage.getItem("galaItemsDone") || "[]"));
 const saveDone = () => localStorage.setItem("galaItemsDone", JSON.stringify([...DONE]));
 const esc = s => (s==null?"":String(s)).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -203,6 +204,7 @@ async function enhanceImage(it, card, btn){
     const url = await pollImage(d.taskId, btn);
     const mainImg = card.querySelector("img.main");
     if(mainImg) mainImg.src = url;
+    saveGenerated(it.id, "enhanced", url);
     // make original + enhanced both reachable as thumbnails (tap to revert/compare)
     let thumbs = card.querySelector(".thumbs");
     if(!thumbs){
@@ -274,8 +276,35 @@ const AD_FIX = {
 function renderTileCaption(fig, rr){
   const cap = fig.querySelector("figcaption"); if(!cap) return;
   const fn = "gala-"+esc(String(rr.id))+"-"+esc(String(rr.label).toLowerCase().replace(/\s+/g,"-"))+".png";
-  cap.innerHTML = `<b>${esc(rr.label)}</b> · <a href="${PROXY(rr.url)}" download="${fn}">download</a> · <button class="adcopy" data-u="${esc(rr.url)}">copy</button>`
-    + `<div class="adfixrow"><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="fidelity">↻ fidelity</button><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="text">↻ less text</button><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="labels">↻ labels</button></div>`;
+  let html = `<b>${esc(rr.label)}</b> · <a href="${PROXY(rr.url)}" download="${fn}">download</a> · <button class="adcopy" data-u="${esc(rr.url)}">copy</button>`;
+  if(rr.taskId) html += `<div class="adfixrow"><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="fidelity">↻ fidelity</button><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="text">↻ less text</button><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="labels">↻ labels</button></div>`;
+  cap.innerHTML = html;
+}
+
+function saveGenerated(id, label, url){
+  try{
+    const k = String(id);
+    if(!SAVED_IMAGES[k]) SAVED_IMAGES[k] = [];
+    if(!SAVED_IMAGES[k].some(x=>x.url===url)) SAVED_IMAGES[k].unshift({url, label, ts:Date.now()});
+    SAVED_IMAGES[k] = SAVED_IMAGES[k].slice(0,8);
+  }catch(_){}
+  fetch("/api/gala-images", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id, label, url})}).catch(()=>{});
+}
+
+function populateSavedImages(){
+  document.querySelectorAll(".item").forEach(card=>{
+    const id = card.dataset.id;
+    const out = card.querySelector(".adout");
+    const saved = SAVED_IMAGES[id];
+    if(!out || out.children.length || !saved || !saved.length) return;
+    saved.forEach(rr=>{
+      const fig = document.createElement("figure"); fig.className = "adtile";
+      const im = document.createElement("img"); im.src = rr.url; im.alt = "";
+      fig.appendChild(im); fig.appendChild(document.createElement("figcaption"));
+      out.appendChild(fig);
+      renderTileCaption(fig, {label:rr.label||"saved", url:rr.url, taskId:"", id});
+    });
+  });
 }
 
 async function aiAdPair(it, card, btn){
@@ -301,6 +330,7 @@ async function aiAdPair(it, card, btn){
       out.innerHTML = "";
       results.forEach(rr=>{
         AD_JOBS[rr.taskId] = { basePrompt: rr.basePrompt, src, label: rr.label, id: it.id };
+        saveGenerated(it.id, rr.label, rr.url);
         const fig = document.createElement("figure"); fig.className = "adtile"; fig.dataset.tid = rr.taskId;
         const im = document.createElement("img"); im.src = rr.url; im.alt = "";
         fig.appendChild(im); fig.appendChild(document.createElement("figcaption"));
@@ -330,6 +360,7 @@ async function adCorrect(tid, kind, card){
     fig.dataset.tid = d.taskId;
     const im = fig.querySelector("img"); if(im) im.src = url;
     renderTileCaption(fig, {label:job.label, url, taskId:d.taskId, id:job.id});
+    saveGenerated(job.id, job.label, url);
     toast("Redone ✓");
   }catch(e){
     toast("Redo failed — "+(e.message||e)); if(cap) cap.innerHTML = old;
@@ -380,6 +411,7 @@ function render(){
       <div class="adout"></div>
     </div>`;
   }).join("");
+  populateSavedImages();
 }
 
 document.addEventListener("click", e=>{
@@ -430,6 +462,7 @@ document.getElementById("q").addEventListener("input", ()=>{ clearTimeout(window
     const applyOverlay = (rw)=>{ ITEMS.forEach(it=>{ const o = rw[String(it.id)]; if(o){ if(o.desc_html) it.desc_html = o.desc_html; if(o.desc!=null) it.desc = o.desc; it._rw = true; } }); };
     try{ const rr = await fetch("./rewrites.json", {cache:"no-store"}); if(rr.ok) applyOverlay(await rr.json()); }catch(_){}
     try{ const sr = await fetch("/api/gala-rewrites", {cache:"no-store"}); if(sr.ok) applyOverlay(await sr.json()); }catch(_){}
+    try{ const ir = await fetch("/api/gala-images", {cache:"no-store"}); if(ir.ok) SAVED_IMAGES = await ir.json(); }catch(_){}
     render();
   }catch(e){
     document.getElementById("list").innerHTML = `<div class="empty">Couldn't load items.<br><small>${esc(e.message||e)}</small></div>`;
