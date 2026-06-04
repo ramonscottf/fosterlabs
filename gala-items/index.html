@@ -58,6 +58,8 @@
   .btn:active{transform:scale(.97);}
   .btn.desc-b{background:#eef2ff;color:var(--indigo);}
   .btn.img-b{background:linear-gradient(95deg,var(--red),#883bb5 76%,var(--indigo));color:#fff;}
+  .btn.ai-b{width:100%;background:linear-gradient(95deg,var(--indigo),var(--navy));color:#fff;}
+  .airow{padding:0 14px 0;}
   .btn.ok{background:#16a34a!important;color:#fff!important;}
   .copytitle{display:block;width:100%;text-align:center;background:none;border:0;color:var(--muted);font-size:12px;padding:0 14px 12px;cursor:pointer;}
 
@@ -135,6 +137,35 @@ async function copyImage(url, btn){
   flash(btn,"URL copied"); toast("Long-press the photo to copy it");
 }
 
+async function aiRewrite(it, card, btn){
+  const orig = btn.dataset.orig || btn.textContent;
+  btn.dataset.orig = orig;
+  btn.disabled = true; btn.textContent = "✨ Writing…";
+  try{
+    const r = await fetch("/api/gala-rewrite", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({ title: it.title, desc: (it._orig || it.desc || ""), value: it.value, tags: it.tags||[] })
+    });
+    const d = await r.json();
+    if(!r.ok || !d.desc_html) throw new Error(d.error || ("HTTP "+r.status));
+    it.desc_html = d.desc_html;
+    it.desc = d.desc_html.replace(/<[^>]+>/g," ").replace(/\s+/g," ").trim();
+    it._rw = true;
+    const descEl = card.querySelector(".desc");
+    if(descEl){ descEl.classList.remove("empty-d"); descEl.innerHTML = d.desc_html; }
+    const meta = card.querySelector(".meta");
+    if(meta && !meta.querySelector(".rw-badge")){
+      const s=document.createElement("span"); s.className="tag rw-badge";
+      s.style.cssText="background:#fef3c7;color:#92400e;border:1px solid #fde68a"; s.textContent="✨ rewritten";
+      meta.insertBefore(s, meta.firstChild);
+    }
+    document.getElementById("count").innerHTML = `Showing <b>${document.querySelectorAll(".item").length}</b> · ✨ <b>${ITEMS.filter(x=>x._rw).length}</b> · Done <b>${DONE.size}</b>/${ITEMS.length}`;
+    toast("New copy ready ✓"); btn.textContent = "✨ Rewrite again";
+  }catch(e){
+    toast("Rewrite failed — "+(e.message||e)); btn.textContent = orig;
+  }finally{ btn.disabled = false; }
+}
+
 function render(){
   const q = document.getElementById("q").value.trim().toLowerCase();
   const hide = document.getElementById("hidedone").checked;
@@ -163,10 +194,11 @@ function render(){
         <div class="ttl">${esc(it.title)}</div>
         <label class="donebox"><input type="checkbox" class="done-cb" ${done?'checked':''}> done</label>
       </div>
-      <div class="meta">${it.value?`<span class="val">${esc(it.value)}</span>`:""}${it._rw?`<span class="tag" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a">✨ rewritten</span>`:""}${tags}</div>
+      <div class="meta">${it.value?`<span class="val">${esc(it.value)}</span>`:""}${it._rw?`<span class="tag rw-badge" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a">✨ rewritten</span>`:""}${tags}</div>
       <div class="photo">${main}</div>
       ${thumbs}
       <div class="desc ${it.desc?'':'empty-d'}">${desc}</div>
+      <div class="airow"><button class="btn ai-b" data-act="ai">✨ Rewrite with AI</button></div>
       <div class="btns">
         <button class="btn desc-b" data-act="desc">📋 Copy description</button>
         <button class="btn img-b" data-act="img" ${imgs.length?'':'disabled style=opacity:.4'}>🖼 Copy photo</button>
@@ -189,6 +221,7 @@ document.addEventListener("click", e=>{
     const act = btn.dataset.act;
     if(act==="desc") copyText(toMarkdown(it.desc_html||"") || it.desc || "", btn, "Description copied ✓");
     else if(act==="title") copyText(it.title||"", btn, "Title copied ✓");
+    else if(act==="ai") aiRewrite(it, card, btn);
     else if(act==="img"){ const cur = (card.querySelector("img.main")||{}).src || (it.images||[])[0]; if(cur) copyImage(cur, btn); }
     return;
   }
@@ -211,6 +244,7 @@ document.getElementById("q").addEventListener("input", ()=>{ clearTimeout(window
     const r = await fetch(DATA_URL, {cache:"no-store"});
     const d = await r.json();
     ITEMS = (d.items||[]).slice().sort((a,b)=> (parseInt(a.number)||0)-(parseInt(b.number)||0));
+    ITEMS.forEach(it=>{ it._orig = it.desc; });
     try{
       const rr = await fetch("./rewrites.json", {cache:"no-store"});
       if(rr.ok){
