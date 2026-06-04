@@ -220,7 +220,8 @@ async function enhanceImage(it, card, btn){
 function adCopyParts(it){
   const md = (typeof toMarkdown==='function' ? toMarkdown(it.desc_html||"") : "") || it.desc || "";
   const bold = md.match(/\*\*(.+?)\*\*/);
-  const headline = (bold ? bold[1] : (it.title||"")).replace(/\s+/g,' ').trim();
+  let headline = (bold ? bold[1] : (it.title||"")).replace(/\s+/g,' ').trim();
+  headline = headline.split(/\s+[—–-]\s+/)[0].trim();
   const ital = md.match(/(?:^|\n)\*([^*\n]{3,})\*\s*(?:\n|$)/);
   const tagline = ital ? ital[1].replace(/\s+/g,' ').trim() : "";
   const subhead = (it.title||"").replace(/\s+/g,' ').trim();
