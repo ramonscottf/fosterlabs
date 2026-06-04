@@ -38,6 +38,7 @@ export async function onRequestPost(context) {
   const title = (b.title || '').toString().slice(0, 300);
   const desc = (b.desc || '').toString().slice(0, 6000);
   const value = (b.value || '').toString().slice(0, 40);
+  const id = (b.id || '').toString().slice(0, 40);
   const tags = Array.isArray(b.tags) ? b.tags.join(', ') : (b.tags || '').toString();
   const model = (b.model || DEFAULT_MODEL).toString();
 
@@ -95,5 +96,22 @@ Rewrite it per the rules. Return JSON only.`;
   if (!out.desc_html) {
     return new Response(JSON.stringify({ error: 'no content returned' }), { status: 502, headers });
   }
-  return new Response(JSON.stringify({ desc_html: out.desc_html, model }), { headers });
+
+  const plain = out.desc_html
+    .replace(/<\/(p|li)>/gi, '\n').replace(/<li>/gi, '- ')
+    .replace(/<[^>]+>/g, '').replace(/&amp;/g, '&').replace(/\n{2,}/g, '\n').trim();
+
+  // Persist so it survives reload (single consolidated KV blob, keyed by item id)
+  let saved = false;
+  if (id && env.FOSTER_FINANCE) {
+    try {
+      const raw = await env.FOSTER_FINANCE.get('gala_rewrites_v1');
+      const all = raw ? JSON.parse(raw) : {};
+      all[id] = { desc_html: out.desc_html, desc: plain, ts: Date.now() };
+      await env.FOSTER_FINANCE.put('gala_rewrites_v1', JSON.stringify(all));
+      saved = true;
+    } catch (e) { /* non-fatal — session copy still works */ }
+  }
+
+  return new Response(JSON.stringify({ desc_html: out.desc_html, desc: plain, model, saved }), { headers });
 }

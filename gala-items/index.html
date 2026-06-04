@@ -144,7 +144,7 @@ async function aiRewrite(it, card, btn){
   try{
     const r = await fetch("/api/gala-rewrite", {
       method:"POST", headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({ title: it.title, desc: (it._orig || it.desc || ""), value: it.value, tags: it.tags||[] })
+      body: JSON.stringify({ id: it.id, title: it.title, desc: (it._orig || it.desc || ""), value: it.value, tags: it.tags||[] })
     });
     const d = await r.json();
     if(!r.ok || !d.desc_html) throw new Error(d.error || ("HTTP "+r.status));
@@ -245,13 +245,9 @@ document.getElementById("q").addEventListener("input", ()=>{ clearTimeout(window
     const d = await r.json();
     ITEMS = (d.items||[]).slice().sort((a,b)=> (parseInt(a.number)||0)-(parseInt(b.number)||0));
     ITEMS.forEach(it=>{ it._orig = it.desc; });
-    try{
-      const rr = await fetch("./rewrites.json", {cache:"no-store"});
-      if(rr.ok){
-        const rw = await rr.json();
-        ITEMS.forEach(it=>{ const o = rw[String(it.id)]; if(o){ if(o.desc_html) it.desc_html = o.desc_html; if(o.desc!=null) it.desc = o.desc; it._rw = true; } });
-      }
-    }catch(_){}
+    const applyOverlay = (rw)=>{ ITEMS.forEach(it=>{ const o = rw[String(it.id)]; if(o){ if(o.desc_html) it.desc_html = o.desc_html; if(o.desc!=null) it.desc = o.desc; it._rw = true; } }); };
+    try{ const rr = await fetch("./rewrites.json", {cache:"no-store"}); if(rr.ok) applyOverlay(await rr.json()); }catch(_){}
+    try{ const sr = await fetch("/api/gala-rewrites", {cache:"no-store"}); if(sr.ok) applyOverlay(await sr.json()); }catch(_){}
     render();
   }catch(e){
     document.getElementById("list").innerHTML = `<div class="empty">Couldn't load items.<br><small>${esc(e.message||e)}</small></div>`;
