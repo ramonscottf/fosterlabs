@@ -47,7 +47,10 @@
   .thumbs img{width:54px;height:34px;object-fit:cover;border-radius:6px;border:2px solid transparent;flex:0 0 auto;opacity:.6;cursor:pointer;}
   .thumbs img.sel{border-color:var(--gold);opacity:1;}
 
-  .desc{padding:11px 14px 4px;font-size:13.5px;color:#334155;max-height:120px;overflow:auto;}
+  .desc{padding:11px 14px 4px;font-size:13.5px;color:#334155;max-height:160px;overflow:auto;}
+  .desc p{margin:0 0 8px;} .desc p:last-child{margin-bottom:0;}
+  .desc ul,.desc ol{margin:0 0 8px;padding-left:20px;} .desc li{margin:0 0 4px;}
+  .desc strong,.desc b{color:#0f172a;font-weight:700;} .desc em,.desc i{font-style:italic;}
   .desc.empty-d{color:#94a3b8;font-style:italic;}
 
   .btns{display:flex;gap:8px;padding:12px 14px 14px;}
@@ -93,6 +96,27 @@ async function copyText(txt, btn, okLabel){
   flash(btn, okLabel); toast(okLabel);
 }
 
+function toMarkdown(html){
+  if(!html) return "";
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  function walk(node){
+    let out="";
+    node.childNodes.forEach(n=>{
+      if(n.nodeType===3){ out += n.textContent; return; }
+      if(n.nodeType!==1) return;
+      const tag=n.tagName.toLowerCase(), inner=walk(n);
+      if(tag==="p") out += inner.trim()+"\n\n";
+      else if(tag==="br") out += "\n";
+      else if(tag==="ul"||tag==="ol") out += "\n"+inner+"\n";
+      else if(tag==="li") out += "- "+inner.trim()+"\n";
+      else if(tag==="strong"||tag==="b") out += "**"+inner.trim()+"**";
+      else if(tag==="em"||tag==="i") out += "*"+inner.trim()+"*";
+      else out += inner;
+    });
+    return out;
+  }
+  return walk(doc.body).replace(/\n{3,}/g,"\n\n").trim();
+}
 function pngFrom(blob){
   if(blob.type==="image/png") return Promise.resolve(blob);
   return createImageBitmap(blob).then(bmp=>{ const c=document.createElement("canvas"); c.width=bmp.width; c.height=bmp.height; c.getContext("2d").drawImage(bmp,0,0); return new Promise(r=>c.toBlob(r,"image/png")); });
@@ -128,7 +152,7 @@ function render(){
     const main = imgs.length ? `<img class="main" src="${esc(imgs[0])}" alt="" loading="lazy">` : `<div class="nodesc">No photo</div>`;
     const thumbs = imgs.length>1 ? `<div class="thumbs">${imgs.map((u,i)=>`<img src="${esc(u)}" data-u="${esc(u)}" class="${i===0?'sel':''}" alt="">`).join("")}</div>` : "";
     const tags = (it.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
-    const desc = it.desc ? esc(it.desc) : "No description.";
+    const desc = it.desc_html ? it.desc_html : (it.desc ? esc(it.desc) : "No description.");
     return `<div class="item ${done?'done':''}" data-id="${id}">
       <div class="top">
         <span class="num">#${esc(it.number||"?")}</span>
@@ -159,7 +183,7 @@ document.addEventListener("click", e=>{
   const btn = e.target.closest("[data-act]");
   if(btn){
     const act = btn.dataset.act;
-    if(act==="desc") copyText(it.desc||"", btn, "Description copied ✓");
+    if(act==="desc") copyText(toMarkdown(it.desc_html||"") || it.desc || "", btn, "Description copied ✓");
     else if(act==="title") copyText(it.title||"", btn, "Title copied ✓");
     else if(act==="img"){ const cur = (card.querySelector("img.main")||{}).src || (it.images||[])[0]; if(cur) copyImage(cur, btn); }
     return;
