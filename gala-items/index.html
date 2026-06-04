@@ -217,8 +217,23 @@ async function enhanceImage(it, card, btn){
   }finally{ btn.disabled = false; }
 }
 
-const AD_SCENE = (title, hint)=>`Aspirational lifestyle product advertisement, 16:9, cinematic golden-hour lighting, premium photorealistic commercial quality. Feature the EXACT product from the reference image — preserve its real design, colors, materials, branding, logos and labels precisely; do not redesign, recolor, or invent anything. Show it naturally in ${hint && hint.trim() ? hint.trim() : "an attractive real-world setting that suits this product: "+title}. If a person appears, an attractive model in stylish, flattering clothing, looking happy and relaxed. Beautiful composition, shallow depth of field, professional commercial photography. Minimal or no text.`;
-const AD_WHITE = ()=>`Clean commercial studio product photograph, 16:9, pure white seamless background with a soft realistic drop shadow beneath. Show the EXACT product(s) from the reference image together, faithfully reproduced — preserve every logo, label, color, package and text detail exactly; do not alter, redesign or fabricate anything. Bright, even professional e-commerce lighting, crisp sharp focus, premium catalog quality. No added text or graphics.`;
+function adCopyParts(it){
+  const md = (typeof toMarkdown==='function' ? toMarkdown(it.desc_html||"") : "") || it.desc || "";
+  const bold = md.match(/\*\*(.+?)\*\*/);
+  const headline = (bold ? bold[1] : (it.title||"")).replace(/\s+/g,' ').trim();
+  const ital = md.match(/(?:^|\n)\*([^*\n]{3,})\*\s*(?:\n|$)/);
+  const tagline = ital ? ital[1].replace(/\s+/g,' ').trim() : "";
+  const subhead = (it.title||"").replace(/\s+/g,' ').trim();
+  return { headline, subhead, tagline };
+}
+const AD_SCENE = (it, hint)=>{
+  const {headline, subhead, tagline} = adCopyParts(it);
+  return `Aspirational 16:9 product advertisement, premium brand-hero style, cinematic golden-hour lighting, photorealistic, high-end commercial quality. Feature the EXACT product from the reference image ${hint && hint.trim() ? ("in this setting: "+hint.trim()) : "in an attractive real-world setting that suits it"}. If a person appears, an attractive model in stylish, flattering clothing, happy and relaxed. Preserve the product's real design, colors, branding, logos and labels precisely — do not invent or alter anything. Add clean, elegant advertising text, rendered crisply and spelled EXACTLY as written, placed tastefully with generous negative space (upper-left works well): large bold headline "${headline}"; small subhead "${subhead}"${tagline?('; small tagline "'+tagline+'"'):''}. Keep text minimal and uncluttered. Use the product's real brand logo if recognizable. No watermark, no gibberish text.`;
+};
+const AD_WHITE = (it)=>{
+  const {subhead} = adCopyParts(it);
+  return `Clean 16:9 commercial studio product photograph on a pure white seamless background with soft realistic drop shadows. Arrange the EXACT product(s) from the reference image together, faithfully reproduced — preserve every logo, label, color, package and text detail exactly; do not alter, redesign or fabricate anything. Bright, even professional e-commerce lighting, crisp focus, premium catalog quality. You may add a small, clean product title in the upper-left, rendered crisply and spelled EXACTLY: "${subhead}". No other text or graphics.`;
+};
 
 async function aiAdPair(it, card, btn){
   const imgs = it.images||[];
@@ -228,7 +243,7 @@ async function aiAdPair(it, card, btn){
   btn.disabled = true; btn.textContent = "✨ Submitting 2…";
   const out = card.querySelector(".adout"); if(out) out.innerHTML = "";
   const hint = ((card.querySelector(".adprompt")||{}).value || "").trim();
-  const jobs = [{label:"Aspirational", prompt:AD_SCENE(it.title, hint)}, {label:"White studio", prompt:AD_WHITE()}];
+  const jobs = [{label:"Aspirational", prompt:AD_SCENE(it, hint)}, {label:"White studio", prompt:AD_WHITE(it)}];
   try{
     const submitted = await Promise.all(jobs.map(async j=>{
       const r = await fetch("/api/gala-image", {method:"POST",headers:{"Content-Type":"application/json"},
