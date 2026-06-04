@@ -217,7 +217,7 @@ async function enhanceImage(it, card, btn){
   }finally{ btn.disabled = false; }
 }
 
-const AD_SCENE = (title)=>`Aspirational lifestyle product advertisement, 16:9, cinematic golden-hour lighting, premium photorealistic commercial quality. Feature the EXACT product from the reference image — preserve its real design, colors, materials, branding, logos and labels precisely; do not redesign, recolor, or invent anything. Show it naturally in an attractive real-world setting that suits this product: ${title}. If a person appears, an attractive model in stylish, flattering clothing, looking happy and relaxed. Beautiful composition, shallow depth of field, professional commercial photography. Minimal or no text.`;
+const AD_SCENE = (title, hint)=>`Aspirational lifestyle product advertisement, 16:9, cinematic golden-hour lighting, premium photorealistic commercial quality. Feature the EXACT product from the reference image — preserve its real design, colors, materials, branding, logos and labels precisely; do not redesign, recolor, or invent anything. Show it naturally in ${hint && hint.trim() ? hint.trim() : "an attractive real-world setting that suits this product: "+title}. If a person appears, an attractive model in stylish, flattering clothing, looking happy and relaxed. Beautiful composition, shallow depth of field, professional commercial photography. Minimal or no text.`;
 const AD_WHITE = ()=>`Clean commercial studio product photograph, 16:9, pure white seamless background with a soft realistic drop shadow beneath. Show the EXACT product(s) from the reference image together, faithfully reproduced — preserve every logo, label, color, package and text detail exactly; do not alter, redesign or fabricate anything. Bright, even professional e-commerce lighting, crisp sharp focus, premium catalog quality. No added text or graphics.`;
 
 async function aiAdPair(it, card, btn){
@@ -227,7 +227,8 @@ async function aiAdPair(it, card, btn){
   const orig = btn.dataset.orig || btn.textContent; btn.dataset.orig = orig;
   btn.disabled = true; btn.textContent = "✨ Submitting 2…";
   const out = card.querySelector(".adout"); if(out) out.innerHTML = "";
-  const jobs = [{label:"Aspirational", prompt:AD_SCENE(it.title)}, {label:"White studio", prompt:AD_WHITE()}];
+  const hint = ((card.querySelector(".adprompt")||{}).value || "").trim();
+  const jobs = [{label:"Aspirational", prompt:AD_SCENE(it.title, hint)}, {label:"White studio", prompt:AD_WHITE()}];
   try{
     const submitted = await Promise.all(jobs.map(async j=>{
       const r = await fetch("/api/gala-image", {method:"POST",headers:{"Content-Type":"application/json"},
@@ -287,6 +288,7 @@ function render(){
       <div class="desc ${it.desc?'':'empty-d'}">${desc}</div>
       <div class="airow"><button class="btn ai-b" data-act="ai">✨ Rewrite with AI</button></div>
       <div class="airow" style="padding-top:8px"><button class="btn enh-b" data-act="enh" ${imgs.length?'':'disabled style="opacity:.4"'}>🎨 Enhance photo with AI</button></div>
+      <div class="airow" style="padding-top:8px"><input class="adprompt" type="text" placeholder="optional scene hint (e.g. alpine lakeside at sunrise)…" style="width:100%;font:inherit;font-size:13px;padding:9px 11px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)"></div>
       <div class="airow" style="padding-top:8px"><button class="btn ad-b" data-act="adpair" ${imgs.length?'':'disabled style="opacity:.4"'}>✨ Ad pair: scene + white (16:9)</button></div>
       <div class="btns">
         <button class="btn desc-b" data-act="desc">📋 Copy description</button>
