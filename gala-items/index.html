@@ -59,6 +59,7 @@
   .btn.desc-b{background:#eef2ff;color:var(--indigo);}
   .btn.img-b{background:linear-gradient(95deg,var(--red),#883bb5 76%,var(--indigo));color:#fff;}
   .btn.ai-b{width:100%;background:linear-gradient(95deg,var(--indigo),var(--navy));color:#fff;}
+  .btn.enh-b{width:100%;background:linear-gradient(95deg,var(--gold),#e0972b);color:#3a2a00;}
   .airow{padding:0 14px 0;}
   .btn.ok{background:#16a34a!important;color:#fff!important;}
   .copytitle{display:block;width:100%;text-align:center;background:none;border:0;color:var(--muted);font-size:12px;padding:0 14px 12px;cursor:pointer;}
@@ -166,6 +167,50 @@ async function aiRewrite(it, card, btn){
   }finally{ btn.disabled = false; }
 }
 
+async function pollImage(taskId, btn){
+  const start = Date.now(); let delay = 2500;
+  while(Date.now() - start < 120000){
+    await new Promise(r=>setTimeout(r, delay));
+    let d; try{ d = await (await fetch("/api/gala-image?taskId="+encodeURIComponent(taskId), {cache:"no-store"})).json(); }catch(_){ d={}; }
+    if(d.state==="success" && d.imageUrl) return d.imageUrl;
+    if(d.state==="fail") throw new Error(d.failMsg || "generation failed");
+    if(btn) btn.textContent = "🎨 "+(d.state||"working")+"…";
+    delay = Math.min(delay+1000, 6000);
+  }
+  throw new Error("timed out");
+}
+
+async function enhanceImage(it, card, btn){
+  const imgs = it.images||[];
+  if(!imgs.length){ toast("No photo to enhance"); return; }
+  const src = (card.querySelector("img.main")||{}).src || imgs[0];
+  const orig = btn.dataset.orig || btn.textContent; btn.dataset.orig = orig;
+  btn.disabled = true; btn.textContent = "🎨 Submitting…";
+  try{
+    const r = await fetch("/api/gala-image", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({id:it.id, imageUrl:src})});
+    const d = await r.json();
+    if(!r.ok || !d.taskId) throw new Error(d.error || ("HTTP "+r.status));
+    btn.textContent = "🎨 Generating…";
+    const url = await pollImage(d.taskId, btn);
+    const mainImg = card.querySelector("img.main");
+    if(mainImg) mainImg.src = url;
+    // make original + enhanced both reachable as thumbnails (tap to revert/compare)
+    let thumbs = card.querySelector(".thumbs");
+    if(!thumbs){
+      thumbs = document.createElement("div"); thumbs.className = "thumbs";
+      const o = document.createElement("img"); o.src = imgs[0]; o.dataset.u = imgs[0]; o.alt = "";
+      thumbs.appendChild(o);
+      card.querySelector(".photo").insertAdjacentElement("afterend", thumbs);
+    }
+    thumbs.querySelectorAll("img").forEach(x=>x.classList.remove("sel"));
+    const t = document.createElement("img"); t.src = url; t.dataset.u = url; t.className = "sel"; t.alt = "";
+    thumbs.appendChild(t);
+    toast("Enhanced ✓ — tap a thumbnail to compare"); btn.textContent = "🎨 Enhance again";
+  }catch(e){
+    toast("Enhance failed — "+(e.message||e)); btn.textContent = orig;
+  }finally{ btn.disabled = false; }
+}
+
 function render(){
   const q = document.getElementById("q").value.trim().toLowerCase();
   const hide = document.getElementById("hidedone").checked;
@@ -199,6 +244,7 @@ function render(){
       ${thumbs}
       <div class="desc ${it.desc?'':'empty-d'}">${desc}</div>
       <div class="airow"><button class="btn ai-b" data-act="ai">✨ Rewrite with AI</button></div>
+      <div class="airow" style="padding-top:8px"><button class="btn enh-b" data-act="enh" ${imgs.length?'':'disabled style="opacity:.4"'}>🎨 Enhance photo with AI</button></div>
       <div class="btns">
         <button class="btn desc-b" data-act="desc">📋 Copy description</button>
         <button class="btn img-b" data-act="img" ${imgs.length?'':'disabled style=opacity:.4'}>🖼 Copy photo</button>
@@ -222,6 +268,7 @@ document.addEventListener("click", e=>{
     if(act==="desc") copyText(toMarkdown(it.desc_html||"") || it.desc || "", btn, "Description copied ✓");
     else if(act==="title") copyText(it.title||"", btn, "Title copied ✓");
     else if(act==="ai") aiRewrite(it, card, btn);
+    else if(act==="enh") enhanceImage(it, card, btn);
     else if(act==="img"){ const cur = (card.querySelector("img.main")||{}).src || (it.images||[])[0]; if(cur) copyImage(cur, btn); }
     return;
   }
