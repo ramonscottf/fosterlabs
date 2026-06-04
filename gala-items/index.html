@@ -45,6 +45,7 @@
   .photo .nodesc{display:flex;align-items:center;justify-content:center;aspect-ratio:16/9;color:#475569;font-size:13px;background:#e2e8f0;}
   .thumbs{display:flex;gap:6px;padding:8px 10px;overflow-x:auto;background:#0b1020;}
   .thumbs img{width:54px;height:34px;object-fit:cover;border-radius:6px;border:2px solid transparent;flex:0 0 auto;opacity:.6;cursor:pointer;}
+  .thumbs img.genthumb{border-color:#7c3aed;opacity:1;}
   .thumbs img.sel{border-color:var(--gold);opacity:1;}
 
   .desc{padding:11px 14px 4px;font-size:13.5px;color:#334155;max-height:160px;overflow:auto;}
@@ -99,6 +100,7 @@ let SAVED_IMAGES = {};
 const DONE = new Set(JSON.parse(localStorage.getItem("galaItemsDone") || "[]"));
 const saveDone = () => localStorage.setItem("galaItemsDone", JSON.stringify([...DONE]));
 const esc = s => (s==null?"":String(s)).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const slug = s => String(s||"").toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-+|-+$/g,"").slice(0,48);
 
 let toastT;
 function toast(msg){ const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),1600); }
@@ -275,10 +277,30 @@ const AD_FIX = {
 
 function renderTileCaption(fig, rr){
   const cap = fig.querySelector("figcaption"); if(!cap) return;
-  const fn = "gala-"+esc(String(rr.id))+"-"+esc(String(rr.label).toLowerCase().replace(/\s+/g,"-"))+".png";
+  const it = ITEMS.find(x=>String(x.id)===String(rr.id)) || {};
+  const num = it.number ? slug(it.number) : slug(rr.id);
+  const fn = [num, slug(it.title||""), slug(rr.label)].filter(Boolean).join("-").slice(0,80) + ".png";
   let html = `<b>${esc(rr.label)}</b> · <a href="${PROXY(rr.url)}" download="${fn}">download</a> · <button class="adcopy" data-u="${esc(rr.url)}">copy</button>`;
   if(rr.taskId) html += `<div class="adfixrow"><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="fidelity">↻ fidelity</button><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="text">↻ less text</button><button class="adfix" data-tid="${esc(rr.taskId)}" data-kind="labels">↻ labels</button></div>`;
   cap.innerHTML = html;
+}
+
+// Add a generated image into the item's TOP photo gallery (alongside the original photos)
+function addGenThumb(card, it, url, label, makeMain){
+  if(!card || !url) return;
+  let thumbs = card.querySelector(".thumbs");
+  if(!thumbs){
+    thumbs = document.createElement("div"); thumbs.className = "thumbs";
+    const orig = ((it&&it.images)||[])[0] || (card.querySelector("img.main")||{}).src || "";
+    if(orig){ const o = document.createElement("img"); o.src = orig; o.dataset.u = orig; o.alt = ""; thumbs.appendChild(o); }
+    const photo = card.querySelector(".photo"); if(photo) photo.insertAdjacentElement("afterend", thumbs);
+  }
+  let t = [...thumbs.querySelectorAll("img")].find(x=>x.dataset.u===url);
+  if(!t){ t = document.createElement("img"); t.src = url; t.dataset.u = url; t.alt = ""; t.className = "genthumb"; if(label) t.title = label; thumbs.appendChild(t); }
+  if(makeMain){
+    const main = card.querySelector("img.main"); if(main) main.src = url;
+    thumbs.querySelectorAll("img").forEach(x=>x.classList.toggle("sel", x===t));
+  }
 }
 
 function saveGenerated(id, label, url){
@@ -294,16 +316,22 @@ function saveGenerated(id, label, url){
 function populateSavedImages(){
   document.querySelectorAll(".item").forEach(card=>{
     const id = card.dataset.id;
+    const it = ITEMS.find(x=>String(x.id)===id);
     const out = card.querySelector(".adout");
     const saved = SAVED_IMAGES[id];
-    if(!out || out.children.length || !saved || !saved.length) return;
-    saved.forEach(rr=>{
-      const fig = document.createElement("figure"); fig.className = "adtile";
-      const im = document.createElement("img"); im.src = rr.url; im.alt = "";
-      fig.appendChild(im); fig.appendChild(document.createElement("figcaption"));
-      out.appendChild(fig);
-      renderTileCaption(fig, {label:rr.label||"saved", url:rr.url, taskId:"", id});
-    });
+    if(!saved || !saved.length) return;
+    // add to the TOP photo gallery (newest first → append oldest→newest so order reads naturally)
+    [...saved].reverse().forEach(rr=> addGenThumb(card, it, rr.url, rr.label, false));
+    // and the download/copy/redo panel below
+    if(out && !out.children.length){
+      saved.forEach(rr=>{
+        const fig = document.createElement("figure"); fig.className = "adtile";
+        const im = document.createElement("img"); im.src = rr.url; im.alt = "";
+        fig.appendChild(im); fig.appendChild(document.createElement("figcaption"));
+        out.appendChild(fig);
+        renderTileCaption(fig, {label:rr.label||"saved", url:rr.url, taskId:"", id});
+      });
+    }
   });
 }
 
@@ -328,9 +356,10 @@ async function aiAdPair(it, card, btn){
     const results = await Promise.all(submitted.map(j => pollImage(j.taskId).then(url=>({label:j.label, url, taskId:j.taskId, basePrompt:j.prompt}))));
     if(out){
       out.innerHTML = "";
-      results.forEach(rr=>{
+      results.forEach((rr,idx)=>{
         AD_JOBS[rr.taskId] = { basePrompt: rr.basePrompt, src, label: rr.label, id: it.id };
         saveGenerated(it.id, rr.label, rr.url);
+        addGenThumb(card, it, rr.url, rr.label, idx===0);
         const fig = document.createElement("figure"); fig.className = "adtile"; fig.dataset.tid = rr.taskId;
         const im = document.createElement("img"); im.src = rr.url; im.alt = "";
         fig.appendChild(im); fig.appendChild(document.createElement("figcaption"));
@@ -361,6 +390,7 @@ async function adCorrect(tid, kind, card){
     const im = fig.querySelector("img"); if(im) im.src = url;
     renderTileCaption(fig, {label:job.label, url, taskId:d.taskId, id:job.id});
     saveGenerated(job.id, job.label, url);
+    addGenThumb(card, ITEMS.find(x=>String(x.id)===String(job.id)), url, job.label, true);
     toast("Redone ✓");
   }catch(e){
     toast("Redo failed — "+(e.message||e)); if(cap) cap.innerHTML = old;
