@@ -66,9 +66,25 @@ export async function onRequestGet(context) {
 
   const data = await resp.json().catch(() => ({}));
   const d = data.data || {};
-  let url = null;
+  let url = null, tempUrl = null;
   if (d.state === 'success' && d.resultJson) {
-    try { url = (JSON.parse(d.resultJson).resultUrls || [])[0] || null; } catch (_) {}
+    try { tempUrl = (JSON.parse(d.resultJson).resultUrls || [])[0] || null; } catch (_) {}
+    url = tempUrl;
+    if (tempUrl && env.GALA_ASSETS) {
+      const key = 'gen/' + taskId + '.png';
+      try {
+        let exists = null;
+        try { exists = await env.GALA_ASSETS.head(key); } catch (_) {}
+        if (!exists) {
+          const ir = await fetch(tempUrl);
+          if (ir.ok) {
+            const buf = await ir.arrayBuffer();
+            await env.GALA_ASSETS.put(key, buf, { httpMetadata: { contentType: 'image/png' } });
+          }
+        }
+        url = new URL(request.url).origin + '/gala-img/' + key; // permanent
+      } catch (e) { /* keep temp url as fallback */ }
+    }
   }
-  return new Response(JSON.stringify({ state: d.state || 'unknown', imageUrl: url, failMsg: d.failMsg || '' }), { headers });
+  return new Response(JSON.stringify({ state: d.state || 'unknown', imageUrl: url, tempUrl, failMsg: d.failMsg || '' }), { headers });
 }
