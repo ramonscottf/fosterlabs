@@ -60,6 +60,12 @@
   .btn.img-b{background:linear-gradient(95deg,var(--red),#883bb5 76%,var(--indigo));color:#fff;}
   .btn.ai-b{width:100%;background:linear-gradient(95deg,var(--indigo),var(--navy));color:#fff;}
   .btn.enh-b{width:100%;background:linear-gradient(95deg,var(--gold),#e0972b);color:#3a2a00;}
+  .btn.ad-b{width:100%;background:linear-gradient(95deg,#7c3aed,#4d54b3);color:#fff;}
+  .adout{padding:2px 14px 8px;display:flex;flex-direction:column;gap:12px;}
+  .adtile img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:10px;background:#0b1020;display:block;}
+  .adtile figcaption{font-size:12px;color:var(--muted);padding-top:5px;}
+  .adtile a{color:var(--indigo);font-weight:700;text-decoration:none;}
+  .adtile .adcopy{font:inherit;font-size:12px;font-weight:700;color:var(--indigo);background:none;border:0;cursor:pointer;padding:0;}
   .airow{padding:0 14px 0;}
   .btn.ok{background:#16a34a!important;color:#fff!important;}
   .copytitle{display:block;width:100%;text-align:center;background:none;border:0;color:var(--muted);font-size:12px;padding:0 14px 12px;cursor:pointer;}
@@ -211,6 +217,42 @@ async function enhanceImage(it, card, btn){
   }finally{ btn.disabled = false; }
 }
 
+const AD_SCENE = (title)=>`Aspirational lifestyle product advertisement, 16:9, cinematic golden-hour lighting, premium photorealistic commercial quality. Feature the EXACT product from the reference image — preserve its real design, colors, materials, branding, logos and labels precisely; do not redesign, recolor, or invent anything. Show it naturally in an attractive real-world setting that suits this product: ${title}. If a person appears, an attractive model in stylish, flattering clothing, looking happy and relaxed. Beautiful composition, shallow depth of field, professional commercial photography. Minimal or no text.`;
+const AD_WHITE = ()=>`Clean commercial studio product photograph, 16:9, pure white seamless background with a soft realistic drop shadow beneath. Show the EXACT product(s) from the reference image together, faithfully reproduced — preserve every logo, label, color, package and text detail exactly; do not alter, redesign or fabricate anything. Bright, even professional e-commerce lighting, crisp sharp focus, premium catalog quality. No added text or graphics.`;
+
+async function aiAdPair(it, card, btn){
+  const imgs = it.images||[];
+  if(!imgs.length){ toast("No photo to use"); return; }
+  const src = (card.querySelector("img.main")||{}).src || imgs[0];
+  const orig = btn.dataset.orig || btn.textContent; btn.dataset.orig = orig;
+  btn.disabled = true; btn.textContent = "✨ Submitting 2…";
+  const out = card.querySelector(".adout"); if(out) out.innerHTML = "";
+  const jobs = [{label:"Aspirational", prompt:AD_SCENE(it.title)}, {label:"White studio", prompt:AD_WHITE()}];
+  try{
+    const submitted = await Promise.all(jobs.map(async j=>{
+      const r = await fetch("/api/gala-image", {method:"POST",headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ id:it.id, imageUrl:src, model:"nano-banana-pro", aspect_ratio:"16:9", resolution:"2K", prompt:j.prompt })});
+      const d = await r.json();
+      if(!r.ok || !d.taskId) throw new Error(d.error || ("HTTP "+r.status));
+      return { ...j, taskId:d.taskId };
+    }));
+    btn.textContent = "✨ Generating 2…";
+    const results = await Promise.all(submitted.map(j => pollImage(j.taskId).then(url=>({label:j.label, url}))));
+    if(out){
+      out.innerHTML = results.map(rr=>{
+        const fn = "gala-"+esc(String(it.id))+"-"+esc(rr.label.toLowerCase().replace(/\s+/g,"-"))+".png";
+        return `<figure class="adtile">
+          <img src="${esc(rr.url)}" alt="">
+          <figcaption><b>${esc(rr.label)}</b> · <a href="${PROXY(rr.url)}" download="${fn}">download</a> · <button class="adcopy" data-u="${esc(rr.url)}">copy</button></figcaption>
+        </figure>`;
+      }).join("");
+    }
+    toast("2 ad images ready ✓"); btn.textContent = "✨ Make 2 again";
+  }catch(e){
+    toast("Ad gen failed — "+(e.message||e)); btn.textContent = orig;
+  }finally{ btn.disabled = false; }
+}
+
 function render(){
   const q = document.getElementById("q").value.trim().toLowerCase();
   const hide = document.getElementById("hidedone").checked;
@@ -245,11 +287,13 @@ function render(){
       <div class="desc ${it.desc?'':'empty-d'}">${desc}</div>
       <div class="airow"><button class="btn ai-b" data-act="ai">✨ Rewrite with AI</button></div>
       <div class="airow" style="padding-top:8px"><button class="btn enh-b" data-act="enh" ${imgs.length?'':'disabled style="opacity:.4"'}>🎨 Enhance photo with AI</button></div>
+      <div class="airow" style="padding-top:8px"><button class="btn ad-b" data-act="adpair" ${imgs.length?'':'disabled style="opacity:.4"'}>✨ Ad pair: scene + white (16:9)</button></div>
       <div class="btns">
         <button class="btn desc-b" data-act="desc">📋 Copy description</button>
         <button class="btn img-b" data-act="img" ${imgs.length?'':'disabled style=opacity:.4'}>🖼 Copy photo</button>
       </div>
       <button class="copytitle" data-act="title">copy title only</button>
+      <div class="adout"></div>
     </div>`;
   }).join("");
 }
@@ -262,6 +306,9 @@ document.addEventListener("click", e=>{
   const thumb = e.target.closest(".thumbs img");
   if(thumb){ card.querySelector("img.main").src = thumb.dataset.u; card.querySelectorAll(".thumbs img").forEach(t=>t.classList.toggle("sel",t===thumb)); return; }
 
+  const ac = e.target.closest(".adcopy");
+  if(ac){ copyImage(ac.dataset.u, ac); return; }
+
   const btn = e.target.closest("[data-act]");
   if(btn){
     const act = btn.dataset.act;
@@ -269,6 +316,7 @@ document.addEventListener("click", e=>{
     else if(act==="title") copyText(it.title||"", btn, "Title copied ✓");
     else if(act==="ai") aiRewrite(it, card, btn);
     else if(act==="enh") enhanceImage(it, card, btn);
+    else if(act==="adpair") aiAdPair(it, card, btn);
     else if(act==="img"){ const cur = (card.querySelector("img.main")||{}).src || (it.images||[])[0]; if(cur) copyImage(cur, btn); }
     return;
   }

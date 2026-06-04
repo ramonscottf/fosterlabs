@@ -1,14 +1,26 @@
 // /api/gala-image
-//   POST { id, imageUrl, prompt? }            -> { taskId }
-//   GET  ?taskId=...                          -> { state, imageUrl, failMsg }
-// Enhances the REAL product photo via Kie.ai Nano Banana Edit (keeps the item accurate).
+//   POST { id, imageUrl, prompt?, model?, aspect_ratio?, resolution? } -> { taskId }
+//   GET  ?taskId=...                                                   -> { state, imageUrl, failMsg }
+// Image gen via Kie.ai. Default model google/nano-banana-edit (single photo cleanup, uses image_urls).
+// model "nano-banana-pro" -> Nano Banana Pro (uses image_input + aspect_ratio + resolution).
 // Needs KIE_API_KEY as a Pages env var.
 
 const SUBMIT = 'https://api.kie.ai/api/v1/jobs/createTask';
 const POLL   = 'https://api.kie.ai/api/v1/jobs/recordInfo';
-const MODEL  = 'google/nano-banana-edit';
 
-const DEFAULT_PROMPT = `Professional product photograph for an online charity-auction listing. Keep the product itself EXACTLY the same — identical shape, colors, materials, branding, labels, and details. Do NOT redesign, restyle, recolor, or invent any part of the product. Change ONLY the presentation: replace a cluttered or distracting background with a clean, softly lit neutral studio backdrop, improve lighting, sharpness, white balance, and exposure, and remove clutter. Photorealistic, crisp, e-commerce quality. Do not add any text, logos, watermarks, or new objects.`;
+const DEFAULT_PROMPT = `Professional product photograph for an online charity-auction listing. Keep the product itself EXACTLY the same — identical shape, colors, materials, branding, labels, and details. Do NOT redesign, restyle, recolor, or invent any part of the product. Change ONLY the presentation: replace a cluttered background with a clean, softly lit neutral studio backdrop, improve lighting, sharpness, white balance and exposure, remove clutter. Photorealistic, crisp, e-commerce quality. No added text, logos, watermarks, or new objects.`;
+
+function buildInput(model, prompt, imageUrl, aspect_ratio, resolution) {
+  const isPro = /pro/i.test(model);
+  const input = { prompt, output_format: 'png' };
+  if (imageUrl) {
+    if (isPro) input.image_input = [imageUrl];   // Nano Banana Pro
+    else input.image_urls = [imageUrl];          // Nano Banana Edit
+  }
+  if (aspect_ratio) input.aspect_ratio = aspect_ratio;
+  if (isPro) input.resolution = resolution || '2K';
+  return input;
+}
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -18,15 +30,18 @@ export async function onRequestPost(context) {
   let b;
   try { b = await request.json(); } catch { return new Response(JSON.stringify({ error: 'bad json' }), { status: 400, headers }); }
   const imageUrl = (b.imageUrl || '').toString();
-  if (!imageUrl) return new Response(JSON.stringify({ error: 'imageUrl required' }), { status: 400, headers });
-  const prompt = (b.prompt || DEFAULT_PROMPT).toString().slice(0, 2000);
+  const model = (b.model || 'google/nano-banana-edit').toString();
+  const aspect_ratio = b.aspect_ratio ? b.aspect_ratio.toString() : '';
+  const resolution = b.resolution ? b.resolution.toString() : '';
+  const prompt = (b.prompt || DEFAULT_PROMPT).toString().slice(0, 2500);
+  if (!imageUrl && !/text/i.test(model)) { /* image-to-image needs a source, but allow text models without */ }
 
   let resp;
   try {
     resp = await fetch(SUBMIT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + env.KIE_API_KEY },
-      body: JSON.stringify({ model: MODEL, input: { prompt, image_urls: [imageUrl], output_format: 'png' } }),
+      body: JSON.stringify({ model, input: buildInput(model, prompt, imageUrl, aspect_ratio, resolution) }),
     });
   } catch (e) { return new Response(JSON.stringify({ error: 'submit request failed' }), { status: 502, headers }); }
 
