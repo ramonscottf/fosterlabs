@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0E1B2A">
+<title>Summer Expedition — Mission Run</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0E1B2A;--navy-soft:#16293d;--paper:#FBF9F4;--orange:#FF6B35;--teal:#1FB8A6;--slate:#5B6B7B;--sky:#DCEEF5;--ink:#16202b;--line:#d7dde3;--good:#2bbd7e;--miss:#e8654e;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{background:var(--navy);color:#fff;font-family:'Nunito',sans-serif;line-height:1.45;overflow-x:hidden;}
+  #app{min-height:100%;max-width:760px;margin:0 auto;padding:20px 18px 40px;display:flex;flex-direction:column;}
+  .mono{font-family:'Space Mono',monospace;}
+  .frac{display:inline-flex;flex-direction:column;text-align:center;vertical-align:middle;margin:0 2px;font-family:'Space Mono',monospace;font-weight:700;line-height:1.04;}
+  .frac .n{padding:0 4px;}.frac .d{padding:1px 4px 0;border-top:2px solid currentColor;}
+
+  /* top bar */
+  .bar{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.16);padding-bottom:12px;margin-bottom:18px;}
+  .bar .brand{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.16em;color:var(--teal);text-transform:uppercase;}
+  .bar .right{display:flex;gap:8px;align-items:center;}
+  .iconbtn{background:transparent;border:1.5px solid rgba(255,255,255,.3);color:#fff;border-radius:9px;width:38px;height:34px;font-size:15px;cursor:pointer;}
+  .iconbtn:active{transform:translateY(1px);}
+
+  /* HOME */
+  .hero{text-align:left;margin-bottom:6px;}
+  .eyebrow{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.28em;color:var(--orange);text-transform:uppercase;margin-bottom:8px;}
+  h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:clamp(40px,11vw,64px);line-height:.92;letter-spacing:-.01em;}
+  h1 .r2{color:var(--orange);display:block;}
+  .lede{font-size:16px;color:#cfe0ec;margin-top:14px;font-weight:600;max-width:46ch;}
+  .commander{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.06em;color:var(--teal);margin-top:14px;}
+  .progress-note{font-family:'Space Mono',monospace;font-size:11px;color:var(--slate);margin:22px 0 10px;letter-spacing:.04em;text-transform:uppercase;}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media(min-width:560px){.grid{grid-template-columns:repeat(4,1fr);}}
+  .mtile{background:var(--navy-soft);border:1.5px solid rgba(255,255,255,.12);border-radius:16px;padding:16px 12px 14px;text-align:center;cursor:pointer;transition:transform .08s ease,border-color .15s ease;position:relative;}
+  .mtile:active{transform:scale(.97);}
+  .mtile:hover{border-color:rgba(255,107,53,.5);}
+  .mbadge{width:54px;height:54px;margin:0 auto 8px;border-radius:50%;border:2.5px solid var(--line);display:flex;align-items:center;justify-content:center;font-family:'Baloo 2',cursive;font-weight:800;font-size:22px;color:var(--line);background:rgba(0,0,0,.15);}
+  .mtile.done .mbadge{border-color:var(--teal);color:var(--teal);box-shadow:0 0 0 4px rgba(31,184,166,.14);}
+  .mtile .mt{font-size:12.5px;font-weight:700;line-height:1.2;color:#eaf2f7;min-height:30px;}
+  .mtile .ms{font-family:'Space Mono',monospace;font-size:10px;color:var(--slate);margin-top:5px;letter-spacing:.04em;}
+  .mtile .stars{font-size:11px;margin-top:4px;color:var(--orange);min-height:14px;letter-spacing:1px;}
+  .footnote{font-size:12.5px;color:var(--slate);margin-top:26px;text-align:center;}
+  .footnote a{color:var(--teal);}
+
+  /* PLAY */
+  .play{display:flex;flex-direction:column;min-height:78vh;}
+  .phead{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+  .phead .mno{font-family:'Space Mono',monospace;font-weight:700;font-size:12px;color:#fff;background:var(--orange);padding:6px 11px;border-radius:8px;letter-spacing:.06em;}
+  .phead .ptitle{font-family:'Baloo 2',cursive;font-weight:700;font-size:20px;flex:1;line-height:1;}
+  .stat{font-family:'Space Mono',monospace;font-size:12px;color:var(--teal);text-align:right;line-height:1.3;}
+  .stat b{color:#fff;font-size:15px;}
+
+  .stage{display:flex;gap:16px;flex:1;}
+  /* rocket track */
+  .track{width:46px;flex:none;display:flex;flex-direction:column-reverse;align-items:center;justify-content:space-between;border-left:2px dashed rgba(255,255,255,.18);position:relative;padding:4px 0;}
+  .rung{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.18);}
+  .rung.lit{background:var(--teal);box-shadow:0 0 6px var(--teal);}
+  .star{font-size:20px;margin-bottom:2px;}
+  .rocket{position:absolute;left:50%;transform:translateX(-50%);font-size:24px;transition:bottom .45s cubic-bezier(.3,1.4,.5,1);bottom:0;}
+  .qzone{flex:1;display:flex;flex-direction:column;}
+  .objline{font-family:'Space Mono',monospace;font-size:11px;color:var(--slate);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;}
+  .qcard{background:#fff;color:var(--ink);border-radius:18px;padding:30px 24px;text-align:center;font-size:clamp(22px,6vw,30px);font-weight:700;font-family:'Space Mono',monospace;min-height:118px;display:flex;align-items:center;justify-content:center;flex-wrap:wrap;}
+  .qcard b{font-weight:700;}
+  .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:16px;}
+  .choice{background:var(--navy-soft);border:2px solid rgba(255,255,255,.16);color:#fff;border-radius:14px;padding:18px 12px;font-size:21px;font-weight:700;font-family:'Space Mono',monospace;cursor:pointer;transition:transform .07s ease,background .12s ease,border-color .12s ease;min-height:60px;display:flex;align-items:center;justify-content:center;}
+  .choice:active{transform:scale(.97);}
+  .choice:hover{border-color:rgba(255,107,53,.55);}
+  .choice.ok{background:var(--good);border-color:var(--good);color:#04240f;}
+  .choice.no{background:var(--miss);border-color:var(--miss);color:#2c0a04;}
+  .choice.dim{opacity:.4;}
+  .feedback{text-align:center;font-family:'Space Mono',monospace;font-size:14px;margin-top:16px;min-height:22px;font-weight:700;letter-spacing:.02em;}
+  .feedback.good{color:var(--good);}.feedback.miss{color:var(--orange);}
+  .quit{margin-top:14px;text-align:center;}
+  .quit button{background:transparent;border:none;color:var(--slate);font-family:'Space Mono',monospace;font-size:12px;cursor:pointer;text-decoration:underline;letter-spacing:.04em;}
+
+  /* CLEAR */
+  .clear{text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;}
+  .clear .seal{width:128px;height:128px;border-radius:50%;border:3px solid var(--orange);display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 0 0 7px rgba(255,107,53,.12);margin-bottom:24px;}
+  .clear .seal .sk{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--teal);}
+  .clear .seal .sg{font-family:'Baloo 2',cursive;font-weight:800;font-size:34px;color:#fff;line-height:.9;}
+  .clear .ck{font-family:'Space Mono',monospace;letter-spacing:.28em;color:var(--teal);text-transform:uppercase;font-size:13px;margin-bottom:10px;}
+  .clear h2{font-family:'Baloo 2',cursive;font-weight:800;font-size:46px;line-height:.95;}
+  .clear h2 em{color:var(--orange);font-style:normal;}
+  .clear .bigstars{font-size:34px;margin:18px 0 6px;letter-spacing:4px;color:var(--orange);}
+  .clear .score{font-size:18px;color:#cfe0ec;font-weight:700;}
+  .clear .score b{color:#fff;}
+  .btnrow{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap;justify-content:center;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:15px;border-radius:12px;padding:15px 22px;cursor:pointer;border:none;transition:transform .08s ease;}
+  .btn:active{transform:translateY(1px);}
+  .btn.primary{background:var(--orange);color:#1a0f08;}
+  .btn.ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);}
+
+  .pop{animation:pop .4s ease;}
+  @keyframes pop{0%{transform:scale(.6);opacity:0;}70%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+/* ---------- helpers ---------- */
+const $=(s)=>document.querySelector(s);
+function ri(a,b){return Math.floor(Math.random()*(b-a+1))+a;}
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function fmt(n){return Number(n).toLocaleString('en-US');}
+function fr(n,d){return `<span class="frac"><span class="n">${n}</span><span class="d">${d}</span></span>`;}
+const OBJ=8;
+
+/* ---------- storage ---------- */
+function loadCleared(){try{return JSON.parse(localStorage.getItem('exp_cleared')||'{}');}catch(e){return {};}}
+function saveCleared(c){try{localStorage.setItem('exp_cleared',JSON.stringify(c));}catch(e){}}
+
+/* ---------- sound ---------- */
+let AC=null,soundOn=true;
+try{soundOn=localStorage.getItem('exp_sound')!=='off';}catch(e){}
+function beep(freq,dur,type){if(!soundOn)return;try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.type=type||'sine';o.frequency.value=freq;o.connect(g);g.connect(AC.destination);g.gain.setValueAtTime(.12,AC.currentTime);g.gain.exponentialRampToValueAtTime(.0001,AC.currentTime+dur);o.start();o.stop(AC.currentTime+dur);}catch(e){}}
+function sGood(){beep(660,.12);setTimeout(()=>beep(880,.14),90);}
+function sMiss(){beep(200,.18,'triangle');}
+function sClear(){[523,659,784,1046].forEach((f,i)=>setTimeout(()=>beep(f,.16),i*110));}
+
+/* ---------- choice builder ---------- */
+function buildChoices(correct,wrongs){
+  const seen=new Set([correct]);
+  const out=[{html:correct,ok:true}];
+  for(const w of wrongs){if(out.length>=4)break;if(w==null)continue;const s=String(w);if(!seen.has(s)){seen.add(s);out.push({html:s,ok:false});}}
+  let g=0;while(out.length<4&&g++<60){const s=fmt(ri(2,9999));if(!seen.has(s)){seen.add(s);out.push({html:s,ok:false});}}
+  return shuffle(out);
+}
+
+/* ---------- mission generators: return {q, correct, wrongs[]} ---------- */
+function g1(){ // Place value & rounding
+  if(Math.random()<0.5){
+    const n=ri(1200,98000), place=pick([100,1000]);
+    const r=Math.round(n/place)*place;
+    return {q:`Round <b>${fmt(n)}</b> to the nearest <b>${place===100?'hundred':'thousand'}</b>.`,
+      correct:fmt(r), wrongs:[fmt(r+place),fmt(r-place),fmt(Math.floor(n/place)*place),fmt(Math.ceil(n/place)*place+place)]};
+  }
+  let s; do{s=String(ri(10000,98765));}while(s.indexOf('0')>-1);
+  const idx=ri(0,4), d=+s[idx], place=Math.pow(10,4-idx), val=d*place;
+  return {q:`What is the <b>value</b> of the <b>${d}</b> in <b>${fmt(+s)}</b>?`,
+    correct:fmt(val), wrongs:[fmt(d),fmt(val*10),fmt(val/10),fmt(d*(place/10||1))]};
+}
+function g2(){ // Units
+  const t=pick([['km','m',1000],['m','cm',100],['kg','g',1000],['L','mL',1000]]);
+  const n=ri(2,9), a=n*t[2];
+  return {q:`<b>${n} ${t[0]}</b> = ? <b>${t[1]}</b>`, correct:fmt(a),
+    wrongs:[fmt(a*10),fmt(a/10),fmt(n),fmt(n*(t[2]/10))]};
+}
+function g3(){ // Multiply
+  let a,b;const k=Math.random();
+  if(k<0.5){a=ri(12,39);b=ri(3,9);} else if(k<0.78){a=ri(102,499);b=ri(3,8);} else {a=ri(11,29);b=ri(11,24);}
+  const ans=a*b;
+  return {q:`<b>${fmt(a)} × ${fmt(b)}</b> = ?`, correct:fmt(ans),
+    wrongs:[fmt(ans+a),fmt(ans-b),fmt(ans+10),fmt(a*(b+1))]};
+}
+function g4(){ // Divide & remainders
+  const b=ri(3,9), q=ri(11,99), r=Math.random()<0.6?ri(1,b-1):0, dv=b*q+r;
+  const correct=r===0?`${q}`:`${q} R${r}`;
+  const w=[ r===0?`${q} R1`:`${q}`, `${q+1}`+(r?` R${r}`:''), `${q} R${(r+1)%b}`, `${q-1} R${r||1}` ];
+  return {q:`<b>${fmt(dv)} ÷ ${b}</b> = ?`, correct, wrongs:w};
+}
+function g5(){ // Angles
+  const t=ri(1,3);
+  if(t===1){const ang=pick([30,40,50,60,90,110,130,150]);const correct=ang<90?'acute':ang===90?'right':'obtuse';
+    return {q:`An angle measures <b>${ang}°</b>. What type is it?`, correct, wrongs:['acute','right','obtuse','straight']};}
+  if(t===2){const x=ri(20,160),a=180-x;return {q:`Two angles sit on a <b>straight line</b>. One is <b>${x}°</b>. The other?`,correct:`${a}°`,wrongs:[`${a+10}°`,`${a-10}°`,`${(90-x>0?90-x:x)}°`,`${x}°`]};}
+  const x=ri(10,80),a=90-x;return {q:`A <b>right angle</b> splits in two. One part is <b>${x}°</b>. The other?`,correct:`${a}°`,wrongs:[`${a+10}°`,`${(a-10>0?a-10:a+20)}°`,`${180-x}°`,`${x}°`]};
+}
+function g6(){ // Fractions
+  const t=ri(1,3), d=pick([5,6,8,10]);
+  if(t===1){const a=ri(1,d-2),b=ri(1,d-1-a),s=a+b;return {q:`${fr(a,d)} + ${fr(b,d)} = ?`,correct:fr(s,d),wrongs:[fr(a+b,d+d),fr(s+1,d),fr(s,d+1),fr(a*b||s,d)]};}
+  if(t===2){const a=ri(3,d),b=ri(1,a-1),s=a-b;return {q:`${fr(a,d)} − ${fr(b,d)} = ?`,correct:fr(s,d),wrongs:[fr(s+1,d),fr(s-1>0?s-1:s+2,d),fr(a+b,d),fr(s,d-1>1?d-1:d+1)]};}
+  const base=pick([[1,2],[1,3],[2,3],[1,4],[3,4]]),mk=pick([2,3,4]),nd=base[1]*mk,nn=base[0]*mk;
+  return {q:`${fr(base[0],base[1])} = ${fr('?',nd)} &nbsp;— top number?`,correct:`${nn}`,wrongs:[`${nn+1}`,`${nn-1>0?nn-1:nn+2}`,`${base[0]}`,`${nd}`]};
+}
+function g7(){ // Decimals
+  const t=ri(1,3);
+  if(t===1){const n=ri(1,9);if(Math.random()<0.5)return {q:`Write ${fr(n,10)} as a decimal.`,correct:`0.${n}`,wrongs:[`0.0${n}`,`${n}.0`,`0.${(n%9)+1}`,`${(n/10).toFixed(2)}`]};
+    return {q:`Write ${fr(n,100)} as a decimal.`,correct:`0.0${n}`,wrongs:[`0.${n}`,`${n}.00`,`0.${n}0`,`0.00${n}`]};}
+  if(t===2){const a=ri(1,8)/10,b=ri(1,9)/10,s=Math.round((a+b)*10)/10;return {q:`<b>${a.toFixed(1)} + ${b.toFixed(1)}</b> = ?`,correct:s.toFixed(1),wrongs:[(s+0.1).toFixed(1),Math.abs(s-0.1).toFixed(1),(a*b).toFixed(2),(s+1).toFixed(1)]};}
+  const c=ri(2,4)/10,m=ri(2,5),s=Math.round(c*m*10)/10;return {q:`Each part is <b>${c.toFixed(1)}</b> thick. Stack <b>${m}</b> — how tall?`,correct:s.toFixed(1),wrongs:[(s+0.1).toFixed(1),Math.abs(s-0.1).toFixed(1),(c+m).toFixed(1),(s+1).toFixed(1)]};
+}
+const GENS=[g1,g2,g3,g4,g5,g6,g7];
+function g8(){return pick(GENS)();}
+
+const MISSIONS=[
+ {no:1,title:'Place Value & Rounding',gen:g1},
+ {no:2,title:'Measurement & Units',gen:g2},
+ {no:3,title:'Multiply Big Numbers',gen:g3},
+ {no:4,title:'Division & Remainders',gen:g4},
+ {no:5,title:'Angles & Shapes',gen:g5},
+ {no:6,title:'Fractions',gen:g6},
+ {no:7,title:'Decimals',gen:g7},
+ {no:8,title:'Final Expedition',gen:g8},
+];
+
+/* ---------- game state ---------- */
+const G={cleared:loadCleared(),mission:null,qi:0,score:0,streak:0,best:0,cur:null,locked:false};
+
+function starsFor(score){return score>=8?3:score>=6?2:1;}
+function starStr(n){return '★★★'.slice(0,n)+'☆☆☆'.slice(0,3-n);}
+
+/* ---------- render: HOME ---------- */
+function renderHome(){
+  const tiles=MISSIONS.map(m=>{
+    const rec=G.cleared[m.no];
+    const done=rec?'done':'';
+    const stars=rec?`<div class="stars">${starStr(rec.stars)}</div>`:`<div class="stars"></div>`;
+    return `<div class="mtile ${done}" data-m="${m.no}">
+      <div class="mbadge">${m.no}</div>
+      <div class="mt">${m.title}</div>
+      <div class="ms">MISSION 0${m.no}</div>${stars}</div>`;
+  }).join('');
+  $('#app').innerHTML=`
+   <div class="bar"><span class="brand">Field Logbook · Mission Run</span>
+     <div class="right"><button class="iconbtn" id="snd">${soundOn?'🔊':'🔈'}</button></div></div>
+   <div class="hero">
+     <p class="eyebrow">Summer 2026 · 8 Missions</p>
+     <h1>Summer<span class="r2">Expedition</span></h1>
+     <p class="lede">Pick a mission, clear eight objectives, earn the patch. No timer, no wrong landings — just keep flying.</p>
+     <p class="commander">COMMANDING OFFICER · CHARLES</p>
+   </div>
+   <p class="progress-note">Tap a mission to launch</p>
+   <div class="grid">${tiles}</div>
+   <p class="footnote">Part of the <a href="https://fosterlabs.org/math/expedition/">Summer Expedition</a> — there's a printable book too.</p>`;
+  document.querySelectorAll('.mtile').forEach(t=>t.addEventListener('click',()=>startMission(+t.dataset.m)));
+  $('#snd').addEventListener('click',toggleSound);
+}
+function toggleSound(){soundOn=!soundOn;try{localStorage.setItem('exp_sound',soundOn?'on':'off');}catch(e){}const b=$('#snd');if(b)b.textContent=soundOn?'🔊':'🔈';if(soundOn)beep(700,.1);}
+
+/* ---------- render: PLAY ---------- */
+function startMission(no){G.mission=no;G.qi=0;G.score=0;G.streak=0;G.best=0;G.locked=false;nextQuestion();}
+function nextQuestion(){
+  const m=MISSIONS.find(x=>x.no===G.mission);
+  const o=m.gen();
+  G.cur={q:o.q,choices:buildChoices(o.correct,o.wrongs)};
+  G.locked=false;
+  renderPlay();
+}
+function renderPlay(){
+  const m=MISSIONS.find(x=>x.no===G.mission);
+  const rungs=Array.from({length:OBJ},(_,i)=>`<div class="rung ${i<G.qi?'lit':''}"></div>`).reverse().join('');
+  const rocketBottom=`calc(${(G.qi/OBJ)*100}% )`;
+  const choices=G.cur.choices.map((c,i)=>`<button class="choice" data-i="${i}">${c.html}</button>`).join('');
+  $('#app').innerHTML=`
+   <div class="bar"><span class="brand">Mission 0${G.mission}</span>
+     <div class="right"><button class="iconbtn" id="snd">${soundOn?'🔊':'🔈'}</button></div></div>
+   <div class="play">
+     <div class="phead"><span class="mno">0${G.mission}</span><span class="ptitle">${m.title}</span>
+       <span class="stat">SCORE <b>${G.score}</b><br>STREAK <b>${G.streak}</b></span></div>
+     <div class="objline">Objective ${Math.min(G.qi+1,OBJ)} of ${OBJ}</div>
+     <div class="stage">
+       <div class="track"><div class="star">⭐</div>${rungs}<div class="rocket" style="bottom:${rocketBottom}">🚀</div></div>
+       <div class="qzone">
+         <div class="qcard pop" id="qc">${G.cur.q}</div>
+         <div class="choices" id="ch">${choices}</div>
+         <div class="feedback" id="fb">&nbsp;</div>
+       </div>
+     </div>
+     <div class="quit"><button id="quit">↩ back to missions</button></div>
+   </div>`;
+  document.querySelectorAll('.choice').forEach(b=>b.addEventListener('click',()=>answer(+b.dataset.i,b)));
+  $('#snd').addEventListener('click',toggleSound);
+  $('#quit').addEventListener('click',renderHome);
+}
+function answer(i,btn){
+  if(G.locked)return;G.locked=true;
+  const c=G.cur.choices[i];
+  const btns=document.querySelectorAll('.choice');
+  btns.forEach(b=>b.classList.add('dim'));
+  const fb=$('#fb');
+  if(c.ok){
+    btn.classList.remove('dim');btn.classList.add('ok');
+    G.score++;G.streak++;if(G.streak>G.best)G.best=G.streak;
+    fb.className='feedback good';fb.textContent=pick(['✓ Cleared!','✓ Direct hit!','✓ On target!','✓ Nailed it!'])+(G.streak>=3?`  ×${G.streak} streak`:'');
+    sGood();
+  } else {
+    btn.classList.remove('dim');btn.classList.add('no');
+    btns.forEach(b=>{if(G.cur.choices[+b.dataset.i].ok){b.classList.remove('dim');b.classList.add('ok');}});
+    G.streak=0;
+    fb.className='feedback miss';fb.textContent='Re-route — the green one\u2019s right. Keep flying!';
+    sMiss();
+  }
+  G.qi++;
+  setTimeout(()=>{ if(G.qi>=OBJ) finishMission(); else nextQuestion(); }, c.ok?780:1300);
+}
+function finishMission(){
+  const stars=starsFor(G.score);
+  const prev=G.cleared[G.mission];
+  if(!prev||stars>prev.stars||G.score>(prev.score||0)) G.cleared[G.mission]={stars,score:G.score};
+  saveCleared(G.cleared);
+  sClear();
+  renderClear(stars);
+}
+function renderClear(stars){
+  const m=MISSIONS.find(x=>x.no===G.mission);
+  const next=MISSIONS.find(x=>x.no===G.mission+1);
+  $('#app').innerHTML=`
+   <div class="bar"><span class="brand">Mission 0${G.mission} · Debrief</span><div class="right"></div></div>
+   <div class="clear">
+     <div class="seal pop"><span class="sk">MISSION</span><span class="sg">0${G.mission}</span></div>
+     <p class="ck">Mission Cleared</p>
+     <h2>${m.title.split(' ')[0]} <em>Complete</em></h2>
+     <div class="bigstars">${starStr(stars)}</div>
+     <p class="score">You cleared <b>${G.score} of ${OBJ}</b> objectives · best streak <b>${G.best}</b></p>
+     <div class="btnrow">
+       ${next?`<button class="btn primary" id="next">▶ Mission 0${next.no}</button>`:`<button class="btn primary" id="next">▶ Fly it again</button>`}
+       <button class="btn ghost" id="home">↩ Mission map</button>
+     </div>
+   </div>`;
+  $('#home').addEventListener('click',renderHome);
+  $('#next').addEventListener('click',()=>{ if(next)startMission(next.no); else startMission(G.mission); });
+}
+
+/* ---------- go ---------- */
+renderHome();
+</script>
+</body>
+</html>
