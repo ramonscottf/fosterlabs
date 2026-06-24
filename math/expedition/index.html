@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Summer Expedition — Downloads</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--navy:#0E1B2A;--navy-soft:#16293d;--paper:#FBF9F4;--orange:#FF6B35;--teal:#1FB8A6;--slate:#5B6B7B;--sky:#DCEEF5;--ink:#16202b;--line:#d7dde3;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--navy);color:#fff;font-family:'Nunito',sans-serif;line-height:1.5;min-height:100vh;display:flex;flex-direction:column;}
+  .wrap{max-width:760px;margin:0 auto;padding:48px 24px 40px;width:100%;}
+  .topcode{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.18em;color:var(--teal);text-transform:uppercase;display:flex;justify-content:space-between;border-bottom:1px solid rgba(255,255,255,.18);padding-bottom:14px;margin-bottom:40px;}
+  .eyebrow{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.3em;color:var(--orange);text-transform:uppercase;margin-bottom:12px;}
+  h1{font-family:'Baloo 2',cursive;font-weight:800;font-size:62px;line-height:.92;letter-spacing:-.01em;}
+  h1 .row2{color:var(--orange);display:block;}
+  .sub{font-size:18px;color:#cfe0ec;margin-top:18px;max-width:48ch;font-weight:600;}
+  .commander{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:.06em;color:var(--teal);margin-top:16px;}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:40px;}
+  .card{background:var(--navy-soft);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:26px 24px;display:flex;flex-direction:column;}
+  .card .ck{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;}
+  .card h2{font-family:'Baloo 2',cursive;font-weight:700;font-size:24px;line-height:1.05;margin-bottom:8px;}
+  .card p{font-size:15px;color:#b9c9d6;flex:1;margin-bottom:20px;}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;text-decoration:none;font-family:'Space Mono',monospace;font-weight:700;font-size:14px;letter-spacing:.03em;border-radius:11px;padding:14px 18px;transition:transform .08s ease;}
+  .btn:active{transform:translateY(1px);}
+  .btn.primary{background:var(--orange);color:#1a0f08;}
+  .btn.ghost{background:transparent;color:#fff;border:1.5px solid rgba(255,255,255,.4);}
+  .meta{font-family:'Space Mono',monospace;font-size:11px;color:var(--slate);margin-top:12px;}
+  .note{margin-top:36px;background:rgba(31,184,166,.1);border-left:4px solid var(--teal);border-radius:0 12px 12px 0;padding:16px 20px;font-size:15px;color:#dbeef0;}
+  .note b{color:#fff;}
+  footer{margin-top:auto;}
+  .foot{max-width:760px;margin:0 auto;width:100%;padding:18px 24px 30px;display:flex;justify-content:space-between;font-family:'Space Mono',monospace;font-size:11px;color:rgba(255,255,255,.4);letter-spacing:.04em;border-top:1px solid rgba(255,255,255,.12);}
+  @media(max-width:620px){h1{font-size:46px;}.cards{grid-template-columns:1fr;}.wrap{padding:32px 18px;}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="topcode"><span>Field Logbook · Downloads</span><span>Clearance · Grade 4</span></div>
+    <p class="eyebrow">Summer 2026 · 8 Missions</p>
+    <h1>Summer<span class="row2">Expedition</span></h1>
+    <p class="sub">A print-ready summer math logbook — eight missions across the Grade 4 map, plus optional Brain Benders. Grab the book to print, or the generator to make more.</p>
+    <p class="commander">COMMANDING OFFICER · CHARLES</p>
+
+    <div class="cards">
+      <div class="card">
+        <p class="ck">◆ The Book</p>
+        <h2>Print-ready PDF</h2>
+        <p>36 pages, US Letter. Cover, mission map to color in, all eight missions with answer keys, and a completion certificate.</p>
+        <a class="btn primary" href="Charles-Summer-Expedition-Grade4.pdf" download>⬇ Download PDF</a>
+        <p class="meta">~1.7 MB · prints single or double-sided</p>
+      </div>
+      <div class="card">
+        <p class="ck">◆ The Generator</p>
+        <h2>build_book.py</h2>
+        <p>The Python source. Reskin the theme, reseed the drills, or add missions — then rebuild a fresh volume.</p>
+        <a class="btn ghost" href="build_book.py" download>⬇ Download generator</a>
+        <p class="meta">Python 3 · curriculum + auto-keyed drills</p>
+      </div>
+    </div>
+
+    <div class="note"><b>Want a new volume?</b> Edit the generator's mission list or theme, rebuild, and a new PDF drops out — answer keys recompute themselves. Full how-to is in the repo README.</div>
+  </div>
+  <footer><div class="foot"><span>SUMMER EXPEDITION</span><span>WICKO WAYPOINT</span></div></footer>
+</body>
+</html>
