@@ -26,16 +26,17 @@
 
   var css = `
   #fl-pill{position:fixed;top:18px;left:50%;transform:translate(-50%,0);z-index:99999;
-    width:calc(100% - 36px);max-width:940px;background:rgba(253,246,236,.92);
+    width:calc(100% - 36px);max-width:940px;background:rgba(8,17,40,.82);
     backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:50px;
-    border:1px solid rgba(180,160,130,.18);box-shadow:0 8px 32px rgba(60,45,25,.16);
+    border:1px solid rgba(255,255,255,.10);box-shadow:0 10px 34px rgba(0,0,0,.42);
     transition:top .4s ease,box-shadow .4s ease,background .4s ease;
     animation:flPillDown .7s cubic-bezier(.2,.8,.2,1) both;
     font-family:system-ui,-apple-system,"Segoe UI",sans-serif}
   @keyframes flPillDown{from{opacity:0;transform:translate(-50%,-16px)}to{opacity:1;transform:translate(-50%,0)}}
-  #fl-pill.scrolled{top:10px;background:rgba(253,246,236,.98);box-shadow:0 12px 40px rgba(60,45,25,.22)}
+  #fl-pill.scrolled{top:10px;background:rgba(8,17,40,.94);box-shadow:0 12px 40px rgba(0,0,0,.5)}
   #fl-pill .fl-inner{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 9px 18px}
   #fl-pill .fl-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
+  #fl-pill .fl-logo{height:32px;width:auto;display:block}
   #fl-pill .fl-brand-icon{height:32px;width:32px;flex-shrink:0}
   #fl-pill .fl-brand-icon img{height:100%;width:100%;object-fit:contain;border-radius:8px}
   #fl-pill .fl-brand-tx{display:flex;flex-direction:column;line-height:1.05}
@@ -44,14 +45,14 @@
   #fl-pill .fl-brand-sub{font-size:8.5px;font-weight:600;letter-spacing:2px;
     text-transform:uppercase;color:rgba(43,43,43,.42);margin-top:1px}
   #fl-pill .fl-links{display:flex;gap:24px;align-items:center;list-style:none;margin:0;padding:0}
-  #fl-pill .fl-links a{font-size:12px;font-weight:600;color:rgba(43,43,43,.62);letter-spacing:.6px;
+  #fl-pill .fl-links a{font-size:12px;font-weight:600;color:rgba(233,238,251,.72);letter-spacing:.6px;
     text-transform:uppercase;text-decoration:none;position:relative;transition:color .25s;white-space:nowrap}
   #fl-pill .fl-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:2px;
-    background:#c0392b;transition:width .25s;border-radius:1px}
-  #fl-pill .fl-links a:hover,#fl-pill .fl-links a.active{color:#1b1b1b}
+    background:#f28816;transition:width .25s;border-radius:1px}
+  #fl-pill .fl-links a:hover,#fl-pill .fl-links a.active{color:#fff}
   #fl-pill .fl-links a:hover::after,#fl-pill .fl-links a.active::after{width:100%}
   #fl-pill .fl-toggle{display:none;background:none;border:none;cursor:pointer;padding:8px;position:relative;z-index:2}
-  #fl-pill .fl-toggle span{display:block;width:22px;height:2px;background:#2b2b2b;margin:5px 0;
+  #fl-pill .fl-toggle span{display:block;width:22px;height:2px;background:#e9eefb;margin:5px 0;
     transition:all .3s;border-radius:2px}
   #fl-pill .fl-toggle.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
   #fl-pill .fl-toggle.open span:nth-child(2){opacity:0}
@@ -61,16 +62,16 @@
     #fl-pill .fl-inner{padding:8px 10px 8px 14px}
     #fl-pill .fl-toggle{display:block}
     #fl-pill .fl-links{position:absolute;top:calc(100% + 10px);left:0;right:0;flex-direction:column;
-      align-items:stretch;gap:0;background:rgba(253,246,236,.99);backdrop-filter:blur(20px);
-      -webkit-backdrop-filter:blur(20px);border-radius:18px;border:1px solid rgba(180,160,130,.2);
-      box-shadow:0 16px 44px rgba(60,45,25,.2);padding:8px;opacity:0;visibility:hidden;
+      align-items:stretch;gap:0;background:rgba(10,19,42,.98);backdrop-filter:blur(20px);
+      -webkit-backdrop-filter:blur(20px);border-radius:18px;border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 16px 44px rgba(0,0,0,.45);padding:8px;opacity:0;visibility:hidden;
       transform:translateY(-8px);transition:opacity .25s,transform .25s,visibility .25s;max-height:72vh;overflow:auto}
     #fl-pill .fl-links.open{opacity:1;visibility:visible;transform:translateY(0)}
-    #fl-pill .fl-links li{border-bottom:1px solid rgba(180,160,130,.12)}
+    #fl-pill .fl-links li{border-bottom:1px solid rgba(255,255,255,.08)}
     #fl-pill .fl-links li:last-child{border-bottom:none}
     #fl-pill .fl-links a{display:block;padding:13px 16px;font-size:13px}
     #fl-pill .fl-links a::after{display:none}
-    #fl-pill .fl-links a.active{color:#c0392b}
+    #fl-pill .fl-links a.active{color:#f28816}
   }
   @media(prefers-reduced-motion:reduce){#fl-pill{animation:none}#fl-pill *{transition:none !important}}
   `;
@@ -93,9 +94,7 @@
   nav.innerHTML =
     '<div class="fl-inner">' +
       '<a class="fl-brand" href="/">' +
-        '<span class="fl-brand-icon"><img src="/logo-mark.png" alt="Foster Labs"></span>' +
-        '<span class="fl-brand-tx"><span class="fl-brand-main">Foster Labs</span>' +
-        '<span class="fl-brand-sub">Skippy</span></span>' +
+        '<img class="fl-logo" src="/logo-horizontal-white.png" alt="Foster Labs">' +
       '</a>' +
       '<ul class="fl-links" id="fl-links">' + lis + '</ul>' +
       '<button class="fl-toggle" id="fl-toggle" aria-label="Toggle menu" aria-expanded="false">' +
