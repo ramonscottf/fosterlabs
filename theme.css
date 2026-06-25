@@ -1,0 +1,95 @@
+/* ============================================================
+   FOSTER LABS — Command-Center Theme  (universal design tokens)
+   Brand: navy #012452 / deep #011d4b / orange #f28816
+   Tokens are --fl-* prefixed so they never collide with a page's
+   own variables. Component styles are scoped under .fl-theme so
+   they only apply to pages that opt in (add class="fl-theme").
+   ============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root{
+  /* surfaces */
+  --fl-bg:#07112a;          /* deepest navy-black            */
+  --fl-bg-2:#0b1733;        /* sections                      */
+  --fl-surface:#0f1d3d;     /* cards                         */
+  --fl-surface-2:#16294d;   /* raised / hover                */
+  --fl-navy:#012452;        /* brand navy                    */
+  --fl-deep:#011d4b;        /* brand deep navy               */
+  /* lines */
+  --fl-line:#21345b;
+  --fl-line-soft:rgba(125,150,205,.14);
+  /* text */
+  --fl-text:#e9eefb;
+  --fl-muted:#93a2c2;
+  --fl-faint:#64729a;
+  /* accent (brand orange) */
+  --fl-accent:#f28816;
+  --fl-accent-2:#ff9a33;
+  --fl-accent-soft:rgba(242,136,22,.13);
+  --fl-accent-line:rgba(242,136,22,.38);
+  /* semantic */
+  --fl-good:#34d399;
+  --fl-warn:#fbbf24;
+  --fl-bad:#f87171;
+  /* radii / depth */
+  --fl-r:14px; --fl-r-sm:10px; --fl-r-lg:20px;
+  --fl-shadow:0 14px 44px rgba(0,0,0,.40);
+  --fl-glow:0 0 0 1px var(--fl-accent-line), 0 10px 34px rgba(242,136,22,.12);
+  /* type */
+  --fl-display:'Space Grotesk', system-ui, -apple-system, sans-serif;
+  --fl-body:'Inter', system-ui, -apple-system, sans-serif;
+  --fl-mono:'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+}
+
+/* ---------- base (opt-in via body.fl-theme) ---------- */
+body.fl-theme{
+  margin:0; background:var(--fl-bg); color:var(--fl-text);
+  font-family:var(--fl-body); line-height:1.55;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+.fl-theme h1,.fl-theme h2,.fl-theme h3,.fl-theme h4{
+  font-family:var(--fl-display); font-weight:700; letter-spacing:-.01em;
+  color:#fff; line-height:1.12; margin:0 0 .4em;
+}
+.fl-theme a{color:var(--fl-accent); text-decoration:none}
+.fl-theme a:hover{color:var(--fl-accent-2)}
+.fl-theme ::selection{background:var(--fl-accent); color:#06112a}
+.fl-theme :focus-visible{outline:2px solid var(--fl-accent); outline-offset:2px}
+.fl-theme ::-webkit-scrollbar{width:12px;height:12px}
+.fl-theme ::-webkit-scrollbar-track{background:var(--fl-bg)}
+.fl-theme ::-webkit-scrollbar-thumb{background:var(--fl-surface-2);border-radius:10px;border:3px solid var(--fl-bg)}
+.fl-theme ::-webkit-scrollbar-thumb:hover{background:var(--fl-line)}
+
+/* ---------- reusable components ---------- */
+.fl-eyebrow{font-family:var(--fl-mono); font-size:11px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--fl-accent)}
+
+.fl-btn{font-family:var(--fl-display); font-weight:600; font-size:14px;
+  padding:11px 20px; border-radius:999px; border:1px solid transparent; cursor:pointer;
+  display:inline-flex; align-items:center; gap:8px; transition:all .18s ease; text-decoration:none}
+.fl-btn-primary{background:var(--fl-accent); color:#0a1024}
+.fl-btn-primary:hover{background:var(--fl-accent-2); transform:translateY(-1px)}
+.fl-btn-ghost{background:transparent; color:var(--fl-text); border-color:var(--fl-line)}
+.fl-btn-ghost:hover{border-color:var(--fl-accent); color:#fff}
+
+.fl-card{background:var(--fl-surface); border:1px solid var(--fl-line);
+  border-radius:var(--fl-r); box-shadow:var(--fl-shadow)}
+.fl-card-glow{box-shadow:var(--fl-glow)}
+.fl-panel{background:linear-gradient(180deg,var(--fl-surface),var(--fl-bg-2));
+  border:1px solid var(--fl-line); border-radius:var(--fl-r-lg)}
+
+.fl-badge{display:inline-flex; align-items:center; gap:6px; font-family:var(--fl-mono);
+  font-size:11px; letter-spacing:.04em; padding:4px 10px; border-radius:999px;
+  background:var(--fl-accent-soft); color:var(--fl-accent); border:1px solid var(--fl-accent-line)}
+.fl-chip{font-family:var(--fl-body); font-weight:600; font-size:13px; padding:7px 13px;
+  border-radius:999px; background:var(--fl-surface); color:var(--fl-text);
+  border:1px solid var(--fl-line); cursor:pointer; transition:all .15s ease}
+.fl-chip:hover{border-color:var(--fl-faint)}
+.fl-chip.active{background:var(--fl-accent); color:#0a1024; border-color:var(--fl-accent)}
+
+.fl-input{background:var(--fl-bg-2); border:1px solid var(--fl-line); border-radius:var(--fl-r-sm);
+  color:var(--fl-text); font-family:var(--fl-body); font-size:15px; padding:10px 14px}
+.fl-input::placeholder{color:var(--fl-faint)}
+.fl-input:focus{border-color:var(--fl-accent); outline:none}
+
+@media (prefers-reduced-motion:reduce){.fl-theme *{transition:none !important; animation:none !important}}

@@ -6,6 +6,11 @@ export async function onRequest(context) {
     const ct = res.headers.get('content-type') || '';
     if (!ct.includes('text/html')) return res;
     return new HTMLRewriter()
+      .on('head', {
+        element(el) {
+          el.append('\n<link rel="stylesheet" href="/theme.css">\n', { html: true });
+        },
+      })
       .on('body', {
         element(el) {
           el.append('\n<script defer src="/menu.js"></script>\n', { html: true });
