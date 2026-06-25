@@ -36,8 +36,8 @@
   #fl-pill.scrolled{top:10px;background:rgba(253,246,236,.98);box-shadow:0 12px 40px rgba(60,45,25,.22)}
   #fl-pill .fl-inner{display:flex;align-items:center;justify-content:space-between;padding:9px 12px 9px 18px}
   #fl-pill .fl-brand{display:flex;align-items:center;gap:10px;text-decoration:none}
-  #fl-pill .fl-brand-icon{height:30px;width:30px;flex-shrink:0}
-  #fl-pill .fl-brand-icon img{height:100%;width:100%;object-fit:contain;border-radius:7px}
+  #fl-pill .fl-brand-icon{height:32px;width:32px;flex-shrink:0}
+  #fl-pill .fl-brand-icon img{height:100%;width:100%;object-fit:contain;border-radius:8px}
   #fl-pill .fl-brand-tx{display:flex;flex-direction:column;line-height:1.05}
   #fl-pill .fl-brand-main{font-family:Georgia,"Times New Roman",serif;font-weight:700;
     font-size:16px;color:#2b2b2b;letter-spacing:-.2px}
@@ -93,7 +93,7 @@
   nav.innerHTML =
     '<div class="fl-inner">' +
       '<a class="fl-brand" href="/">' +
-        '<span class="fl-brand-icon"><img src="/icon-192.svg" alt=""></span>' +
+        '<span class="fl-brand-icon"><img src="/logo-mark.png" alt="Foster Labs"></span>' +
         '<span class="fl-brand-tx"><span class="fl-brand-main">Foster Labs</span>' +
         '<span class="fl-brand-sub">Skippy</span></span>' +
       '</a>' +
