@@ -525,6 +525,8 @@
   }
   .warn-text { color: var(--body); font-weight: 500; }
 </style>
+
+<link rel="stylesheet" href="/theme.css">
 </head>
 <body>
 
@@ -550,9 +552,7 @@
     <div class="nav-bar">
       <div style="width:36px"></div>
       <div class="nav-title-compact" id="navTitle">Summary</div>
-      <button class="nav-action icon-only" onclick="logoutHealth()" title="Lock">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 1a5 5 0 015 5v3h1a3 3 0 013 3v9a3 3 0 01-3 3H6a3 3 0 01-3-3v-9a3 3 0 013-3h1V6a5 5 0 015-5zm0 2a3 3 0 00-3 3v3h6V6a3 3 0 00-3-3z"/></svg>
-      </button>
+      <div style="width:36px"></div>
     </div>
     <div class="nav-large">
       <h1 id="navHeading">Summary</h1>
@@ -569,6 +569,19 @@
           <div class="hero-title" id="heroTitle">Tap to log a dose</div>
         </div>
         <div class="hero-stats" id="heroStats"></div>
+      </button>
+
+      <button class="lab-feature" onclick="switchTab('labs')">
+        <div class="lab-feature-top">
+          <span class="lab-feature-eyebrow">Bloodwork · Jul 2</span>
+          <span class="lab-feature-chev">›</span>
+        </div>
+        <div class="lab-feature-title">62-marker panel</div>
+        <div class="lab-feature-stats">
+          <span class="lf-pill lf-opt">36 optimal</span>
+          <span class="lf-pill lf-rng">21 in range</span>
+          <span class="lf-pill lf-flag">5 flagged</span>
+        </div>
       </button>
 
       <div class="section" id="dashVialsSection" style="display:none">
@@ -732,6 +745,67 @@
       </div>
     </section>
 
+    <!-- LABS / BLOODWORK -->
+    <style>
+      .lab-feature{width:100%;text-align:left;background:var(--surface);border:none;border-radius:16px;padding:16px 18px;margin-bottom:18px;cursor:pointer;display:block}
+      .lab-feature:active{opacity:.7;transform:scale(.99)}
+      .lab-feature-top{display:flex;justify-content:space-between;align-items:center}
+      .lab-feature-eyebrow{font-size:12px;font-weight:700;letter-spacing:.02em;text-transform:uppercase;color:var(--activity)}
+      .lab-feature-chev{color:var(--label-tertiary);font-size:24px;line-height:1}
+      .lab-feature-title{font-size:22px;font-weight:700;letter-spacing:-.02em;margin:4px 0 12px;color:var(--label)}
+      .lab-feature-stats{display:flex;gap:8px;flex-wrap:wrap}
+      .lf-pill{font-size:12px;font-weight:600;padding:5px 10px;border-radius:20px}
+      .lf-opt{color:#248A3D;background:rgba(52,199,89,.14)}
+      .lf-rng{color:#B25000;background:rgba(255,149,0,.16)}
+      .lf-flag{color:#C11E4A;background:rgba(250,17,79,.12)}
+
+      #panel-labs .lab-scoreline{display:flex;background:var(--surface);border-radius:16px;overflow:hidden;margin-bottom:16px}
+      #panel-labs .lab-score{flex:1;text-align:center;padding:16px 8px;border-right:1px solid var(--separator)}
+      #panel-labs .lab-score:last-child{border-right:none}
+      #panel-labs .lab-score .n{font-size:28px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+      #panel-labs .lab-score .l{font-size:11px;letter-spacing:.02em;text-transform:uppercase;color:var(--label-secondary);margin-top:6px}
+      #panel-labs .lab-score.opt .n{color:#34C759}
+      #panel-labs .lab-score.rng .n{color:#FF9500}
+      #panel-labs .lab-score.flag .n{color:#FA114F}
+      #panel-labs .lab-verdict{font-size:14px;color:var(--label-secondary);padding:0 4px;margin-bottom:22px;line-height:1.5}
+      #panel-labs .lab-verdict b{color:var(--label);font-weight:600}
+
+      #panel-labs .lab-tag{font-weight:400;font-size:12px;color:var(--label-tertiary);text-transform:none;letter-spacing:0}
+      #panel-labs .lab-rows{background:var(--surface);border-radius:14px;overflow:hidden}
+      #panel-labs .lab-row{padding:12px 16px;border-bottom:1px solid var(--separator)}
+      #panel-labs .lab-row:last-child{border-bottom:none}
+      #panel-labs .lab-row-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+      #panel-labs .lab-name{font-size:15px;font-weight:500;color:var(--label);flex:1}
+      #panel-labs .lab-sub{color:var(--label-tertiary);font-weight:400;font-size:12px}
+      #panel-labs .lab-val{font-size:16px;font-weight:600;color:var(--label);white-space:nowrap;font-variant-numeric:tabular-nums}
+      #panel-labs .lab-u{font-size:12px;font-weight:400;color:var(--label-secondary);margin-left:3px}
+      #panel-labs .lab-meta{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:6px}
+      #panel-labs .lab-status{font-size:11px;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+      #panel-labs .lab-ref{font-size:11px;color:var(--label-tertiary);font-variant-numeric:tabular-nums;white-space:nowrap}
+      #panel-labs .lab-status.optimal{color:#34C759}
+      #panel-labs .lab-status.inrange{color:#FF9500}
+      #panel-labs .lab-status.flag{color:#FA114F}
+      #panel-labs .lab-bar{position:relative;height:6px;border-radius:3px;background:var(--surface-2);margin-top:8px}
+      #panel-labs .lab-zone{position:absolute;top:0;height:6px;border-radius:3px;opacity:.4}
+      #panel-labs .lab-zone.optimal{background:#34C759}
+      #panel-labs .lab-zone.inrange{background:#FF9500}
+      #panel-labs .lab-mark{position:absolute;top:50%;width:12px;height:12px;border-radius:50%;background:var(--surface);transform:translate(-50%,-50%);box-shadow:0 0 0 1px var(--separator)}
+      #panel-labs .lab-mark.optimal{border:3px solid #34C759}
+      #panel-labs .lab-mark.inrange{border:3px solid #FF9500}
+      #panel-labs .lab-mark.flag{border:3px solid #FA114F}
+
+      #panel-labs .lab-flag{display:flex;gap:12px;background:var(--surface);border-radius:14px;padding:14px 16px;margin-bottom:10px;border-left:3px solid #FA114F}
+      #panel-labs .lab-flag.rng{border-left-color:#FF9500}
+      #panel-labs .lab-flag-idx{font-size:12px;font-weight:700;color:#FA114F;background:rgba(250,17,79,.12);border-radius:7px;padding:5px 8px;line-height:1;height:fit-content}
+      #panel-labs .lab-flag.rng .lab-flag-idx{color:#B25000;background:rgba(255,149,0,.16)}
+      #panel-labs .lab-flag-h{font-size:14px;font-weight:600;color:var(--label);letter-spacing:-.01em}
+      #panel-labs .lab-flag-p{font-size:13px;color:var(--label-secondary);margin-top:4px;line-height:1.5}
+      #panel-labs .lab-disclaimer{font-size:12px;color:var(--label-tertiary);padding:10px 4px 0;line-height:1.5}
+    </style>
+    <section class="panel" id="panel-labs">
+      <div id="labsContent"></div>
+    </section>
+
   </main>
 
   <nav class="tabbar">
@@ -840,13 +914,12 @@ function logoutHealth() {
 }
 document.getElementById('pwInput').addEventListener('keypress', e => { if (e.key === 'Enter') tryAuth(); });
 
-const saved = sessionStorage.getItem('fh_auth');
-if (saved === PASS_HASH) {
-  AUTH = saved;
-  document.getElementById('gate').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  setTimeout(initApp, 0);
-}
+// Passcode removed — always authenticate and open straight to the data.
+// PASS_HASH is kept only because it doubles as the X-Health-Auth key for /api/health.
+AUTH = PASS_HASH;
+document.getElementById('gate').style.display = 'none';
+document.getElementById('app').style.display = 'block';
+setTimeout(initApp, 0);
 
 async function api(action, opts = {}) {
   const url = `/api/health?action=${action}` + (opts.params ? '&' + opts.params : '');
@@ -941,7 +1014,7 @@ function bindSeg(id, fn) {
   });
 }
 
-const HEADINGS = { summary: 'Summary', calc: 'Calculator', log: 'Log Dose', vials: 'Vials', history: 'History' };
+const HEADINGS = { summary: 'Summary', calc: 'Calculator', log: 'Log Dose', vials: 'Vials', history: 'History', labs: 'Bloodwork' };
 function switchTab(name) {
   document.querySelectorAll('.tabbar-item').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
   document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
@@ -952,6 +1025,7 @@ function switchTab(name) {
   if (name === 'vials') loadVials();
   if (name === 'history') loadHistory();
   if (name === 'log') loadLogPicker();
+  if (name === 'labs') renderLabs();
 }
 
 function recalc() {
@@ -1256,6 +1330,11 @@ async function loadDashboard() {
       <div class="cat-tile-name">Vials</div>
       <div class="cat-tile-meta">${stats.activeVials.length} active</div>
     </button>
+    <button class="cat-tile" onclick="switchTab('labs')">
+      <div class="cat-tile-icon" style="background:linear-gradient(135deg, var(--activity), var(--peptide))">🩸</div>
+      <div class="cat-tile-name">Bloodwork</div>
+      <div class="cat-tile-meta">Jul 2 · 5 flagged</div>
+    </button>
     <button class="cat-tile" onclick="switchTab('calc')">
       <div class="cat-tile-icon" style="background:linear-gradient(135deg, var(--body), var(--activity))">🧮</div>
       <div class="cat-tile-name">Calculator</div>
@@ -1271,6 +1350,141 @@ function filterAndShow(med) {
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+/* ===== BLOODWORK (Hone panel, Jul 2 2026) — static, no backend ===== */
+const LABS_FLAGS = [
+  {idx:'01', tone:'flag', h:'Testosterone & LH',
+   p:`Total T 324 ng/dL — bottom ~15% of the 264–916 range. Free T low-normal. LH 0.9 (ref 1.7–8.6) is below range. LH is the pituitary's signal to make testosterone, so low LH alongside low-normal T puts the quiet part upstream at the signal. Estradiol 30 and SHBG 37 both sit mid-range.`},
+  {idx:'02', tone:'rng', h:'ApoB · LDL · Non-HDL',
+   p:`ApoB 92 (opt <90) · LDL 125 (opt <100) · Non-HDL 141 (goal <130). ApoB counts atherogenic particles — the single strongest lipid signal. Offsetting it: triglycerides 64 and Trig/HDL 1.28 are both excellent, so glucose handling reads clean.`},
+  {idx:'03', tone:'rng', h:'Eosinophils',
+   p:`10.4% (ref 0–6%) and 562 cells/µL absolute (ref 15–500). The only elevated line in the differential — every other white cell is optimal. Eosinophils rise with allergic/atopic response.`},
+];
+const LABS_SYSTEMS = [
+  { group:'Hormones', tag:'6 markers', items:[
+    {n:'Total Testosterone', v:'324', u:'ng/dL', s:'inrange', ref:'264–916', pos:14, zs:8, ze:90, note:'low-normal'},
+    {n:'Free Testosterone', v:'5.82', u:'ng/dL', s:'inrange', ref:'', pos:24, zs:14, ze:90, note:'low-normal'},
+    {n:'Luteinizing Hormone', sub:'(LH)', v:'0.9', u:'mIU/mL', s:'flag', ref:'1.7–8.6', pos:5, zs:18, ze:82},
+    {n:'Estradiol', v:'30', u:'pg/mL', s:'optimal', ref:'10–40', pos:55, zs:35, ze:72},
+    {n:'SHBG', v:'37', u:'nmol/L', s:'optimal', ref:'16.5–55.9', pos:46, zs:30, ze:70},
+    {n:'Prostate-Specific Antigen', sub:'(PSA)', v:'0.46', u:'ng/mL', s:'optimal', ref:'<4.0', pos:10, zs:0, ze:80},
+  ]},
+  { group:'Cholesterol & Heart', tag:'9 markers', items:[
+    {n:'Apolipoprotein B', sub:'(ApoB)', v:'92', u:'mg/dL', s:'flag', ref:'<90 opt', pos:92, zs:8, ze:82},
+    {n:'LDL', v:'125', u:'mg/dL', s:'flag', ref:'<100 opt', pos:88, zs:8, ze:80},
+    {n:'Non-HDL', v:'141', u:'mg/dL', s:'flag', ref:'<130', pos:95, zs:5, ze:80},
+    {n:'Total Cholesterol', v:'191', u:'mg/dL', s:'inrange', ref:'<200', pos:78, zs:10, ze:88},
+    {n:'HDL', v:'50', u:'mg/dL', s:'inrange', ref:'>40', pos:30, zs:40, ze:92, note:'low side'},
+    {n:'Triglycerides', v:'64', u:'mg/dL', s:'optimal', ref:'<150', pos:26, zs:5, ze:55},
+    {n:'Total Chol / HDL ratio', v:'3.82', u:'', s:'inrange', ref:'<5.0', pos:72, zs:5, ze:78},
+    {n:'Triglyceride / HDL ratio', v:'1.28', u:'', s:'optimal', ref:'<2.0 opt', pos:20, zs:5, ze:55},
+    {n:'LDL / ApoB ratio', v:'1.36', u:'', s:'optimal', ref:'~1.3–1.5', pos:50, zs:32, ze:70},
+  ]},
+  { group:'Metabolic & Electrolytes', tag:'6 markers', items:[
+    {n:'Glucose (fasting)', v:'85', u:'mg/dL', s:'optimal', ref:'70–99', pos:40, zs:28, ze:62},
+    {n:'Sodium', v:'138', u:'mmol/L', s:'optimal', ref:'135–145', pos:50, zs:30, ze:75},
+    {n:'Potassium', v:'4.6', u:'mmol/L', s:'optimal', ref:'3.5–5.1', pos:55, zs:32, ze:78},
+    {n:'Chloride', v:'104', u:'mmol/L', s:'optimal', ref:'98–107', pos:55, zs:35, ze:78},
+    {n:'Calcium', v:'9.8', u:'mg/dL', s:'optimal', ref:'8.6–10.2', pos:62, zs:38, ze:80},
+    {n:'CO2', v:'30', u:'mmol/L', s:'inrange', ref:'20–29', pos:85, zs:20, ze:90, note:'top of range'},
+  ]},
+  { group:'Kidney', tag:'4 markers', items:[
+    {n:'eGFR', v:'117', u:'mL/min', s:'optimal', ref:'>60', pos:80, zs:45, ze:95},
+    {n:'Blood Urea Nitrogen', sub:'(BUN)', v:'11', u:'mg/dL', s:'optimal', ref:'7–20', pos:40, zs:25, ze:75},
+    {n:'Creatinine', v:'0.73', u:'mg/dL', s:'optimal', ref:'0.7–1.3', pos:45, zs:30, ze:72},
+    {n:'BUN / Creatinine ratio', v:'15.07', u:'', s:'optimal', ref:'10–20', pos:50, zs:32, ze:72},
+  ]},
+  { group:'Liver & Protein', tag:'9 markers', items:[
+    {n:'ALT', v:'16', u:'U/L', s:'optimal', ref:'0–44', pos:25, zs:8, ze:60},
+    {n:'AST', v:'17', u:'U/L', s:'optimal', ref:'0–40', pos:30, zs:10, ze:62},
+    {n:'AST / ALT ratio', v:'1.06', u:'', s:'optimal', ref:'~0.8–1.5', pos:50, zs:30, ze:72},
+    {n:'Alkaline Phosphatase', v:'41', u:'IU/L', s:'inrange', ref:'40–129', pos:22, zs:25, ze:82, note:'low side'},
+    {n:'Total Bilirubin', v:'0.6', u:'mg/dL', s:'optimal', ref:'0.0–1.2', pos:48, zs:20, ze:72},
+    {n:'Total Protein', v:'7.3', u:'g/dL', s:'optimal', ref:'6.0–8.3', pos:55, zs:35, ze:78},
+    {n:'Albumin', v:'4.6', u:'g/dL', s:'optimal', ref:'3.5–5.0', pos:60, zs:40, ze:82},
+    {n:'Globulin', v:'2.7', u:'g/dL', s:'optimal', ref:'2.0–3.5', pos:50, zs:32, ze:72},
+    {n:'Albumin / Globulin ratio', v:'1.7', u:'', s:'optimal', ref:'1.1–2.5', pos:55, zs:35, ze:78},
+  ]},
+  { group:'Thyroid', tag:'5 markers', items:[
+    {n:'TSH', v:'2.03', u:'µIU/mL', s:'optimal', ref:'0.45–4.5', pos:40, zs:22, ze:70},
+    {n:'Thyroxine (T4)', v:'7.7', u:'µg/dL', s:'optimal', ref:'4.5–12.0', pos:55, zs:32, ze:78},
+    {n:'FT3', v:'3.5', u:'pg/mL', s:'optimal', ref:'2.3–4.2', pos:45, zs:30, ze:72},
+    {n:'T3 Uptake', v:'32', u:'%', s:'optimal', ref:'22–35', pos:55, zs:35, ze:78},
+    {n:'Free Thyroxine Index', v:'2.5', u:'', s:'inrange', ref:'1.2–4.9', pos:55, zs:25, ze:82},
+  ]},
+  { group:'Blood Count', tag:'10 markers', items:[
+    {n:'White Blood Cells', sub:'(WBC)', v:'5.4', u:'x10³/µL', s:'optimal', ref:'3.4–10.8', pos:45, zs:30, ze:72},
+    {n:'Red Blood Cells', sub:'(RBC)', v:'5.31', u:'x10⁶/µL', s:'inrange', ref:'4.14–5.80', pos:72, zs:30, ze:78},
+    {n:'Hemoglobin', v:'15.5', u:'g/dL', s:'optimal', ref:'13.0–17.7', pos:55, zs:35, ze:78},
+    {n:'Hematocrit', v:'47.6', u:'%', s:'optimal', ref:'37.5–51.0', pos:55, zs:35, ze:78},
+    {n:'MCV', v:'89.6', u:'fL', s:'optimal', ref:'79–97', pos:48, zs:30, ze:72},
+    {n:'MCH', v:'29.2', u:'pg', s:'optimal', ref:'26.6–33.0', pos:50, zs:32, ze:72},
+    {n:'MCHC', v:'32.6', u:'', s:'optimal', ref:'31.5–35.7', pos:45, zs:30, ze:70},
+    {n:'RDW', v:'12.3', u:'%', s:'optimal', ref:'11.6–15.4', pos:30, zs:20, ze:65},
+    {n:'Platelet Count', v:'311', u:'x10³/µL', s:'optimal', ref:'150–400', pos:55, zs:32, ze:78},
+    {n:'MPV', v:'9.5', u:'fL', s:'inrange', ref:'7.5–12.5', pos:40, zs:28, ze:82},
+  ]},
+  { group:'Immune & Inflammation', tag:'11 markers', items:[
+    {n:'Eosinophils', sub:'(%)', v:'10.4', u:'%', s:'flag', ref:'0–6', pos:95, zs:5, ze:75},
+    {n:'Eosinophils', sub:'(absolute)', v:'562', u:'cells/µL', s:'inrange', ref:'15–500', pos:80, zs:5, ze:82, note:'high side'},
+    {n:'Neutrophils', sub:'(%)', v:'49.6', u:'%', s:'inrange', ref:'40–70', pos:45, zs:30, ze:82},
+    {n:'Neutrophils', sub:'(absolute)', v:'2678', u:'cells/µL', s:'optimal', ref:'1500–7800', pos:45, zs:30, ze:72},
+    {n:'Lymphocytes', sub:'(%)', v:'32', u:'%', s:'inrange', ref:'20–40', pos:55, zs:25, ze:82},
+    {n:'Lymphocytes', sub:'(absolute)', v:'1728', u:'cells/µL', s:'optimal', ref:'850–3900', pos:50, zs:32, ze:72},
+    {n:'Monocytes', sub:'(%)', v:'7.3', u:'%', s:'inrange', ref:'2–10', pos:55, zs:20, ze:82},
+    {n:'Monocytes', sub:'(absolute)', v:'394', u:'cells/µL', s:'optimal', ref:'200–950', pos:50, zs:32, ze:72},
+    {n:'Basophils', sub:'(%)', v:'0.7', u:'%', s:'inrange', ref:'0–2', pos:50, zs:20, ze:82},
+    {n:'Basophils', sub:'(absolute)', v:'38', u:'cells/µL', s:'optimal', ref:'0–200', pos:30, zs:20, ze:68},
+    {n:'Neutrophil / Lymphocyte ratio', sub:'(NLR)', v:'1.55', u:'', s:'optimal', ref:'~1–3', pos:40, zs:25, ze:70},
+  ]},
+];
+const LAB_PILL = { optimal:'Optimal', inrange:'In range', flag:'Flagged' };
+function renderLabs() {
+  const el = document.getElementById('labsContent');
+  if (!el || el.dataset.rendered) return;
+  const flags = LABS_FLAGS.map(f => `
+    <div class="lab-flag ${f.tone}">
+      <div class="lab-flag-idx">${f.idx}</div>
+      <div><div class="lab-flag-h">${f.h}</div><div class="lab-flag-p">${f.p}</div></div>
+    </div>`).join('');
+  const groups = LABS_SYSTEMS.map(g => `
+    <div class="section">
+      <div class="section-h">${g.group} <span class="lab-tag">${g.tag}</span></div>
+      <div class="lab-rows">${g.items.map(it => {
+        const sub = it.sub ? ` <span class="lab-sub">${it.sub}</span>` : '';
+        const note = it.note ? ` · ${it.note}` : '';
+        const zoneStatus = it.s === 'flag' ? 'optimal' : it.s;
+        const zw = Math.max(0, it.ze - it.zs);
+        const mp = Math.min(98, Math.max(2, it.pos));
+        return `
+        <div class="lab-row">
+          <div class="lab-row-top">
+            <div class="lab-name">${it.n}${sub}</div>
+            <div class="lab-val">${it.v}<span class="lab-u">${it.u}</span></div>
+          </div>
+          <div class="lab-meta">
+            <span class="lab-status ${it.s}">${LAB_PILL[it.s]}${note}</span>
+            ${it.ref ? `<span class="lab-ref">Ref ${it.ref}</span>` : ''}
+          </div>
+          <div class="lab-bar">
+            <div class="lab-zone ${zoneStatus}" style="left:${it.zs}%;width:${zw}%"></div>
+            <div class="lab-mark ${it.s}" style="left:${mp}%"></div>
+          </div>
+        </div>`;
+      }).join('')}</div>
+    </div>`).join('');
+  el.innerHTML = `
+    <div class="lab-scoreline">
+      <div class="lab-score opt"><div class="n">36</div><div class="l">Optimal</div></div>
+      <div class="lab-score rng"><div class="n">21</div><div class="l">In range</div></div>
+      <div class="lab-score flag"><div class="n">5</div><div class="l">Out</div></div>
+    </div>
+    <div class="lab-verdict"><b>36 optimal · 21 in range · 5 out.</b> Kidney, liver, glucose, thyroid, and the full blood count read clean. Every marker below is set against its reference range.</div>
+    <div class="section"><div class="section-h">Out of range</div>${flags}</div>
+    ${groups}
+    <div class="lab-disclaimer">Ranges shown are standard adult-male labs; Hone's optimal bands run tighter. Not medical advice.</div>`;
+  el.dataset.rendered = '1';
+}
 function toast(msg, err) {
   const t = document.getElementById('toast');
   document.getElementById('toastMsg').textContent = msg;
@@ -1326,5 +1540,7 @@ window.addEventListener('load', () => setTimeout(() => {
 }, 1500));
 </script>
 
+
+<script defer src="/menu.js"></script>
 </body>
 </html>
