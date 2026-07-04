@@ -801,6 +801,13 @@
       #panel-labs .lab-flag-h{font-size:14px;font-weight:600;color:var(--label);letter-spacing:-.01em}
       #panel-labs .lab-flag-p{font-size:13px;color:var(--label-secondary);margin-top:4px;line-height:1.5}
       #panel-labs .lab-disclaimer{font-size:12px;color:var(--label-tertiary);padding:10px 4px 0;line-height:1.5}
+      #panel-labs .lab-explain-toggle{width:100%;display:flex;justify-content:space-between;align-items:center;background:transparent;border:none;padding:12px 4px 2px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:var(--tint);text-align:left}
+      #panel-labs .lab-explain-chev{transition:transform .2s;font-size:15px;line-height:1}
+      #panel-labs .lab-explain-toggle.open .lab-explain-chev{transform:rotate(180deg)}
+      #panel-labs .lab-explain{display:none;padding:6px 6px 2px;font-size:13.5px;line-height:1.6;color:var(--label-secondary)}
+      #panel-labs .lab-explain.open{display:block}
+      #panel-labs .lab-explain b{color:var(--label);font-weight:600}
+      #panel-labs .lab-explain i{font-style:italic}
     </style>
     <section class="panel" id="panel-labs">
       <div id="labsContent"></div>
@@ -1438,6 +1445,16 @@ const LABS_SYSTEMS = [
     {n:'Neutrophil / Lymphocyte ratio', sub:'(NLR)', v:'1.55', u:'', s:'optimal', ref:'~1–3', pos:40, zs:25, ze:70},
   ]},
 ];
+const LABS_EXPLAIN = {
+  'Hormones': `<b>The command chain.</b> Testosterone is made in the testes on a two-step signal: the hypothalamus releases GnRH → the pituitary releases LH → LH tells the testes' Leydig cells to produce testosterone. Reading LH and T <i>together</i> tells you where a low number originates.<br><br><b>Your pattern.</b> Total T 324 sits in the bottom ~10–15% of the 264–916 range, and LH 0.9 is below its 1.7–8.6 band. Low output <i>with</i> a low signal is a <b>central (secondary)</b> pattern — the command is quiet, the factory isn't failing. The opposite would be low T with <i>high</i> LH (primary — testes struggling, pituitary shouting louder). That's not you.<br><br><b>What can quiet the signal.</b> Upper-normal estradiol feeding back on the pituitary, short sleep, high stress/cortisol, elevated prolactin, higher body fat, some medications, or no identifiable cause. Your estradiol (30, upper-normal for a man) exerts mild feedback that can nudge LH down; SHBG (37, mid-range) is normal, so your free-vs-bound balance isn't distorted.<br><br><b>Context.</b> Only ~2% of testosterone is 'free' and active — the rest rides on SHBG and albumin. The number matters far less than symptoms: plenty of men at 324 have normal energy, libido, and drive. Estradiol isn't just a 'female' hormone — men need it for bone density, libido, and vascular health. PSA 0.46 is a clean prostate baseline.`,
+  'Cholesterol & Heart': `<b>The one idea that matters.</b> Plaque forms when <i>ApoB-containing particles</i> (LDL, VLDL, IDL, Lp(a)) lodge in artery walls. Each such particle carries exactly one ApoB protein — so <b>ApoB is a direct headcount of the particles that drive atherosclerosis</b>, and it predicts risk better than LDL-cholesterol, which only measures the cholesterol <i>mass</i> those particles carry.<br><br><b>Your numbers.</b> ApoB 92 is mildly over the prevention target (<90) — modestly more atherogenic particles than ideal for the long game. LDL 125 and Non-HDL 141 (all your atherogenic cholesterol) echo it. HDL 50 does the reverse job — hauling cholesterol back out — and is fine, though 60+ is better; aerobic exercise is the main lever.<br><br><b>The reassuring half.</b> Triglycerides 64 are excellent, and your Trig/HDL ratio 1.28 is a well-validated stand-in for insulin sensitivity and small-dense-LDL burden. A low ratio suggests your elevated LDL skews toward the larger, buoyant, <i>less</i> atherogenic particles rather than small dense ones — the 'lean, metabolically healthy, genetically-higher-LDL' pattern, not metabolic dysfunction.<br><br><b>The lever.</b> ApoB responds to dietary saturated fat, soluble fiber, and body composition. Pristine trigs and glucose are the counterweight that keep this a 'watch and optimize' item, not an alarm.`,
+  'Metabolic & Electrolytes': `<b>Glucose 85</b> (fasting) is excellent — well under the prediabetes line (100–125) and diabetes (126+) — and it agrees with your low triglycerides that insulin sensitivity is strong. <b>Sodium, potassium, chloride, and calcium</b> are the electrolytes your kidneys, adrenal glands (via aldosterone), and parathyroid tune minute-to-minute; all optimal means none of those systems is off. <b>CO2 (bicarbonate) 30</b> is at the top of range — it tracks acid-base balance, and a mild bump usually reflects mild dehydration or normal lab variation rather than anything meaningful when everything around it is clean.`,
+  'Kidney': `These four read kidney filtration. <b>Creatinine 0.73</b> is a muscle-breakdown waste product the kidneys clear; low-normal is common in leaner or well-hydrated people. <b>eGFR 117</b> estimates how fast your kidneys filter — >90 is normal, and 117 is excellent. <b>BUN 11</b> and the <b>BUN/creatinine ratio 15</b> add a hydration/protein cross-check (a high ratio flags dehydration). Together: kidneys filtering cleanly, no concern.`,
+  'Liver & Protein': `<b>ALT 16 and AST 17</b> are enzymes that spill into the blood when liver cells are stressed — both low means no hepatocellular injury (no fatty-liver or inflammation signal), and the AST/ALT ratio near 1 is normal (a ratio above 2 is what raises flags). <b>ALP 41</b> (from liver and bone) is low-normal and benign. <b>Bilirubin 0.6</b> is a heme-breakdown product; normal means good processing and no red-cell breakdown. <b>Albumin 4.6, total protein 7.3, globulin 2.7</b> reflect the liver's manufacturing (albumin) and your immune proteins (globulins) — all healthy, so synthetic function is solid.`,
+  'Thyroid': `<b>TSH 2.03</b> is the pituitary's dial for the thyroid and the most sensitive single marker — 2.03 sits in the sweet spot (many optimize for ~1–2.5). <b>T4 7.7</b> is the storage hormone, <b>FT3 3.5</b> is the active one your cells actually use, and <b>T3 uptake / Free Thyroxine Index</b> estimate how much is available. All normal means your thyroid is both producing hormone and converting it properly — no hypo- or hyperthyroid signal. This system is genuinely dialed.`,
+  'Blood Count': `<b>Red cells</b> (RBC, Hemoglobin 15.5, Hematocrit 47.6) carry oxygen — all healthy, ruling out anemia (low) and polycythemia (high), with comfortable headroom on the hematocrit. <b>MCV / MCH / MCHC</b> describe red-cell size and hemoglobin content, and <b>RDW 12.3</b> (low) means very uniform cells — no mixed or developing anemia. <b>WBC 5.4</b> is your total immune-cell count (normal, no broad infection or activation). <b>Platelets 311, MPV 9.5</b> are your clotting cells — normal count and size, no bleeding or clotting flags.`,
+  'Immune & Inflammation': `<b>The differential</b> splits white cells by job: neutrophils (bacteria), lymphocytes (viruses / adaptive immunity), monocytes, basophils — all yours are normal. <b>The standout is eosinophils</b>: 10.4% and 562 absolute, both mildly high. Eosinophils are the allergy / parasite / inflammation cells, and in a US adult with no travel, the overwhelming driver is <b>allergic / atopic</b> — seasonal allergies, allergic rhinitis, asthma, eczema, or occasionally a drug reaction. Parasitic and rarer blood causes sit far down the list and usually drag other markers with them, which yours don't.<br><br><b>Why allergies leads.</b> It's early July (pollen), every other white-cell line is normal, and your <b>NLR 1.55</b> (neutrophil-to-lymphocyte ratio, a general systemic-inflammation gauge) is low — so there's no broad inflammatory fire, just a specific allergic bump. What would change the read: eosinophils that keep climbing across future panels, or that show up alongside a rash, wheeze, or GI symptoms.`,
+};
 const LAB_PILL = { optimal:'Optimal', inrange:'In range', flag:'Flagged' };
 function renderLabs() {
   const el = document.getElementById('labsContent');
@@ -1472,6 +1489,7 @@ function renderLabs() {
           </div>
         </div>`;
       }).join('')}</div>
+      ${LABS_EXPLAIN[g.group] ? `<button class="lab-explain-toggle" onclick="this.nextElementSibling.classList.toggle('open');this.classList.toggle('open')"><span>What these mean</span><span class="lab-explain-chev">⌄</span></button><div class="lab-explain">${LABS_EXPLAIN[g.group]}</div>` : ''}
     </div>`).join('');
   el.innerHTML = `
     <div class="lab-scoreline">
@@ -1479,7 +1497,7 @@ function renderLabs() {
       <div class="lab-score rng"><div class="n">21</div><div class="l">In range</div></div>
       <div class="lab-score flag"><div class="n">5</div><div class="l">Out</div></div>
     </div>
-    <div class="lab-verdict"><b>36 optimal · 21 in range · 5 out.</b> Kidney, liver, glucose, thyroid, and the full blood count read clean. Every marker below is set against its reference range.</div>
+    <div class="lab-verdict"><b>36 optimal · 21 in range · 5 out.</b> Kidney, liver, glucose, thyroid, and the full blood count read clean. Every marker is set against its reference range — tap <b>What these mean</b> under any group for the physiology and what your values suggest.</div>
     <div class="section"><div class="section-h">Out of range</div>${flags}</div>
     ${groups}
     <div class="lab-disclaimer">Ranges shown are standard adult-male labs; Hone's optimal bands run tighter. Not medical advice.</div>`;
