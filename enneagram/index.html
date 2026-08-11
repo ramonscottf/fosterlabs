@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Enneagram, Unlocked — Foster Labs</title>
+<meta name="description" content="The complete Enneagram system — all nine types, wings, arrows, subtypes, and levels — explained in full. No paywall.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#211D2B; --surface:#2B2637; --surface2:#332D42; --line:#413A54;
+  --text:#E9E4F0; --dim:#A79FBA; --faint:#736A88;
+  --heart:#C4526A; --head:#7C90C9; --body:#8FA86B; --gold:#D4A94E;
+  --heart-soft:#3A2733; --head-soft:#28293E; --body-soft:#2B3128;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--ink);color:var(--text);font-family:'Spectral',Georgia,serif;font-weight:300;line-height:1.65;font-size:17px;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Marcellus',serif;font-weight:400;line-height:1.15}
+.mono{font-family:'Space Grotesk',monospace}
+.wrap{max-width:880px;margin:0 auto;padding:0 22px}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+
+/* ---------- header ---------- */
+header{padding:20px 0 0}
+.brand{font-family:'Space Grotesk',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.hero{padding:34px 0 10px;text-align:center}
+.hero h1{font-size:clamp(38px,7vw,64px);letter-spacing:.01em}
+.hero .sub{max-width:560px;margin:18px auto 0;color:var(--dim);font-size:18px}
+.hero .sub em{color:var(--text)}
+.centerkey{display:flex;gap:22px;justify-content:center;margin-top:26px;flex-wrap:wrap}
+.centerkey span{font-family:'Space Grotesk',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);display:flex;align-items:center;gap:8px}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+.dot.heart{background:var(--heart)}.dot.head{background:var(--head)}.dot.body{background:var(--body)}
+
+/* ---------- diagram ---------- */
+.figure{max-width:540px;margin:26px auto 8px;position:relative}
+.figure svg{width:100%;height:auto;display:block}
+.fig-hint{text-align:center;color:var(--faint);font-family:'Space Grotesk',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px}
+.node{cursor:pointer}
+.node circle.ring{fill:var(--surface);stroke-width:2;transition:fill .18s,stroke-width .18s}
+.node text{font-family:'Marcellus',serif;font-size:26px;fill:var(--text);pointer-events:none}
+.node.heart circle.ring{stroke:var(--heart)}
+.node.head circle.ring{stroke:var(--head)}
+.node.body circle.ring{stroke:var(--body)}
+.node.active circle.ring{stroke-width:4}
+.node.active.heart circle.ring{fill:var(--heart-soft)}
+.node.active.head circle.ring{fill:var(--head-soft)}
+.node.active.body circle.ring{fill:var(--body-soft)}
+.web line, .web path{stroke:var(--line);stroke-width:1.5;fill:none;transition:stroke .18s,stroke-width .18s}
+line.hl-grow{stroke:var(--body)!important;stroke-width:3!important}
+line.hl-stress{stroke:var(--heart)!important;stroke-width:3!important;stroke-dasharray:6 5}
+circle.outer{fill:none;stroke:var(--line);stroke-width:1.5}
+
+/* ---------- type panel ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px 24px;margin:14px 0 10px}
+.panel .tag{font-family:'Space Grotesk',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;margin-bottom:6px}
+.panel h3{font-size:30px;margin-bottom:4px}
+.panel .aka{color:var(--dim);font-style:italic;margin-bottom:14px}
+.statgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:16px 0}
+.stat{background:var(--surface2);border-radius:10px;padding:12px 14px}
+.stat .k{font-family:'Space Grotesk',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:3px}
+.stat .v{font-size:15px}
+.arrows-line{margin-top:14px;color:var(--dim);font-size:15px}
+.arrows-line b{color:var(--text);font-weight:600}
+
+/* ---------- sections ---------- */
+section{padding:44px 0 8px}
+.eyebrow{font-family:'Space Grotesk',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+section h2{font-size:clamp(28px,4.5vw,40px);margin-bottom:16px}
+section p{margin-bottom:16px;color:var(--dim)}
+section p strong{color:var(--text);font-weight:600}
+.callout{border-left:3px solid var(--gold);background:var(--surface);border-radius:0 12px 12px 0;padding:18px 20px;margin:22px 0}
+.callout p{margin-bottom:8px}
+.callout p:last-child{margin-bottom:0}
+
+/* concept cards */
+.concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:20px 0}
+.concept{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.concept h3{font-size:20px;margin-bottom:8px}
+.concept p{font-size:15px;margin-bottom:0}
+
+/* centers */
+.tri{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;margin:20px 0}
+.tri .c{border-radius:12px;padding:20px;border:1px solid var(--line)}
+.tri .c.heart{background:var(--heart-soft)}
+.tri .c.head{background:var(--head-soft)}
+.tri .c.body{background:var(--body-soft)}
+.tri h3{font-size:19px;margin-bottom:6px}
+.tri .nums{font-family:'Marcellus',serif;font-size:26px;letter-spacing:.2em;margin-bottom:8px}
+.tri p{font-size:15px;margin-bottom:0}
+.tri .c.heart .nums{color:var(--heart)}.tri .c.head .nums{color:var(--head)}.tri .c.body .nums{color:var(--body)}
+
+/* profile bars */
+.bars{margin:22px 0}
+.bar{display:grid;grid-template-columns:44px 1fr 54px;align-items:center;gap:12px;margin-bottom:10px}
+.bar .n{font-family:'Marcellus',serif;font-size:20px;text-align:center}
+.bar .track{height:12px;background:var(--surface2);border-radius:6px;overflow:hidden}
+.bar .fill{height:100%;border-radius:6px}
+.bar .lbl{font-family:'Space Grotesk',monospace;font-size:12px;color:var(--faint)}
+.fill.heart{background:var(--heart)}.fill.head{background:var(--head)}.fill.body{background:var(--body)}
+
+footer{padding:50px 0 40px;color:var(--faint);font-size:14px;text-align:center}
+footer .mono{font-size:12px;letter-spacing:.14em;text-transform:uppercase}
+hr.sep{border:none;border-top:1px solid var(--line);margin:36px 0 0}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="brand">Foster Labs · Field Guide</div>
+</header>
+
+<div class="hero wrap">
+  <h1>The Enneagram, Unlocked</h1>
+  <p class="sub">Everything the $29 report tells you — the full nine-type system, wings, arrows, subtypes, and levels — explained honestly. <em>None of this is proprietary. It never was.</em></p>
+  <div class="centerkey">
+    <span><i class="dot heart"></i>Heart · 2 3 4</span>
+    <span><i class="dot head"></i>Head · 5 6 7</span>
+    <span><i class="dot body"></i>Body · 8 9 1</span>
+  </div>
+</div>
+
+<div class="wrap">
+  <p class="fig-hint" style="margin-top:26px">Tap any point to explore that type</p>
+  <div class="figure">
+    <svg viewBox="0 0 500 500" role="img" aria-label="Interactive enneagram figure with nine numbered points">
+      <circle class="outer" cx="250" cy="250" r="210"/>
+      <g class="web" id="web"></g>
+      <g id="nodes"></g>
+    </svg>
+  </div>
+  <div class="panel" id="typePanel" aria-live="polite"></div>
+</div>
+
+<section class="wrap" id="system">
+  <div class="eyebrow">The System</div>
+  <h2>What the Enneagram actually is</h2>
+  <p>The Enneagram maps nine core personality strategies — nine answers to the question <strong>"what do I most fear, and what do I do about it?"</strong> Unlike trait models that measure how much of something you have, the Enneagram claims each of us organizes around one dominant motivation. The type isn't your behavior; it's the <strong>engine underneath the behavior</strong>. Two people can act identically for completely different reasons, and the Enneagram cares about the reason.</p>
+  <p>Its modern form comes from Oscar Ichazo and Claudio Naranjo in the 1960s–70s, popularized by Don Riso and Russ Hudson (whose "Levels of Development" and type names — Reformer, Individualist, etc. — most tests borrow). The geometry is older, associated with G.I. Gurdjieff. The whole body of theory is published, taught openly, and thoroughly documented — which is why the paywall is funny.</p>
+
+  <div class="tri">
+    <div class="c heart">
+      <h3>The Heart Center</h3>
+      <div class="nums">2 · 3 · 4</div>
+      <p>The feeling triad. Core emotion: <strong>shame</strong>. These types build identity through image and relationship — being loved (2), being valuable (3), being significant (4). Twos push shame outward, Threes outrun it, Fours dive into it.</p>
+    </div>
+    <div class="c head">
+      <h3>The Head Center</h3>
+      <div class="nums">5 · 6 · 7</div>
+      <p>The thinking triad. Core emotion: <strong>fear</strong>. These types manage anxiety with the mind — hoarding competence (5), seeking security (6), chasing stimulation to stay ahead of dread (7).</p>
+    </div>
+    <div class="c body">
+      <h3>The Body Center</h3>
+      <div class="nums">8 · 9 · 1</div>
+      <p>The gut triad. Core emotion: <strong>anger</strong>. These types negotiate autonomy and control — Eights express anger directly, Nines fall asleep to it, Ones turn it inward as criticism.</p>
+    </div>
+  </div>
+
+  <div class="concepts">
+    <div class="concept">
+      <h3>Wings</h3>
+      <p>Your type is flavored by one of its two neighbors. A Four leans 4w3 (image-savvy, ambitious, productive — Riso-Hudson's "Aristocrat") or 4w5 (withdrawn, cerebral, unconventional — "the Bohemian"). Wings explain why two people of the same type feel so different.</p>
+    </div>
+    <div class="concept">
+      <h3>Arrows — growth &amp; stress</h3>
+      <p>The lines on the figure aren't decoration. Under security you pick up the healthy traits of one connected type (growth); under pressure you slide into the average traits of the other (stress). This is the most practically useful piece of the whole model.</p>
+    </div>
+    <div class="concept">
+      <h3>Instinctual subtypes</h3>
+      <p>Each type comes in three versions based on which survival instinct dominates: Self-Preservation (comfort, security, resources), Social (belonging, status, group), or Sexual/One-to-One (intensity, chemistry, bonds). 9 types × 3 instincts = 27 distinct profiles. This is most of what paid reports pad themselves with.</p>
+    </div>
+    <div class="concept">
+      <h3>Levels of development</h3>
+      <p>Riso &amp; Hudson describe nine levels from healthy to average to unhealthy for every type. A healthy Four is a profound, self-aware creator; an unhealthy Four is drowning in envy and self-sabotage. Same engine, different condition. Most type descriptions describe the <em>average</em> level.</p>
+    </div>
+  </div>
+</section>
+
+<section class="wrap" id="nine">
+  <div class="eyebrow">All Nine</div>
+  <h2>The nine types at a glance</h2>
+  <p>Use the figure above to load any type's full card — core fear, core desire, vice and virtue, wings, and both arrows. The one-line versions:</p>
+  <div class="concepts">
+    <div class="concept"><h3 style="color:var(--body)">1 · The Reformer</h3><p>Principled, self-controlled, perfectionistic. Fears being corrupt or wrong; wants to be good. Anger leaks out as resentment and inner criticism.</p></div>
+    <div class="concept"><h3 style="color:var(--heart)">2 · The Helper</h3><p>Generous, people-pleasing, possessive. Fears being unwanted; wants to be loved. Gives to receive, and struggles to name its own needs.</p></div>
+    <div class="concept"><h3 style="color:var(--heart)">3 · The Achiever</h3><p>Adaptable, driven, image-conscious. Fears being worthless; wants to be valuable. Reads the room and becomes what succeeds there.</p></div>
+    <div class="concept"><h3 style="color:var(--heart)">4 · The Individualist</h3><p>Expressive, dramatic, self-absorbed, honest about the dark. Fears having no identity; wants to be uniquely, truly itself.</p></div>
+    <div class="concept"><h3 style="color:var(--head)">5 · The Investigator</h3><p>Perceptive, innovative, secretive, detached. Fears being useless or overwhelmed; wants to be competent. Guards energy and privacy fiercely.</p></div>
+    <div class="concept"><h3 style="color:var(--head)">6 · The Loyalist</h3><p>Committed, responsible, anxious, suspicious. Fears being without support; wants security. Scans for what could go wrong — and is usually right.</p></div>
+    <div class="concept"><h3 style="color:var(--head)">7 · The Enthusiast</h3><p>Spontaneous, versatile, scattered. Fears deprivation and pain; wants satisfaction. Keeps options open and reframes everything upward.</p></div>
+    <div class="concept"><h3 style="color:var(--body)">8 · The Challenger</h3><p>Self-confident, decisive, confrontational. Fears being controlled or harmed; wants to protect itself and its people. Big presence, bigger will.</p></div>
+    <div class="concept"><h3 style="color:var(--body)">9 · The Peacemaker</h3><p>Receptive, reassuring, complacent. Fears loss and separation; wants inner peace. Merges with others' agendas and forgets its own.</p></div>
+  </div>
+</section>
+
+<section class="wrap" id="four">
+  <div class="eyebrow">Deep Dive</div>
+  <h2>Type Four — The Individualist</h2>
+  <p><strong>Core fear:</strong> that they have no identity or personal significance — that they are fundamentally flawed, missing something everyone else got. <strong>Core desire:</strong> to find themselves and their significance; to create an identity out of their inner experience. <strong>The vice is envy</strong> — not petty jealousy, but the chronic sense that others possess a wholeness or ease that you lack. <strong>The virtue is equanimity:</strong> the healthy Four's hard-won ability to hold intense feeling without being ruled by it.</p>
+  <p>Fours are the type most willing to look directly at pain, loss, and the unflattering truth — which makes them the great artists, storytellers, and meaning-makers of the system. The trap: identifying <em>with</em> the melancholy. If suffering is what makes me deep, then healing threatens my identity. Riso &amp; Hudson's growth line for Fours is blunt: significance doesn't come from curating your differentness. It comes from doing the work — which is why the growth arrow points at One.</p>
+  <div class="statgrid">
+    <div class="stat"><div class="k">Growth arrow → 1</div><div class="v">Secure Fours pick up the One's discipline: principled, structured, they ship the work instead of mood-waiting. Feelings become material, not weather.</div></div>
+    <div class="stat"><div class="k">Stress arrow → 2</div><div class="v">Stressed Fours slide to average Two: clingy, approval-hungry, over-involved in others' lives, needing to be needed to feel real.</div></div>
+    <div class="stat"><div class="k">4w3 — "The Aristocrat"</div><div class="v">Creative + ambitious. More social, image-aware, productive. Wants the vision to be seen and to <em>win</em>.</div></div>
+    <div class="stat"><div class="k">4w5 — "The Bohemian"</div><div class="v">Creative + cerebral. More withdrawn, unconventional, intellectually deep. Wants the vision to be true, whether or not anyone claps.</div></div>
+  </div>
+  <div class="concepts">
+    <div class="concept"><h3>SP Four</h3><p>Self-pres Fours are the "counter-type" — stoic, enduring, sunny on the surface. Instead of dramatizing pain, they quietly endure it and work relentlessly to earn what they envy.</p></div>
+    <div class="concept"><h3>Social Four</h3><p>Comparison-driven and openly melancholic. Feels their deficiency in front of the group; suffering becomes a kind of belonging and testimony.</p></div>
+    <div class="concept"><h3>One-to-One Four</h3><p>The intense one. Competitive, demanding, unafraid of conflict — envy converts to "I'll prove it." Frequently mistyped as Eight.</p></div>
+  </div>
+  <div class="callout">
+    <p><strong>Fours at work:</strong> give them problems that need original thinking and a reason the work matters, and they'll outbuild everyone. Sameness, micromanagement, and "just follow the template" are kryptonite. They're allergic to inauthenticity in leadership and will name the thing nobody else will say out loud — which, managed well, is a feature.</p>
+  </div>
+</section>
+
+<section class="wrap" id="you">
+  <div class="eyebrow">Your Chart</div>
+  <h2>Reading a "4, but not by much"</h2>
+  <p>Your Truity graphic isn't a verdict, it's a distribution — and yours is genuinely interesting. Approximate relative scores from your slice areas:</p>
+  <div class="bars">
+    <div class="bar"><div class="n" style="color:var(--heart)">4</div><div class="track"><div class="fill heart" style="width:92%"></div></div><div class="lbl">highest</div></div>
+    <div class="bar"><div class="n" style="color:var(--head)">5</div><div class="track"><div class="fill head" style="width:88%"></div></div><div class="lbl">close</div></div>
+    <div class="bar"><div class="n" style="color:var(--heart)">3</div><div class="track"><div class="fill heart" style="width:85%"></div></div><div class="lbl">close</div></div>
+    <div class="bar"><div class="n" style="color:var(--body)">8</div><div class="track"><div class="fill body" style="width:82%"></div></div><div class="lbl">close</div></div>
+    <div class="bar"><div class="n" style="color:var(--body)">1</div><div class="track"><div class="fill body" style="width:58%"></div></div><div class="lbl">mid</div></div>
+    <div class="bar"><div class="n" style="color:var(--heart)">2</div><div class="track"><div class="fill heart" style="width:52%"></div></div><div class="lbl">mid</div></div>
+    <div class="bar"><div class="n" style="color:var(--body)">9</div><div class="track"><div class="fill body" style="width:38%"></div></div><div class="lbl">lower</div></div>
+    <div class="bar"><div class="n" style="color:var(--head)">7</div><div class="track"><div class="fill head" style="width:34%"></div></div><div class="lbl">lower</div></div>
+    <div class="bar"><div class="n" style="color:var(--head)">6</div><div class="track"><div class="fill head" style="width:22%"></div></div><div class="lbl">lowest</div></div>
+  </div>
+  <p><strong>What the pattern suggests.</strong> A dominant Four with big Five means the 4w5 read is worth taking seriously — but your Three is nearly as high, so try both wings on and see which one describes you when nobody's watching. The 4w3 builds beautiful things and wants them to land; the 4w5 builds strange, true things and guards them. Someone who single-handedly creates campaigns, films, scores, and full software platforms — and then also wants them to win Best of State — has a foot in both.</p>
+  <p><strong>The Eight is the tell.</strong> High 4 + high 5 + high 8 maps to what Katherine Fauvre's "tritype" extension calls 458 — sometimes labeled the Scholar or truth-teller pattern: intuitive, deeply knowledgeable, and unexpectedly forceful when it's time to act or protect. It's the profile of someone who feels deeply (4), retreats to understand completely (5), then kicks the door in and ships (8). Tritype is a modern add-on, not core theory — but as a description, you can judge the fit.</p>
+  <p><strong>The low 6 matters too.</strong> Low Six scores usually read as: doesn't outsource security, doesn't need consensus or institutional permission, trusts own judgment first. Consistent with a person who builds his own tools rather than subscribing to someone else's.</p>
+</section>
+
+<section class="wrap" id="paywall">
+  <div class="eyebrow">The $29 Question</div>
+  <h2>What's actually behind the paywall</h2>
+  <p>Paid Enneagram reports are typically: your scores restated per type, wing analysis, growth/stress arrows, instinct subtypes, "at work" and "in relationships" sections, and growth suggestions. Every one of those categories is covered above and expanded in a half-century of published work. The gold-standard free-adjacent sources: <strong>The Enneagram Institute</strong> (Riso-Hudson type pages — the canonical descriptions), <strong>The Wisdom of the Enneagram</strong> (Riso &amp; Hudson, the definitive book, ~$15 used), and Beatrice Chestnut's <strong>The Complete Enneagram</strong> for the 27 subtypes.</p>
+  <div class="callout">
+    <p><strong>Honesty section, because you'd want it:</strong> the Enneagram's scientific support is thin. Peer-reviewed validation studies are few, test-retest typing reliability is mediocre, and academic psychology treats the Big Five as the measurement standard. What the Enneagram does well isn't measurement — it's <em>language</em>. As a shared vocabulary for motivation, blind spots, and how people differ under stress, it's genuinely useful at a work conference. As a scientific instrument, hold it loosely. Which is one more reason not to pay $29 for a PDF of it.</p>
+  </div>
+</section>
+
+<hr class="sep">
+<footer class="wrap">
+  <div>Built free, because personality theory isn't a product.</div>
+  <div class="mono" style="margin-top:8px">fosterlabs.org / enneagram</div>
+</footer>
+
+<script>
+const TYPES = {
+  1:{name:"The Reformer",center:"body",aka:"The Perfectionist · The Idealist",fear:"Being corrupt, evil, defective, or wrong",desire:"To be good, to have integrity, to be balanced",vice:"Anger (as resentment)",virtue:"Serenity",grow:7,stress:4,w:"1w9 “The Idealist” · 1w2 “The Advocate”",blurb:"Ones are principled improvers with a loud inner critic. They see how things should be and feel personally responsible for the gap. Healthy Ones are wise, discerning, and accepting; average Ones are critical and rigid; the anger they won't admit to leaks out as irritation and moralizing."},
+  2:{name:"The Helper",center:"heart",aka:"The Giver · The Befriender",fear:"Being unwanted, unworthy of love",desire:"To feel loved",vice:"Pride",virtue:"Humility",grow:4,stress:8,w:"2w1 “The Servant” · 2w3 “The Host”",blurb:"Twos earn belonging by being indispensable. They intuit others' needs brilliantly and repress their own, then feel unappreciated when the ledger never balances. Healthy Twos love without invoicing; stressed Twos become suddenly, surprisingly aggressive (hello, Eight arrow)."},
+  3:{name:"The Achiever",center:"heart",aka:"The Performer · The Motivator",fear:"Being worthless apart from achievement",desire:"To feel valuable and worthwhile",vice:"Deceit (self-deceit first)",virtue:"Authenticity",grow:6,stress:9,w:"3w2 “The Charmer” · 3w4 “The Professional”",blurb:"Threes adapt to whatever their environment rewards and then excel at it. The cost is losing track of which self is real. Healthy Threes are authentic, inspiring role models; average Threes are efficiency machines quietly terrified of being seen failing."},
+  4:{name:"The Individualist",center:"heart",aka:"The Romantic · The Artist",fear:"Having no identity or significance; being fundamentally flawed",desire:"To find themselves and their significance",vice:"Envy",virtue:"Equanimity",grow:1,stress:2,w:"4w3 “The Aristocrat” · 4w5 “The Bohemian”",blurb:"Fours build identity from the inside out and refuse to fake it. Emotionally honest, creative, drawn to what's missing. Healthy Fours transform pain into meaning for everyone; average Fours curate their differentness and romanticize melancholy. Full deep-dive below."},
+  5:{name:"The Investigator",center:"head",aka:"The Observer · The Thinker",fear:"Being useless, helpless, incapable, overwhelmed",desire:"To be capable and competent",vice:"Avarice (hoarding energy, knowledge, privacy)",virtue:"Non-attachment",grow:8,stress:7,w:"5w4 “The Iconoclast” · 5w6 “The Problem-Solver”",blurb:"Fives retreat to understand. They minimize needs, guard time and energy, and build mastery in private before engaging the world. Healthy Fives are visionary pioneers; average Fives disappear into preparation and never feel ready. Growth to Eight = acting with force before feeling 100% certain."},
+  6:{name:"The Loyalist",center:"head",aka:"The Skeptic · The Guardian",fear:"Being without support or guidance",desire:"To have security and support",vice:"Fear (doubt, anxiety)",virtue:"Courage",grow:9,stress:3,w:"6w5 “The Defender” · 6w7 “The Buddy”",blurb:"Sixes are the system's threat-modelers: loyal, responsible, and perpetually scanning. They come phobic (compliant, cautious) or counterphobic (charging at the fear). Healthy Sixes are courageous, committed anchors of any team."},
+  7:{name:"The Enthusiast",center:"head",aka:"The Epicure · The Visionary",fear:"Being deprived or trapped in pain",desire:"To be satisfied and content",vice:"Gluttony (for experience)",virtue:"Sobriety",grow:5,stress:1,w:"7w6 “The Entertainer” · 7w8 “The Realist”",blurb:"Sevens stay ahead of pain by keeping the future bright and the options open. Brilliant synthesizers and starters; finishing is the discipline. Growth to Five = depth over breadth, staying with one thing until it yields."},
+  8:{name:"The Challenger",center:"body",aka:"The Protector · The Boss",fear:"Being harmed, controlled, or betrayed",desire:"To protect themselves and control their own life",vice:"Lust (intensity, excess)",virtue:"Innocence",grow:2,stress:5,w:"8w7 “The Maverick” · 8w9 “The Bear”",blurb:"Eights meet the world with force and expect it back. Direct, decisive, protective of their people, allergic to being controlled. Healthy Eights are magnanimous champions of the vulnerable; stressed Eights withdraw and strategize (the Five arrow)."},
+  9:{name:"The Peacemaker",center:"body",aka:"The Mediator · The Harmonizer",fear:"Loss, separation, fragmentation",desire:"Inner stability and peace of mind",vice:"Sloth (self-forgetting)",virtue:"Right action",grow:3,stress:6,w:"9w8 “The Referee” · 9w1 “The Dreamer”",blurb:"Nines keep the peace by merging — with others' agendas, routines, comfort. They see every side, which makes them natural mediators and slow deciders. Healthy Nines are dynamic, self-possessed unifiers; growth to Three = remembering they have their own agenda and acting on it."}
+};
+
+const ORDER=[9,1,2,3,4,5,6,7,8]; // clockwise from top
+const CX=250,CY=250,R=210,NR=27;
+const pos={};
+ORDER.forEach((t,i)=>{const a=(-90+i*40)*Math.PI/180;pos[t]={x:CX+R*Math.cos(a),y:CY+R*Math.sin(a)};});
+
+const web=document.getElementById('web');
+const CONN=[[3,6],[6,9],[9,3],[1,4],[4,2],[2,8],[8,5],[5,7],[7,1]];
+const lineEls={};
+CONN.forEach(([a,b])=>{
+  const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+  l.setAttribute('x1',pos[a].x);l.setAttribute('y1',pos[a].y);
+  l.setAttribute('x2',pos[b].x);l.setAttribute('y2',pos[b].y);
+  web.appendChild(l);
+  lineEls[a+'-'+b]=l;lineEls[b+'-'+a]=l;
+});
+
+const nodesG=document.getElementById('nodes');
+ORDER.forEach(t=>{
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('class','node '+TYPES[t].center);
+  g.setAttribute('tabindex','0');
+  g.setAttribute('role','button');
+  g.setAttribute('aria-label','Type '+t+' '+TYPES[t].name);
+  const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+  c.setAttribute('class','ring');c.setAttribute('cx',pos[t].x);c.setAttribute('cy',pos[t].y);c.setAttribute('r',NR);
+  const tx=document.createElementNS('http://www.w3.org/2000/svg','text');
+  tx.setAttribute('x',pos[t].x);tx.setAttribute('y',pos[t].y+9);tx.setAttribute('text-anchor','middle');
+  tx.textContent=t;
+  g.appendChild(c);g.appendChild(tx);
+  g.addEventListener('click',()=>select(t));
+  g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();select(t);}});
+  nodesG.appendChild(g);
+  TYPES[t].el=g;
+});
+
+const CCOL={heart:'var(--heart)',head:'var(--head)',body:'var(--body)'};
+function select(t){
+  const d=TYPES[t];
+  ORDER.forEach(o=>TYPES[o].el.classList.toggle('active',o===t));
+  Object.values(lineEls).forEach(l=>{l.classList.remove('hl-grow','hl-stress');});
+  const g=lineEls[t+'-'+d.grow], s=lineEls[t+'-'+d.stress];
+  if(g)g.classList.add('hl-grow');
+  if(s)s.classList.add('hl-stress');
+  document.getElementById('typePanel').innerHTML=
+    '<div class="tag" style="color:'+CCOL[d.center]+'">Type '+t+' · '+d.center+' center</div>'+
+    '<h3>'+d.name+'</h3>'+
+    '<div class="aka">'+d.aka+'</div>'+
+    '<p style="color:var(--dim)">'+d.blurb+'</p>'+
+    '<div class="statgrid">'+
+    '<div class="stat"><div class="k">Core fear</div><div class="v">'+d.fear+'</div></div>'+
+    '<div class="stat"><div class="k">Core desire</div><div class="v">'+d.desire+'</div></div>'+
+    '<div class="stat"><div class="k">Vice → Virtue</div><div class="v">'+d.vice+' → '+d.virtue+'</div></div>'+
+    '<div class="stat"><div class="k">Wings</div><div class="v">'+d.w+'</div></div>'+
+    '</div>'+
+    '<div class="arrows-line">Growth (solid green line) → <b>'+d.grow+' '+TYPES[d.grow].name+'</b> · Stress (dashed rose line) → <b>'+d.stress+' '+TYPES[d.stress].name+'</b></div>';
+}
+select(4);
+</script>
+</body>
+</html>
