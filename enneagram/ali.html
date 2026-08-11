@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>For Ali — The One — Foster Labs</title>
+<meta name="description" content="A field guide to Enneagram Type One — written for Ali.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#211D2B; --surface:#2B2637; --surface2:#332D42; --line:#413A54;
+  --text:#E9E4F0; --dim:#A79FBA; --faint:#736A88;
+  --heart:#C4526A; --head:#7C90C9; --body:#8FA86B; --gold:#D4A94E;
+  --heart-soft:#3A2733; --head-soft:#28293E; --body-soft:#2B3128;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--ink);color:var(--text);font-family:'Spectral',Georgia,serif;font-weight:300;line-height:1.65;font-size:17px;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Marcellus',serif;font-weight:400;line-height:1.15}
+.wrap{max-width:880px;margin:0 auto;padding:0 22px}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+header{padding:20px 0 0}
+.brand{font-family:'Space Grotesk',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hero{padding:34px 0 6px;text-align:center}
+.hero h1{font-size:clamp(36px,6.5vw,58px)}
+.hero .sub{max-width:600px;margin:18px auto 0;color:var(--dim);font-size:18px}
+.hero .sub em{color:var(--text)}
+.stack{display:flex;justify-content:center;gap:14px;margin-top:24px;flex-wrap:wrap}
+.fix{width:78px;height:78px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid;background:var(--surface)}
+.fix .n{font-family:'Marcellus',serif;font-size:28px;line-height:1}
+.fix .l{font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+.fix.lead{width:96px;height:96px;border-width:3px}
+.fix.f1{border-color:var(--body)}.fix.f1 .n{color:var(--body)}
+.fix.f4{border-color:var(--heart)}.fix.f4 .n{color:var(--heart)}
+.fix.f8{border-color:var(--body)}.fix.f8 .n{color:var(--body)}
+.fix.f5{border-color:var(--head)}.fix.f5 .n{color:var(--head)}
+section{padding:44px 0 8px}
+.eyebrow{font-family:'Space Grotesk',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+section h2{font-size:clamp(28px,4.5vw,40px);margin-bottom:16px}
+section h3.sub{font-size:22px;margin:26px 0 10px}
+section p{margin-bottom:16px;color:var(--dim)}
+section p strong{color:var(--text);font-weight:600}
+section ul{margin:0 0 16px 20px;color:var(--dim)}
+section li{margin-bottom:9px}
+section li strong{color:var(--text);font-weight:600}
+.callout{border-left:3px solid var(--gold);background:var(--surface);border-radius:0 12px 12px 0;padding:18px 20px;margin:22px 0}
+.callout p{margin-bottom:8px}.callout p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:20px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card h3,.card h4{font-size:19px;margin-bottom:8px}
+.card p{font-size:15px;margin-bottom:10px}
+.card p:last-child{margin-bottom:0}
+.card .k{font-family:'Space Grotesk',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+.card.hb{border-top:3px solid var(--heart)}
+.card.he{border-top:3px solid var(--head)}
+.card.bo{border-top:3px solid var(--body)}
+.card.go{border-top:3px solid var(--gold)}
+.meter{margin:22px 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.meter .k{font-family:'Space Grotesk',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.meter .track{height:14px;background:var(--surface2);border-radius:7px;overflow:hidden}
+.meter .fill{height:100%;width:100%;background:linear-gradient(90deg,var(--body),var(--gold));border-radius:7px}
+.meter .cap{font-family:'Space Grotesk',monospace;font-size:12px;color:var(--gold);margin-top:8px}
+footer{padding:50px 0 40px;color:var(--faint);font-size:14px;text-align:center}
+hr.sep{border:none;border-top:1px solid var(--line);margin:36px 0 0}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="brand"><span>Foster Labs · Field Guide</span><a href="/enneagram/">The full system →</a></div>
+</header>
+
+<div class="hero wrap">
+  <h1>Ali — The One</h1>
+  <p class="sub">The Enneagram calls Type One the Reformer, the Idealist, the Perfectionist. The honest translation: <em>the person who actually does the right thing — especially when no one is watching.</em></p>
+  <div class="stack" aria-hidden="true">
+    <div class="fix f1 lead"><span class="n">1</span><span class="l">Core</span></div>
+    <div class="fix f4"><span class="n">4</span><span class="l">Strong</span></div>
+    <div class="fix f8"><span class="n">8</span><span class="l">Strong</span></div>
+    <div class="fix f5"><span class="n">5</span><span class="l">Strong</span></div>
+  </div>
+</div>
+
+<section class="wrap" id="core">
+  <div class="eyebrow">The Core</div>
+  <h2>What it means to be a One</h2>
+  <p>Ones are the Enneagram's integrity engine. Where other types ask <em>"will this work?"</em> or <em>"will people like it?"</em>, the One asks the harder question first: <strong>"is this right?"</strong> — and then holds themselves to the answer whether or not it's convenient, whether or not anyone's checking, whether or not it would be easier to let it slide. The tradition is blunt about how rare this is: most people negotiate with their conscience. Ones <em>are</em> their conscience.</p>
+  <p>That shows up as a specific set of gifts: Ones keep promises exactly. They see instantly how something could be better — a room, a menu, a process, a plan — and they'll put in the unglamorous work to get it there. They have standards that don't wobble with the audience. They are, reliably, the most trustworthy people in any building, because their behavior isn't performance — it's structure. Riso &amp; Hudson's name for the healthy One says it all: <strong>the Wise Realist</strong> — principled, discerning, fair, and morally courageous. The type of teachers, judges, craftspeople, and the person everyone quietly wants approving their work.</p>
+  <p>The cost of the gift is well-documented too, and worth saying kindly: the One's inner critic is the loudest in the entire system — and it's aimed at the One herself far more than anyone else. A One who seems demanding is running maybe a tenth of the standard she applies to her own reflection. If you know a One, you know someone who works harder on being good than anyone around her — and gives herself the least credit for it.</p>
+  <div class="callout">
+    <p><strong>The vice and the virtue:</strong> the One's challenge is <em>resentment</em> — the quiet anger of the person doing it right while others coast. The virtue is <em>serenity</em>: the hard-won peace of accepting that the world is imperfect, other people are imperfect, she is allowed to be imperfect — and things can still be good. Not lowering the standard. Just unclenching around it.</p>
+  </div>
+</section>
+
+<section class="wrap" id="constellation">
+  <div class="eyebrow">The Supporting Cast</div>
+  <h2>Her particular One</h2>
+  <p>Nobody is just their core type, and this chart has an unusually strong supporting cast. Three big secondary scores, each adding something specific:</p>
+  <div class="cards">
+    <div class="card hb">
+      <div class="k">The strong 4 — the artist's eye</div>
+      <p>A One with a big Four doesn't just want things <em>correct</em> — she wants them <em>beautiful</em>. This is the combination behind taste: the standard isn't only "does it work," it's "is it right AND does it feel right." Ones with Four energy have depth, aesthetic conviction, and a rich inner world they don't show everyone. When she says a thing is off, she's usually sensing something real before she can name it. Trust that instinct — it's almost never wrong.</p>
+    </div>
+    <div class="card bo">
+      <div class="k">The strong 8 — the steel</div>
+      <p>The Eight adds force. This is a One who doesn't just know what's right — she'll <strong>stand there</strong>. Protective of her people, unmoved by pressure, entirely willing to have the hard conversation others avoid. In business that reads as: fair, direct, and not to be pushed. The combination of One-integrity and Eight-strength is the profile of people others instinctively trust in a crisis: principled AND unafraid.</p>
+    </div>
+    <div class="card he">
+      <div class="k">The strong 5 — the deep dive</div>
+      <p>The Five adds mastery. Before this One holds an opinion, she's done the reading. The standard is informed, not arbitrary — she gets it right because she actually <em>knows</em>. This is the researcher streak: thorough, self-sufficient, quietly more knowledgeable than she advertises.</p>
+    </div>
+  </div>
+  <p><strong>Put the whole constellation together</strong> — integrity at the core, an artist's eye, real steel, and depth of knowledge — and you get something the Enneagram literature considers a genuinely formidable combination: a person of <em>conviction</em>. She knows what's right, she knows why, she can defend it, and she'll make it beautiful on the way through.</p>
+  <div class="meter">
+    <div class="k">Confirmed by the assessment · Superpower</div>
+    <div class="track"><div class="fill"></div></div>
+    <div class="cap">DISCIPLINE — 18 / 18. A perfect score. The test agrees with everyone who knows her.</div>
+  </div>
+</section>
+
+<section class="wrap" id="growth">
+  <div class="eyebrow">The Growth Direction</div>
+  <h2>Where a One gets even better</h2>
+  <p>Every type has a growth arrow, and the One's is one of the best in the system: it points at <strong>Seven — joy.</strong> When Ones feel secure, they spontaneously pick up the Seven's gifts: playfulness, spontaneity, optimism, the ability to enjoy the world instead of only improving it. The growth path for a One isn't working harder — she's already maxed that stat (see: 18/18). It's <strong>permission</strong>:</p>
+  <ul>
+    <li><strong>Permission to play before the work is done</strong> — because for a One, the work is never fully done, so "after" never arrives on its own.</li>
+    <li><strong>Permission to let "good enough" be true sometimes</strong> — not on the things that matter; on the things that don't. Ones spend premium effort on non-premium problems. Reclaiming that energy is pure profit.</li>
+    <li><strong>Permission to be spoken to kindly — by herself.</strong> The inner critic never takes a day off, so the practice is talking back: <em>would I say this to someone I love?</em> A One at peace keeps every bit of her standard and loses the self-punishment. That's the whole upgrade.</li>
+    <li><strong>Under stress, the door swings toward Four</strong> — moody, misunderstood, "no one gets how hard I try." Worth knowing simply because naming it shrinks it: that feeling is the type talking, not the truth. The people who know her <em>do</em> see how hard she tries.</li>
+  </ul>
+</section>
+
+<section class="wrap" id="line">
+  <div class="eyebrow">One More Thing</div>
+  <h2>The shared line</h2>
+  <p>A detail from the geometry worth knowing: on the enneagram figure, Types One and Four sit on the <strong>same line</strong> — directly connected. Scott's core type is Four; his growth arrow points at One. Her core is One; her line runs to Four. Which means, in the language of this system: <strong>she lives at the exact point he's growing toward</strong> — the discipline, the follow-through, the shipping-on-schedule — and the depth and artistry of the Four is native territory she visits, not a foreign country.</p>
+  <p>Two people on the same line understand each other's engine from the inside. The tradition would say that's not a coincidence of the chart; it's a description of a good match: each one is fluent in the other's home language, and each one's growth direction runs through the other's front yard.</p>
+</section>
+
+<hr class="sep">
+<footer class="wrap">
+  <div>Part of <a href="/enneagram/">The Enneagram, Unlocked</a> · Foster Labs</div>
+  <div style="margin-top:8px;font-family:'Space Grotesk',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase">fosterlabs.org / enneagram / ali</div>
+</footer>
+</body>
+</html>
