@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The 458 Owner's Manual — Foster Labs</title>
+<meta name="description" content="A deep personal field guide for a Four with strong Five, Three, and Eight — wings, tritype, levels, growth tools, and a communication playbook.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus&family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#211D2B; --surface:#2B2637; --surface2:#332D42; --line:#413A54;
+  --text:#E9E4F0; --dim:#A79FBA; --faint:#736A88;
+  --heart:#C4526A; --head:#7C90C9; --body:#8FA86B; --gold:#D4A94E;
+  --heart-soft:#3A2733; --head-soft:#28293E; --body-soft:#2B3128;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--ink);color:var(--text);font-family:'Spectral',Georgia,serif;font-weight:300;line-height:1.65;font-size:17px;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:'Marcellus',serif;font-weight:400;line-height:1.15}
+.mono{font-family:'Space Grotesk',monospace}
+.wrap{max-width:880px;margin:0 auto;padding:0 22px}
+a{color:var(--gold);text-decoration:none}
+a:hover{text-decoration:underline}
+:focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:4px}
+header{padding:20px 0 0}
+.brand{font-family:'Space Grotesk',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hero{padding:34px 0 6px;text-align:center}
+.hero h1{font-size:clamp(36px,6.5vw,58px)}
+.hero .sub{max-width:600px;margin:18px auto 0;color:var(--dim);font-size:18px}
+.hero .sub em{color:var(--text)}
+.stack{display:flex;justify-content:center;gap:14px;margin-top:24px}
+.fix{width:78px;height:78px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;border:2px solid;background:var(--surface)}
+.fix .n{font-family:'Marcellus',serif;font-size:28px;line-height:1}
+.fix .l{font-family:'Space Grotesk',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-top:3px}
+.fix.f4{border-color:var(--heart)}.fix.f4 .n{color:var(--heart)}
+.fix.f5{border-color:var(--head)}.fix.f5 .n{color:var(--head)}
+.fix.f8{border-color:var(--body)}.fix.f8 .n{color:var(--body)}
+section{padding:44px 0 8px}
+.eyebrow{font-family:'Space Grotesk',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+section h2{font-size:clamp(28px,4.5vw,40px);margin-bottom:16px}
+section h3.sub{font-size:22px;margin:26px 0 10px}
+section p{margin-bottom:16px;color:var(--dim)}
+section p strong{color:var(--text);font-weight:600}
+section ul{margin:0 0 16px 20px;color:var(--dim)}
+section li{margin-bottom:9px}
+section li strong{color:var(--text);font-weight:600}
+.callout{border-left:3px solid var(--gold);background:var(--surface);border-radius:0 12px 12px 0;padding:18px 20px;margin:22px 0}
+.callout p{margin-bottom:8px}.callout p:last-child{margin-bottom:0}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin:20px 0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:20px}
+.card h3,.card h4{font-size:19px;margin-bottom:8px}
+.card p{font-size:15px;margin-bottom:10px}
+.card p:last-child{margin-bottom:0}
+.card .k{font-family:'Space Grotesk',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin-bottom:4px}
+.card.hb{border-top:3px solid var(--heart)}
+.card.he{border-top:3px solid var(--head)}
+.card.bo{border-top:3px solid var(--body)}
+.card.go{border-top:3px solid var(--gold)}
+/* levels ladder */
+.ladder{margin:22px 0;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rung{display:grid;grid-template-columns:56px 1fr;border-bottom:1px solid var(--line)}
+.rung:last-child{border-bottom:none}
+.rung .lv{display:flex;align-items:center;justify-content:center;font-family:'Marcellus',serif;font-size:20px;background:var(--surface2)}
+.rung .tx{padding:13px 16px}
+.rung .tx b{display:block;font-family:'Space Grotesk',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:2px}
+.rung .tx p{font-size:15px;margin:0;color:var(--dim)}
+.rung.h .lv{color:var(--body)}.rung.h .tx b{color:var(--body)}
+.rung.a .lv{color:var(--gold)}.rung.a .tx b{color:var(--gold)}
+.rung.u .lv{color:var(--heart)}.rung.u .tx b{color:var(--heart)}
+.marker{background:var(--surface);font-style:italic}
+/* playbook table-ish */
+.play{border:1px solid var(--line);border-radius:12px;margin:20px 0;overflow:hidden}
+.prow{border-bottom:1px solid var(--line);padding:16px 18px}
+.prow:last-child{border-bottom:none}
+.prow h4{font-size:18px;margin-bottom:6px}
+.prow p{font-size:15px;margin-bottom:6px;color:var(--dim)}
+.prow p:last-child{margin-bottom:0}
+.prow .need{color:var(--text)}
+.prow .risk b{color:var(--heart);font-weight:600}
+.prow .move b{color:var(--body);font-weight:600}
+footer{padding:50px 0 40px;color:var(--faint);font-size:14px;text-align:center}
+hr.sep{border:none;border-top:1px solid var(--line);margin:36px 0 0}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <div class="brand"><span>Foster Labs · Field Guide</span><a href="/enneagram/">← The full system</a></div>
+</header>
+
+<div class="hero wrap">
+  <h1>The 458 Owner's Manual</h1>
+  <p class="sub">A working guide for a Four who scored nearly as high in Five, Three, and Eight — and nearly zero in Six. <em>Feel deeply. Understand completely. Then kick the door in.</em></p>
+  <div class="stack" aria-hidden="true">
+    <div class="fix f4"><span class="n">4</span><span class="l">Heart</span></div>
+    <div class="fix f5"><span class="n">5</span><span class="l">Head</span></div>
+    <div class="fix f8"><span class="n">8</span><span class="l">Body</span></div>
+  </div>
+</div>
+
+<section class="wrap" id="tritype">
+  <div class="eyebrow">The Architecture</div>
+  <h2>How a 4-5-8 actually runs</h2>
+  <p>Tritype theory (Katherine Fauvre's extension of the core model) says you don't just have one type — you have a dominant strategy in <em>each</em> center, and they fire in order. Your stack: <strong>4 in the Heart, 5 in the Head, 8 in the Body.</strong> Fauvre calls 458 the <strong>Scholar</strong>, and its nickname in the community is the <strong>truth-teller</strong> archetype. The loop looks like this:</p>
+  <ul>
+    <li><strong>The 4 leads.</strong> First question, always: <em>is this true to me? Does it mean something?</em> Identity and authenticity are the filter. Work that's technically fine but generic physically bothers you. You'd rather build the strange, right thing than the safe, expected thing.</li>
+    <li><strong>The 5 processes.</strong> When the 4 hits uncertainty, you don't ask for help — you <em>withdraw and study</em>. Master the whole system privately before exposing anything. This is the engine behind teaching yourself entire stacks solo: appraisal software, film production, edge infrastructure, AI pipelines. The 5 wants complete understanding as armor.</li>
+    <li><strong>The 8 executes.</strong> Once the feeling is clear and the map is complete, the 8 converts it to force: decide, build, ship, defend. No permission-seeking, no committee. The 8 is also the guardian — it shows up fastest when someone you love is being wronged.</li>
+  </ul>
+  <p><strong>The gift of this stack:</strong> depth other people can't fake, mastery they didn't expect, and will they didn't see coming. 458s routinely produce work that looks like a team did it. <strong>The shadow:</strong> all three fixes are intensity types and none of them is naturally warm-and-fuzzy in public. People can experience you as intimidating, aloof-then-suddenly-forceful, or "impossible to read until he's certain — then immovable." All three fixes also <em>self-reference</em>: 4 checks feelings, 5 checks its own analysis, 8 checks its own gut. Nobody in the stack naturally checks the room. That's worth knowing before a conference full of consensus-builders.</p>
+  <div class="callout">
+    <p><strong>The one-sentence version:</strong> you process the world as <em>meaning → mastery → force</em>. Most people you'll meet run some flavor of <em>harmony → process → consensus</em>. Neither is wrong; the friction is structural, not personal.</p>
+  </div>
+</section>
+
+<section class="wrap" id="wings">
+  <div class="eyebrow">The Wing Question</div>
+  <h2>4w5 or 4w3 — sorting it honestly</h2>
+  <p>Your 5 and 3 slices are both huge, which is unusual — most Fours lean clearly one way. Try these on. Not "which sounds cooler" — which is true <em>when nobody's watching:</em></p>
+  <div class="cards">
+    <div class="card he">
+      <div class="k">Points to 4w5</div>
+      <p>You'd keep building even if no one ever saw it. Recharge is solitary, full stop. You'd rather be respected by five people who get it than liked by five hundred. You research past the point of usefulness because not-knowing is intolerable. Your style icon is the specialist in the corner who turns out to be the most interesting person in the building.</p>
+    </div>
+    <div class="card hb">
+      <div class="k">Points to 4w3</div>
+      <p>Shipping to an audience is part of the point — the Best of State entry, the pre-movie theater slot, the live gala. You instinctively know how work should be <em>presented</em>, not just made. Recognition isn't vanity to you; it's proof the meaning landed. You can turn on polish and presence when the room requires it, even if it costs you afterward.</p>
+    </div>
+  </div>
+  <p><strong>The honest read on your record:</strong> the production style is pure 4w5 — solo, self-taught, private until complete. The <em>output</em> behavior is 4w3 — campaigns designed to move audiences, awards entered and won, films in theaters. A strong case: <strong>core 4w5 with a well-developed 3 fix</strong> — the withdrawal-and-mastery pattern is the home base, and the 3 is a skill you deploy rather than a hunger that drives you. Test it: after a big public win, do you feel fed (3-ish) or scraped out and needing a cave (5-ish)? Your answer is your wing.</p>
+</section>
+
+<section class="wrap" id="lows">
+  <div class="eyebrow">The Missing Slices</div>
+  <h2>What the low scores cost — and buy</h2>
+  <p>Low scores are as diagnostic as high ones. Yours: 6 lowest by far, then 7 and 9. Each absence is a superpower with an invoice attached:</p>
+  <div class="cards">
+    <div class="card he">
+      <h3>Low 6 — self-authorized</h3>
+      <p><strong>Buys:</strong> you don't wait for permission, credentials, or consensus. You trust your own judgment, build your own tools, and don't outsource security to institutions. This is why "I'll just build it myself" is a reflex, not a decision.</p>
+      <p><strong>Costs:</strong> you under-weight the value others get from process, precedent, and reassurance. You can be blindsided by risks a Six would have flagged in minute one, and surprised when people need consensus you consider obviously unnecessary. Sixes read your certainty as either magnetic or reckless — rarely in between.</p>
+      <p class="k" style="margin-top:10px">Tool: pre-mortem</p>
+      <p>Before big irreversible moves, spend 15 minutes writing "it's six months later and this failed — why?" You're renting a Six's brain. Cheap insurance for a stack with no internal doubt department.</p>
+    </div>
+    <div class="card he">
+      <h3>Low 7 — no automatic reframe</h3>
+      <p><strong>Buys:</strong> you don't flinch from dark material — grief, hard truths, unglamorous work. Your campaigns land because you'll sit in the real feeling instead of sugarcoating it.</p>
+      <p><strong>Costs:</strong> Sevens metabolize disappointment by instantly finding the upside. You don't. Melancholy can pool, and with the 4 lead romanticizing it and the 5 fix isolating with it, moods can go long. Nothing in your stack naturally says "let's go do something fun about it."</p>
+      <p class="k" style="margin-top:10px">Tool: scheduled novelty</p>
+      <p>Put play on the calendar like infrastructure — because for you it won't happen organically. Movement, new input, absurdity with Charles. The mood follows the body long before it follows the mind.</p>
+    </div>
+    <div class="card bo">
+      <h3>Low 9 — no false harmony</h3>
+      <p><strong>Buys:</strong> you will not pretend a bad idea is fine to keep the peace. Combined with the 8 fix, you say the thing everyone's thinking. Teams that value truth treasure this.</p>
+      <p><strong>Costs:</strong> low patience for the social maintenance that keeps groups warm — small talk, ritual agreement, letting slow processors get there in their own time. Quiet people can get flattened before they've spoken. In a conference room, your silence-then-verdict pattern can read as judgment even when it's just processing.</p>
+      <p class="k" style="margin-top:10px">Tool: make space on purpose</p>
+      <p>Once per meeting: "What's a take we haven't heard yet?" — then actually wait. It costs you eight seconds and buys the room's trust.</p>
+    </div>
+  </div>
+  <p><strong>One more pattern worth naming:</strong> your entire Heart center is elevated — 2, 3, and 4 all present. That's shame-center fluency: you feel image, recognition, and connection dynamics acutely even while the 5 and 8 pretend not to care. When you're hurt by being unseen or misjudged, that's not weakness leaking — it's the dominant center doing its job. Fours who deny this get stuck; Fours who work with it make the best communicators in the system.</p>
+</section>
+
+<section class="wrap" id="levels">
+  <div class="eyebrow">The Vertical Axis</div>
+  <h2>The nine levels of Type Four</h2>
+  <p>Riso &amp; Hudson's most useful idea: your type isn't one thing — it's a bandwidth. Same engine, radically different output depending on health. The honest use of this ladder is locating your <em>average week</em>, not your best day:</p>
+  <div class="ladder">
+    <div class="rung h"><div class="lv">1</div><div class="tx"><b>Healthy — Life-Embracing</b><p>The inspired creator. Profoundly in touch with impressions and able to renew the self continuously. Creates from abundance, not wound. Rare air — visited, not lived in.</p></div></div>
+    <div class="rung h"><div class="lv">2</div><div class="tx"><b>Healthy — Self-Aware</b><p>Introspective, sensitive to self and others, emotionally honest. Intuition operating as a precision instrument.</p></div></div>
+    <div class="rung h"><div class="lv">3</div><div class="tx"><b>Healthy — Self-Revealing</b><p>Authentic and personal in expression; turns inner experience into work that moves people. The $5M-campaign level: private feeling made publicly useful.</p></div></div>
+    <div class="rung a marker"><div class="lv">4</div><div class="tx"><b>Average — Romanticizing</b><p>Building identity through imagination and aesthetics; intensifying feeling through fantasy. Taking artistic license with reality. Where most functional Fours live most days.</p></div></div>
+    <div class="rung a"><div class="lv">5</div><div class="tx"><b>Average — Self-Absorbed</b><p>Moody, withdrawing to protect the self-image, exempting oneself from the ordinary. "You wouldn't understand." Hypersensitive to criticism of the work — because the work is the self.</p></div></div>
+    <div class="rung a"><div class="lv">6</div><div class="tx"><b>Average — Self-Indulgent</b><p>Decadence and dramatics; envy running the show; disdain for the mundane people who seem happy. The melancholy becomes furniture.</p></div></div>
+    <div class="rung u"><div class="lv">7</div><div class="tx"><b>Unhealthy — Alienated</b><p>Self-inhibiting and depressive; blocked creatively; fatigued by own emotions. Withdraws from the very people who could help.</p></div></div>
+    <div class="rung u"><div class="lv">8</div><div class="tx"><b>Unhealthy — Self-Rejecting</b><p>Self-hatred, tormented by delusional self-contempt; drives away all support to confirm the flaw narrative.</p></div></div>
+    <div class="rung u"><div class="lv">9</div><div class="tx"><b>Unhealthy — Despairing</b><p>Hopelessness and self-destructive patterns. If life ever reads like this from the inside, that's a moment for real human help, not a personality framework.</p></div></div>
+  </div>
+  <p><strong>The direction of travel matters more than the floor you're on.</strong> Down-triggers for Fours: comparison spirals, being misunderstood publicly, long stretches without creating, isolation. Up-triggers: shipping on schedule (the One arrow), honest connection where you're seen accurately, physical movement, and making something — anything — before noon.</p>
+</section>
+
+<section class="wrap" id="toolkit">
+  <div class="eyebrow">The Toolkit</div>
+  <h2>Growth practices built for this stack</h2>
+  <p>Generic advice bounces off Fours ("practice gratitude!"). These are aimed at your specific machinery:</p>
+  <div class="cards">
+    <div class="card go">
+      <h4>Motion before mood</h4>
+      <p>The 4→1 growth line in one rule: <strong>ship on schedule, not on inspiration.</strong> The Four waits for the feeling to be right; the integrated Four discovers the feeling shows up <em>after</em> starting, about 90% of the time. Small fixed cadences beat heroic bursts. You already know this from launch deadlines — the practice is applying it to the personal work too.</p>
+    </div>
+    <div class="card go">
+      <h4>Envy as compass, not verdict</h4>
+      <p>The Four's vice, reworked: when envy fires, don't argue with it and don't marinate. Extract the data. <strong>"What exactly do they have?"</strong> is a design brief for your next build. Envy pointed at someone's calm is a signal about rest; at someone's title, a signal about the job search. The feeling is a sensor. Read it and move.</p>
+    </div>
+    <div class="card go">
+      <h4>The 70% exposure rule</h4>
+      <p>5-fix hygiene. Your instinct is to master completely before showing anything. Set a tripwire: <strong>when understanding hits ~70%, expose the work to one trusted person.</strong> Not the public — one person. The 5 fix will hate it. It's also where the fastest growth is, because other minds are the one resource the 5 refuses to requisition.</p>
+    </div>
+    <div class="card go">
+      <h4>Force is a budget</h4>
+      <p>8-fix hygiene. The 8 gives you real force — and force spends relationship capital whether or not you meant to. Rule: <strong>pick two hills a quarter.</strong> Everything else gets the 4's honesty at conversational volume. When you do deploy the 8, people should be surprised — that's what makes it effective.</p>
+    </div>
+    <div class="card go">
+      <h4>The slide-to-2 tripwire</h4>
+      <p>Your stress signature: the independent, self-contained builder suddenly <strong>fishing for appreciation, over-helping, feeling unthanked, keeping score.</strong> When you catch "after everything I've done…" forming, that's the alarm. The fix isn't more helping — it's naming your actual need out loud to one person, and rest. The slide to Two is the Four's identity running low, trying to refuel on approval.</p>
+    </div>
+    <div class="card go">
+      <h4>Don't furnish the melancholy room</h4>
+      <p>Equanimity practice. Fours don't just feel sadness — they <em>decorate</em> it: the playlist, the narrative, the identity. The practice: feel the wave fully (real feelings run ~90 seconds of pure physiology), then deliberately decline the soundtrack. Name it — "melancholy, visiting" — and let it be weather instead of architecture. The feeling is real; the furniture is optional.</p>
+    </div>
+  </div>
+  <h3 class="sub">Journal prompts that actually work on a Four</h3>
+  <ul>
+    <li><strong>"What am I envying right now, and what's the design brief inside it?"</strong> — converts the vice to fuel.</li>
+    <li><strong>"What would I build if nobody could ever know I built it?"</strong> — separates the 4w5 core from the 3 performance layer. Whatever answers is the real work.</li>
+    <li><strong>"Where am I being 'misunderstood' that I've never actually explained?"</strong> — Fours want to be seen but make people excavate. This one stings usefully.</li>
+    <li><strong>"What ordinary thing was beautiful today?"</strong> — the Four's growth is finding significance in the unspecial. Direct counter-program to the "extraordinary or nothing" filter.</li>
+    <li><strong>"What did I finish this week?"</strong> — feeds the One arrow. Finished and imperfect beats perfect and theoretical, every week, forever.</li>
+  </ul>
+</section>
+
+<section class="wrap" id="playbook">
+  <div class="eyebrow">The Conference Playbook</div>
+  <h2>Working with every type, as a 458</h2>
+  <p>For each type: what they need from you, where your stack rubs them wrong, and one concrete move. This is the practical payload for a room full of colleagues:</p>
+  <div class="play">
+    <div class="prow"><h4 style="color:var(--body)">With Ones</h4>
+      <p class="need"><strong>They need:</strong> fairness, correctness, and your respect for the standards. Ones are your growth arrow — watch how they finish things.</p>
+      <p class="risk"><b>Your risk:</b> your comfort breaking rules that don't make sense reads to them as sloppiness or arrogance.</p>
+      <p class="move"><b>The move:</b> show your quality bar explicitly. Once a One sees you have standards — just different ones — you become allies instead of critics.</p></div>
+    <div class="prow"><h4 style="color:var(--heart)">With Twos</h4>
+      <p class="need"><strong>They need:</strong> warmth and acknowledgment of what they do for people. They track appreciation like you track authenticity.</p>
+      <p class="risk"><b>Your risk:</b> the 5 fix's self-sufficiency denies them the helping relationship they build identity on; they may experience you as a locked door.</p>
+      <p class="move"><b>The move:</b> occasionally let them help with something real, and thank them specifically. Costs nothing, means everything to them.</p></div>
+    <div class="prow"><h4 style="color:var(--heart)">With Threes</h4>
+      <p class="need"><strong>They need:</strong> efficiency, wins, and not being embarrassed. They move fast and read status instinctively.</p>
+      <p class="risk"><b>Your risk:</b> the Four's allergy to "inauthentic" polish can come off as contempt for their whole operating system.</p>
+      <p class="move"><b>The move:</b> frame your depth as their advantage — "this is the version that wins." Threes become your best distributors when the work makes them look good.</p></div>
+    <div class="prow"><h4 style="color:var(--heart)">With other Fours</h4>
+      <p class="need"><strong>They need:</strong> to be seen as accurately as you want to be. Mutual recognition, instantly deep conversation.</p>
+      <p class="risk"><b>Your risk:</b> two Fours can compete over who's more authentic, or co-sign each other's melancholy into a spiral.</p>
+      <p class="move"><b>The move:</b> make something together. Two Fours building beats two Fours comparing wounds, ten times out of ten.</p></div>
+    <div class="prow"><h4 style="color:var(--head)">With Fives</h4>
+      <p class="need"><strong>They need:</strong> competence, no ambushes, and respect for their time and privacy. Your 5 fix speaks this natively.</p>
+      <p class="risk"><b>Your risk:</b> the 4's emotional intensity and the 8's directness can overwhelm their bandwidth budget.</p>
+      <p class="move"><b>The move:</b> lead with the interesting problem, send material in advance, let them respond async. They'll give you their best thinking if you don't demand it live.</p></div>
+    <div class="prow"><h4 style="color:var(--head)">With Sixes</h4>
+      <p class="need"><strong>They need:</strong> consistency, transparency about risk, and knowing you won't leave them holding the bag. This is your lowest score — budget real effort here.</p>
+      <p class="risk"><b>Your risk:</b> your certainty-without-consensus pattern triggers their alarm system; your "trust me, I built it" is their nightmare sentence.</p>
+      <p class="move"><b>The move:</b> volunteer the failure modes before they ask — "here's what could go wrong and here's the plan." A Six who trusts you is the most loyal ally in the building.</p></div>
+    <div class="prow"><h4 style="color:var(--head)">With Sevens</h4>
+      <p class="need"><strong>They need:</strong> energy, possibility, and no dwelling. They metabolize everything through options and upside.</p>
+      <p class="risk"><b>Your risk:</b> your depth reads as heaviness to them; their reframing reads as shallowness to you. Both readings are wrong.</p>
+      <p class="move"><b>The move:</b> bring them the vision phase, not the grief phase. Sevens are brilliant expansion partners for ideas — and they'll pull your low-7 mood upward for free.</p></div>
+    <div class="prow"><h4 style="color:var(--body)">With Eights</h4>
+      <p class="need"><strong>They need:</strong> directness and strength. Eights test people; passing the test means matching energy without flinching.</p>
+      <p class="risk"><b>Your risk:</b> almost none — your 8 fix means you enjoy these people. The risk is two 8-energies escalating over turf that matters to neither of you.</p>
+      <p class="move"><b>The move:</b> disagree plainly and early. Eights trust people who push back to their face and distrust everyone who goes quiet and routes around them.</p></div>
+    <div class="prow"><h4 style="color:var(--body)">With Nines</h4>
+      <p class="need"><strong>They need:</strong> unhurried space and genuine inclusion. Nines have real opinions; they've just learned rooms don't wait for them.</p>
+      <p class="risk"><b>Your risk:</b> your intensity plus verdict-speed steamrolls them into agreeable silence — and you lose their (often excellent) read.</p>
+      <p class="move"><b>The move:</b> ask them directly, privately, with time: "no rush — what's your take?" Then wait past the comfortable silence. What comes back is usually the most balanced view in the building.</p></div>
+  </div>
+  <div class="callout">
+    <p><strong>Using this at the conference without being insufferable:</strong> don't type people out loud. Instead, ask what people got and what surprised them — Enneagram results are a rare social license for real conversation with coworkers. Your 4 will love the depth, your 5 will love the data, and your 8 can stand down: nothing here needs defending.</p>
+  </div>
+</section>
+
+<hr class="sep">
+<footer class="wrap">
+  <div>Part of <a href="/enneagram/">The Enneagram, Unlocked</a> · Foster Labs</div>
+  <div class="mono" style="margin-top:8px;font-size:12px;letter-spacing:.14em;text-transform:uppercase">fosterlabs.org / enneagram / you</div>
+</footer>
+</body>
+</html>
