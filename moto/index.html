@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pass at 2 — Utah Motorcycle Permit Cram — Foster Labs</title>
+<meta name="description" content="Everything on the Utah motorcycle written test, compressed. Cram sheet + 40-question quiz engine built from the official manual.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=Archivo+Black&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --asphalt:#17181C; --panel:#1F2127; --panel2:#272A31; --line:#34383F;
+  --text:#F2F3F5; --dim:#A9AEB8; --faint:#6E747F;
+  --hiviz:#F5C518; --paint:#FFFFFF; --go:#5DBB63; --stop:#E5484D; --sky:#6FA8DC;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{background:var(--asphalt);color:var(--text);font-family:'Archivo',system-ui,sans-serif;line-height:1.6;font-size:16.5px}
+h1,h2,h3{font-family:'Archivo Black',sans-serif;line-height:1.08;letter-spacing:-.01em}
+.mono{font-family:'Space Grotesk',monospace}
+.wrap{max-width:900px;margin:0 auto;padding:0 20px}
+a{color:var(--hiviz);text-decoration:none}
+:focus-visible{outline:2px solid var(--hiviz);outline-offset:3px;border-radius:4px}
+header{padding:18px 0 0}
+.brand{font-family:'Space Grotesk',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--faint)}
+.hero{padding:30px 0 8px}
+.hero .kicker{display:inline-block;background:var(--hiviz);color:#17181C;font-family:'Space Grotesk',monospace;font-weight:700;font-size:12px;letter-spacing:.14em;text-transform:uppercase;padding:5px 10px;border-radius:4px;margin-bottom:14px}
+.hero h1{font-size:clamp(38px,7.5vw,66px);text-transform:uppercase}
+.hero h1 .yl{color:var(--hiviz)}
+.hero p{max-width:640px;color:var(--dim);margin-top:14px;font-size:18px}
+.hero p b{color:var(--text)}
+.quickbtns{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.qb{display:inline-block;padding:11px 18px;border-radius:8px;font-weight:700;font-size:15px;border:2px solid var(--hiviz)}
+.qb.solid{background:var(--hiviz);color:#17181C}
+.qb.ghost{color:var(--hiviz)}
+.roadline{height:4px;background:repeating-linear-gradient(90deg,var(--hiviz) 0 42px,transparent 42px 74px);border-radius:2px;margin:34px 0 0;opacity:.85}
+section{padding:40px 0 6px}
+.eyebrow{font-family:'Space Grotesk',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--hiviz);margin-bottom:8px}
+section h2{font-size:clamp(26px,4.5vw,38px);text-transform:uppercase;margin-bottom:14px}
+section p{color:var(--dim);margin-bottom:14px}
+section p b, section li b{color:var(--text)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:12px;margin:16px 0}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 18px 14px}
+.card h3{font-size:16px;text-transform:uppercase;letter-spacing:.02em;margin-bottom:10px;color:var(--hiviz)}
+.card ul{list-style:none}
+.card li{padding:6px 0 6px 22px;position:relative;color:var(--dim);font-size:15px;border-bottom:1px dashed var(--line)}
+.card li:last-child{border-bottom:none}
+.card li::before{content:"■";position:absolute;left:0;top:6px;color:var(--hiviz);font-size:11px}
+.bigfact{background:var(--panel);border-left:4px solid var(--hiviz);border-radius:0 10px 10px 0;padding:14px 16px;margin:14px 0;color:var(--dim)}
+.bigfact b{color:var(--text)}
+.tag-ut{display:inline-block;background:#2B2E1B;color:var(--hiviz);font-family:'Space Grotesk',monospace;font-size:10px;font-weight:700;letter-spacing:.12em;padding:2px 7px;border-radius:4px;vertical-align:2px;margin-left:6px}
+/* quiz */
+#quiz{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:24px 22px;margin:18px 0 8px}
+#quiz .qmeta{display:flex;justify-content:space-between;align-items:center;font-family:'Space Grotesk',monospace;font-size:13px;color:var(--faint);margin-bottom:12px;text-transform:uppercase;letter-spacing:.1em}
+#quiz .qmeta .score{color:var(--hiviz);font-weight:700}
+#qtext{font-size:20px;font-weight:700;line-height:1.35;margin-bottom:16px}
+.opt{display:block;width:100%;text-align:left;background:var(--panel2);border:2px solid var(--line);border-radius:10px;padding:13px 15px;margin-bottom:9px;color:var(--text);font-size:16px;font-family:'Archivo',sans-serif;cursor:pointer;transition:border-color .12s}
+.opt:hover{border-color:var(--faint)}
+.opt.correct{border-color:var(--go);background:#1E2A20}
+.opt.wrong{border-color:var(--stop);background:#2C1E1F}
+.opt:disabled{cursor:default;opacity:.95}
+#explain{display:none;background:var(--asphalt);border:1px dashed var(--line);border-radius:10px;padding:13px 15px;color:var(--dim);font-size:15px;margin:6px 0 14px}
+#explain b{color:var(--hiviz)}
+#nextbtn{display:none;background:var(--hiviz);color:#17181C;border:none;border-radius:8px;padding:12px 22px;font-weight:700;font-size:16px;font-family:'Archivo',sans-serif;cursor:pointer}
+#restart{background:transparent;color:var(--hiviz);border:2px solid var(--hiviz);border-radius:8px;padding:11px 20px;font-weight:700;font-size:15px;font-family:'Archivo',sans-serif;cursor:pointer;display:none;margin-left:8px}
+#result{display:none;text-align:center;padding:10px 0}
+#result h3{font-size:34px;text-transform:uppercase;margin-bottom:8px}
+#result p{font-size:17px}
+.bar{height:10px;background:var(--panel2);border-radius:5px;overflow:hidden;margin:14px 0}
+.bar i{display:block;height:100%;background:var(--hiviz);border-radius:5px;transition:width .3s}
+footer{padding:46px 0 40px;color:var(--faint);font-size:14px}
+</style>
+</head>
+<body>
+<header class="wrap"><div class="brand">Foster Labs · Cram Series</div></header>
+
+<div class="hero wrap">
+  <div class="kicker">Utah Motorcycle Written Test</div>
+  <h1>Pass <span class="yl">at 2.</span></h1>
+  <p>The whole Utah Motorcycle Operator Manual, compressed to what the test actually asks. Read the cram sheet once (~12 min), then run the <b>43-question quiz</b> until you're scoring 90%+. The real test is drawn from this exact material — including the practice questions printed in the manual itself, which are all in the quiz below.</p>
+  <div class="quickbtns">
+    <a class="qb solid" href="#quiz-sec">Skip to the Quiz</a>
+    <a class="qb ghost" href="#utah">Utah-Only Rules</a>
+  </div>
+  <div class="roadline"></div>
+</div>
+
+<section class="wrap" id="core">
+  <div class="eyebrow">The Cram Sheet · Part 1</div>
+  <h2>Numbers they love to test</h2>
+  <div class="grid">
+    <div class="card"><h3>Braking</h3><ul>
+      <li><b>Front brake = at least 70%</b> of stopping power</li>
+      <li>Use <b>BOTH brakes every time</b> you slow or stop</li>
+      <li>Front wheel locks → <b>release immediately, reapply firmly</b></li>
+      <li>Rear wheel locks (straight, good traction) → <b>keep it locked</b> until stopped</li>
+      <li>Quick stop in a curve → <b>straighten the bike first</b>, then brake hard</li>
+    </ul></div>
+    <div class="card"><h3>Space & Vision</h3><ul>
+      <li>Following distance: <b>2 seconds minimum</b> — 3+ if slippery/heavy traffic</li>
+      <li>Scan your path <b>12 seconds ahead</b>; <b>4-second</b> zone = immediate</li>
+      <li>SEE = <b>Search, Evaluate, Execute</b></li>
+      <li>Signal <b>2 seconds</b> before any turn or lane change <span class="tag-ut">UT</span></li>
+      <li>Most crashes: short trips <b>under 5 miles</b>, speeds <b>under 30 mph</b></li>
+    </ul></div>
+    <div class="card"><h3>Riders & Crashes</h3><ul>
+      <li><b>Over half</b> of crashes: riders with <b>&lt; 5 months</b> experience</li>
+      <li><b>Over half</b> of motorcycle/car crashes: <b>drivers violating the rider's right-of-way</b></li>
+      <li>#1 danger spot: <b>intersections</b> — especially <b>left-turning cars</b></li>
+      <li>1 in 5 crashes = head/neck injury; helmets = <b>3x more likely to survive</b> a head injury</li>
+      <li>Crash-involved riders typically <b>underbrake the front, overbrake the rear</b></li>
+    </ul></div>
+    <div class="card"><h3>Alcohol</h3><ul>
+      <li>Utah legal limit: <b>0.05%</b> — the only state that low <span class="tag-ut">UT</span></li>
+      <li>Under 21: essentially <b>zero tolerance</b> (0.00–0.02)</li>
+      <li>Body eliminates <b>~1 drink per hour</b> — beer = shot = wine glass</li>
+      <li><b>Judgment goes first</b> — you feel better while riding worse</li>
+      <li>~1/3 of fatally injured riders were over the limit; even 1–2 drinks impairs</li>
+    </ul></div>
+  </div>
+</section>
+
+<section class="wrap" id="riding">
+  <div class="eyebrow">The Cram Sheet · Part 2</div>
+  <h2>How to ride (per the test)</h2>
+  <div class="grid">
+    <div class="card"><h3>Turning</h3><ul>
+      <li>Sequence: <b>SLOW → LOOK → PRESS → ROLL</b></li>
+      <li>Countersteer: <b>press LEFT grip = lean left = GO LEFT</b></li>
+      <li>Look through the turn — <b>turn just your head</b>, not shoulders</li>
+      <li>Normal turns: <b>lean WITH the bike</b>. Slow tight turns: bike leans, <b>you stay upright</b></li>
+      <li>Roll on throttle through the turn — it <b>stabilizes</b> the bike</li>
+    </ul></div>
+    <div class="card"><h3>Lane Strategy</h3><ul>
+      <li>Every lane = <b>3 positions</b>; none is forbidden — choose to <b>see and be seen</b></li>
+      <li>Center strip: oil/debris — but usually <b>OK traction unless wet</b></li>
+      <li>Rain: ride in the <b>tire tracks left by cars</b></li>
+      <li>Behind a car: ride where the driver sees you <b>in the rearview mirror</b></li>
+      <li>Never linger in <b>blind spots</b>; make head checks before lane changes</li>
+      <li>Passing parked cars: <b>left portion</b> of your lane (doors!)</li>
+    </ul></div>
+    <div class="card"><h3>Emergencies</h3><ul>
+      <li>Swerve = <b>press the grip on the side you want to escape</b></li>
+      <li><b>Never brake while swerving</b> — brake before OR after</li>
+      <li>Wobble: <b>grip firmly, don't fight it, roll OFF throttle gradually</b> — no brakes</li>
+      <li>Flat tire: hold grips firmly, ease off throttle, <b>keep straight</b>; brake the good tire if you know which</li>
+      <li>Stuck throttle: twist several times → still stuck? <b>engine cut-off + clutch in</b></li>
+      <li>Chased by a dog: <b>approach slowly, then accelerate away</b></li>
+      <li>Big animals (deer): <b>brake and prepare to stop</b>. Small animal in traffic: stay in your lane</li>
+    </ul></div>
+    <div class="card"><h3>Surfaces</h3><ul>
+      <li>Crossing tracks: usually <b>ride straight in your lane</b> (angling to 90° can take you into traffic)</li>
+      <li>Parallel tracks/seams: cross at <b>45° or more</b>, deliberate turn</li>
+      <li>Rain grooves/bridge grates: <b>relax, steady speed, straight across</b> — wandering is normal</li>
+      <li>Slippery: gentle everything; front brake still works — <b>squeeze, never grab</b></li>
+      <li>Obstacle you must hit: <b>90° angle, slow, rise off seat</b>, slight throttle just before contact</li>
+    </ul></div>
+    <div class="card"><h3>Passengers & Cargo</h3><ul>
+      <li>Passenger: <b>lean as you lean</b>, feet on pegs <b>even when stopped</b>, sit close/forward, look over your shoulder in turns</li>
+      <li>Children: <b>behind the rider</b>, never in front</li>
+      <li>Mount only <b>after engine is started</b>, transmission in neutral</li>
+      <li>With a passenger: ride slower, <b>slow earlier</b>, bigger gaps</li>
+      <li>Loads: <b>low</b>, over/in front of rear axle, even saddlebags, <b>bungees not rope</b></li>
+    </ul></div>
+    <div class="card"><h3>Group Riding</h3><ul>
+      <li><b>Staggered formation</b>; single file in curves, turns, entering/leaving highways</li>
+      <li><b>Inexperienced riders ride just behind the leader</b></li>
+      <li>Lead + sweep = most experienced riders</li>
+      <li><b>Never pair up</b> side-by-side in one lane</li>
+      <li>Pass <b>one at a time</b> on two-lane roads; no passing within the group</li>
+    </ul></div>
+    <div class="card"><h3>Be Seen</h3><ul>
+      <li><b>Headlight ON always</b> — twice as likely to be noticed in daylight</li>
+      <li>Bright/reflective gear — <b>day AND night</b></li>
+      <li><b>Flash your brake light</b> before slowing suddenly or where unexpected, and when stopped with traffic behind</li>
+      <li><b>Never rely on eye contact</b> — it doesn't mean they'll yield</li>
+      <li>Use signals every time, then <b>cancel them</b>; horn = quick beep before passing</li>
+      <li>Cover clutch + both brakes in high-risk zones to <b>cut reaction time</b></li>
+    </ul></div>
+    <div class="card"><h3>Fit To Ride</h3><ul>
+      <li>Gear: <b>DOT helmet</b>, face/eye protection (windshield is NOT a substitute), jacket+pants, boots over ankles, gloves</li>
+      <li>Faceshield beats goggles — <b>protects your whole face</b></li>
+      <li>No tinted lenses in low light</li>
+      <li>Fatigue: max <b>~6 hours riding/day</b>, break <b>every 2 hours</b></li>
+      <li>Pre-ride check = <b>T-CLOCS</b>: Tires, Controls, Lights, Oil, Chassis, Stands</li>
+    </ul></div>
+  </div>
+</section>
+
+<section class="wrap" id="utah">
+  <div class="eyebrow">The Cram Sheet · Part 3</div>
+  <h2>Utah-only rules <span style="color:var(--hiviz)">(guaranteed questions)</span></h2>
+  <div class="bigfact"><b>Helmets:</b> required by law only <b>under age 21</b> (DOT-approved). Everyone's encouraged; 21+ wearing DOT headgear even gets <b>$8 waived</b> off a moving-violation fine.</div>
+  <div class="bigfact"><b>Tiered licensing:</b> you're restricted to the size class you <b>test on</b>: ≤90cc, ≤249cc, ≤649cc, or <b>650cc+ = unrestricted</b>. Test on a 250? You're in the ≤649 tier.</div>
+  <div class="bigfact"><b>Learner permit (first 2 months):</b> no highways posted <b>60+ mph</b>, no <b>passengers</b>, no riding <b>10 PM–6 AM</b>. Restrictions lift after 2 months. Under 19 must hold the permit 2 months (waivable via the Basic Rider Course). Permit valid 6 months; requires valid license + vision + written test.</div>
+  <div class="bigfact"><b>Lane filtering is LEGAL</b> — but only when ALL are true: road has <b>2+ lanes same direction</b>, speed limit <b>≤45 mph</b> (never on-ramps), vehicles you pass are <b>STOPPED</b>, you go <b>≤15 mph</b>, and it's safe. Everything else between lanes = illegal.</div>
+  <div class="bigfact"><b>Dead red light rule:</b> age 16+, complete stop, signal hasn't detected you after a reasonable wait <b>(at least 90 seconds)</b> → you may proceed when clear.</div>
+  <div class="bigfact"><b>Equipment:</b> ONE mirror required (not two). Turn signals required on bikes made after <b>Jan 1, 1973</b>. Handlebars <b>no higher than shoulder height</b>. Tread ≥ 2/32". Passenger footrests required to carry a passenger. No safety inspections since 2018.</div>
+  <div class="bigfact"><b>Also:</b> motorcycles get <b>full use of a lane</b> and may use <b>HOV lanes</b>; max <b>two abreast</b> per lane; insurance evidence must be <b>in your possession</b>; implied consent to chemical tests; register within <b>60 days</b> of residency; address change reported within <b>10 days</b>. Utah's top crash causes: <b>failure to yield</b>, following too closely, improper lane, speed for conditions, ran off road.</div>
+</section>
+
+<section class="wrap" id="quiz-sec">
+  <div class="eyebrow">The Quiz Engine</div>
+  <h2>43 questions. Ride until 90%.</h2>
+  <p>Every practice question printed in the official manual is here (with its official answer), plus more written from the same material. Wrong answers show the fix immediately. Loop it.</p>
+  <div id="quiz">
+    <div class="qmeta"><span id="qcount">Question 1 / 43</span><span class="score" id="qscore">Score: 0</span></div>
+    <div class="bar"><i id="qbar" style="width:0%"></i></div>
+    <div id="qtext"></div>
+    <div id="opts"></div>
+    <div id="explain"></div>
+    <button id="nextbtn">Next Question →</button>
+    <div id="result">
+      <h3 id="rtitle"></h3>
+      <p id="rtext"></p>
+    </div>
+    <button id="restart">Ride Again ↻</button>
+  </div>
+</section>
+
+<footer class="wrap">
+  Built from the Utah Motorcycle Operator Manual (MSF 18th Ed.) · Part of <a href="/enneagram/">Foster Labs field guides</a><br>
+  <span class="mono" style="font-size:12px;letter-spacing:.12em;text-transform:uppercase">fosterlabs.org / moto · good luck at 2</span>
+</footer>
+
+<script>
+const Q=[
+// ===== Official "Test Yourself" questions from the manual =====
+{q:"A plastic shatter-resistant face shield:",o:["Is not necessary if you have a windshield","Only protects your eyes","Helps protect your whole face","Does not protect your face as well as goggles"],a:2,x:"Official manual question. A faceshield protects your WHOLE face — goggles only do eyes, and a windshield is not a substitute."},
+{q:"More than half of all crashes:",o:["Occur at speeds greater than 35 mph","Happen at night","Are caused by worn tires","Involve riders with less than five months of experience on their motorcycle"],a:3,x:"Official manual question. Inexperience is the big one — over half involve riders with under 5 months on that bike."},
+{q:"When riding, you should:",o:["Turn your head and shoulders to look through turns","Keep your arms straight","Keep your knees away from the gas tank","Turn just your head and eyes to look where you are going"],a:3,x:"Official manual question. Head and eyes only — knees AGAINST the tank, arms bent."},
+{q:"Usually, a good way to handle tailgaters is to:",o:["Change lanes and let them pass","Use your horn and make obscene gestures","Speed up to put distance between you","Ignore them"],a:0,x:"Official manual question. Get them in FRONT of you — let them pass."},
+{q:"To reduce your reaction time, you should:",o:["Ride slower than the speed limit","Cover the clutch lever and the brakes","Shift into neutral when slowing","Pull in the clutch when turning"],a:1,x:"Official manual question. Covering the controls in risky areas (intersections etc.) cuts reaction time."},
+{q:"Making eye contact with other drivers:",o:["Is a good sign they see you","Is not worth the effort it takes","Doesn't mean that the driver will yield","Guarantees the other driver will yield to you"],a:2,x:"Official manual question. NEVER count on eye contact — drivers look right at riders and still pull out."},
+{q:"Reflective clothing should:",o:["Be worn at night","Be worn during the day","Not be worn","Be worn day and night"],a:3,x:"Official manual question. Day AND night — most crashes happen in daylight."},
+{q:"The best way to stop quickly is to:",o:["Use the front brake only","Use the rear brake first","Throttle down and use the front brake","Use both brakes at the same time"],a:3,x:"Official manual question. Both brakes, every time, at the same time."},
+{q:"When it starts to rain, it is usually best to:",o:["Ride in the center of the lane","Pull off to the side until the rain stops","Ride in the tire tracks left by cars","Increase your speed"],a:2,x:"Official manual question. The center strip gets slick when wet — ride in the car tire tracks (often the left one)."},
+{q:"If your motorcycle starts to wobble:",o:["Accelerate out of the wobble","Use the brakes gradually","Grip the handlebars firmly and close the throttle gradually","Downshift"],a:2,x:"Official manual question. Don't fight it, don't brake, don't accelerate — firm grip, roll off gradually."},
+{q:"If you are chased by a dog:",o:["Kick it away","Stop until the animal loses interest","Swerve around the animal","Approach the animal slowly, then speed up"],a:3,x:"Official manual question. Downshift, approach slowly, then accelerate away. Never kick."},
+{q:"Passengers should:",o:["Lean as you lean","Hold on to the motorcycle seat","Sit as far back as possible","Never hold onto you"],a:0,x:"Official manual question. Passengers lean WITH the rider, sit forward, hold your waist/hips/handholds."},
+{q:"When riding in a group, inexperienced riders should position themselves:",o:["Just behind the leader","In front of the group","At the tail end of the group","Beside the leader"],a:0,x:"Official manual question. Right behind the leader — they set the pace, experienced riders watch from behind."},
+{q:"If you wait one hour per drink for the alcohol to be eliminated before riding:",o:["You cannot be arrested for drinking and riding","Your riding skills will not be affected","Side effects from the drinking may still remain","You will be okay as long as you ride slowly"],a:2,x:"Official manual question. Fatigue and after-effects linger even after the alcohol is metabolized."},
+// ===== Official Knowledge Test samples =====
+{q:"It is MOST important to flash your brake light when:",o:["Someone is following too closely","You will be slowing suddenly","There is a stop sign ahead","Your signals are not working"],a:1,x:"Official sample question. Flash it before slowing suddenly or slowing where others don't expect it."},
+{q:"The FRONT brake supplies how much of the potential stopping power?",o:["About 25%","About 50%","At least 70%","All of the stopping power"],a:2,x:"Official sample question. 70% or more lives in the front brake. Use it — squeeze, don't grab."},
+{q:"To swerve correctly:",o:["Shift your weight quickly","Turn the handlebars quickly","Press the handgrip in the direction of the turn","Press the handgrip in the opposite direction of the turn"],a:2,x:"Official sample question. Press the grip on the side you want to go — press right, lean right, go right."},
+{q:"If a tire goes flat while riding and you must stop, it is usually best to:",o:["Relax on the handgrips","Shift your weight toward the good tire","Brake on the good tire and steer to the side of the road","Use both brakes and stop quickly"],a:2,x:"Official sample question. Hold grips firmly, ease off throttle, and if braking is needed use the tire that ISN'T flat."},
+{q:"A car is waiting to enter the intersection ahead of you. It is best to:",o:["Make eye contact with the driver","Reduce speed and be ready to react","Maintain speed and position","Maintain speed and move right"],a:1,x:"Official sample question. Slow, cover the controls, be ready — never trust eye contact."},
+// ===== Utah section official samples =====
+{q:"Utah law requires two rear-view mirrors on every motorcycle. True or false?",o:["True","False"],a:1,x:"Official Utah sample. Only ONE mirror is required."},
+{q:"If you test on a 250cc motorcycle, you'll be restricted to riding motorcycles under 649cc. True or false?",o:["True","False"],a:0,x:"Official Utah sample. Tiers: ≤90, ≤249, ≤649, 650+. A 250 puts you in the ≤649 tier. Test on 650+ = unrestricted."},
+{q:"Every motorized vehicle ridden on public roads must be insured, registered, and licensed/endorsed. True or false?",o:["True","False"],a:0,x:"Official Utah sample. All three, and carry evidence of insurance with you."},
+{q:"In Utah, if you are younger than ___ you are required to wear a DOT-approved helmet:",o:["17","18","21"],a:2,x:"Official Utah sample. Under 21 = helmet required by law. (21+ get $8 off a moving-violation fine if wearing one.)"},
+{q:"A Beginning Rider Course is required for all riders. True or false?",o:["True","False"],a:1,x:"Official Utah sample. It's optional — but it can waive the skills test and the under-19 two-month permit wait."},
+// ===== Written from the manual =====
+{q:"Utah's blood alcohol limit for riders 21 and over is:",o:["0.10%","0.08%","0.05%","0.02%"],a:2,x:"Utah is the strictest in the nation at 0.05%. Every other state is 0.08%."},
+{q:"Lane filtering in Utah is legal only when:",o:["Traffic is moving slower than 25 mph","Vehicles are stopped, the road is ≤45 mph with 2+ lanes your direction, and you go ≤15 mph","You're on any freeway in heavy congestion","You're on an on-ramp"],a:1,x:"ALL conditions must be true: 2+ lanes same direction, ≤45 limit, stopped traffic, ≤15 mph, safe. Never on-ramps."},
+{q:"With a motorcycle learner permit, during the FIRST TWO MONTHS you may NOT:",o:["Ride on roads posted 60+ mph, carry passengers, or ride 10 PM–6 AM","Ride outside your county","Ride over 45 mph anywhere","Ride without a supervising rider"],a:0,x:"The three permit restrictions — they lift after two months."},
+{q:"You should maintain a following distance of at least:",o:["1 second","2 seconds","4 seconds","6 seconds"],a:1,x:"2 seconds minimum — open it to 3+ when it's slippery, crowded, or you can't see through the vehicle ahead."},
+{q:"Your searching 'lead times' are:",o:["2-second follow, 4-second immediate path, 12-second anticipation","5, 10, 15 seconds","1, 2, 3 seconds","2, 6, 20 seconds"],a:0,x:"2-4-12: two behind a vehicle, four seconds = immediate action zone, twelve = anticipate."},
+{q:"SEE stands for:",o:["Signal, Evaluate, Execute","Search, Evaluate, Execute","See, Examine, Escape","Search, Examine, Exit"],a:1,x:"Search, Evaluate, Execute — MSF's core strategy."},
+{q:"Over half of motorcycle/car crashes are caused by:",o:["Riders speeding","Drivers violating the rider's right-of-way","Bad weather","Mechanical failure"],a:1,x:"Drivers turning left in front of riders at intersections are the classic case."},
+{q:"To turn left, you press:",o:["The right handgrip","The left handgrip","Both grips evenly","The rear brake"],a:1,x:"Countersteering: press left, lean left, go left."},
+{q:"In a slow, tight turn you should:",o:["Lean with the motorcycle","Keep your body upright while the motorcycle leans","Lean opposite at high speed","Put a foot down"],a:1,x:"Slow tight turns: counterbalance — bike leans, body upright. Normal turns: lean together."},
+{q:"When crossing railroad tracks that run across your path, you should usually:",o:["Cross at exactly 90° even if it takes you into another lane","Ride straight within your lane","Slow to walking pace and zigzag","Stand on the pegs"],a:1,x:"Straight within your lane is safest. For PARALLEL tracks/seams, move over and cross at 45°+."},
+{q:"Riding over rain grooves or bridge gratings, you should:",o:["Zigzag to find the best line","Relax, keep steady speed, ride straight across","Brake gently the whole way","Cross at a sharp angle"],a:1,x:"The wandering feeling is normal and not hazardous. The zigzag is what's dangerous."},
+{q:"Your motorcycle's headlight should be on:",o:["Only at night","At all times","Only in fog","Only on highways"],a:1,x:"Always. A daytime headlight makes you twice as likely to be noticed."},
+{q:"If your throttle sticks and twisting it back and forth doesn't free it:",o:["Pull the front brake hard","Operate the engine cut-off switch and squeeze the clutch at the same time","Jump off","Downshift to first"],a:1,x:"Kill switch + clutch together removes power to the rear wheel; then pull over safely."},
+{q:"When carrying a passenger, they should get on:",o:["Before you start the engine","Only after the engine is started and you're in neutral","While you hold the clutch","Whenever they want"],a:1,x:"Engine running, transmission in neutral, your feet down, front brake applied."},
+{q:"Loads should be carried:",o:["High on a sissy bar","Low, and over or in front of the rear axle","Behind the rear axle","On the handlebars"],a:1,x:"Low and centered near the rear axle — high or rearward loads cause wobble and upset balance."},
+{q:"In a staggered group formation, the leader rides in the left third; the second rider rides:",o:["Directly beside the leader","One second back in the right third","Two seconds back in the left third","At the rear"],a:1,x:"1 second back, right side; third rider 2 seconds back on the left, and so on. Single file for curves and highway ramps."},
+{q:"Experienced riders limit long-trip riding to about:",o:["Four hours a day","Six hours a day, with breaks every two hours","Eight hours a day","As long as they feel good"],a:1,x:"~6 hours/day max, off the bike at least every 2 hours. Fatigue kills control."},
+{q:"Motorcycles in Utah may use HOV lanes:",o:["True","False"],a:0,x:"Yes — motorcycles are explicitly permitted in HOV lanes."},
+{q:"Utah requires you to signal for at least ___ before turning or changing lanes:",o:["2 seconds","3 seconds","5 seconds","100 feet"],a:0,x:"Two full seconds, by law."}
+];
+
+// shuffle
+for(let i=Q.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[Q[i],Q[j]]=[Q[j],Q[i]];}
+let idx=0,score=0,answered=false;
+const $=id=>document.getElementById(id);
+function render(){
+  answered=false;
+  $('qcount').textContent='Question '+(idx+1)+' / '+Q.length;
+  $('qscore').textContent='Score: '+score;
+  $('qbar').style.width=(idx/Q.length*100)+'%';
+  $('qtext').textContent=Q[idx].q;
+  $('explain').style.display='none';$('nextbtn').style.display='none';
+  const box=$('opts');box.innerHTML='';
+  Q[idx].o.forEach((t,i)=>{
+    const b=document.createElement('button');b.className='opt';b.textContent=t;
+    b.onclick=()=>pick(i,b);box.appendChild(b);
+  });
+}
+function pick(i,btn){
+  if(answered)return;answered=true;
+  const ok=i===Q[idx].a;
+  document.querySelectorAll('.opt').forEach((b,bi)=>{
+    b.disabled=true;
+    if(bi===Q[idx].a)b.classList.add('correct');
+  });
+  if(!ok)btn.classList.add('wrong');else score++;
+  $('qscore').textContent='Score: '+score;
+  $('explain').innerHTML=(ok?'<b>Correct.</b> ':'<b>Not quite.</b> ')+Q[idx].x;
+  $('explain').style.display='block';
+  $('nextbtn').style.display='inline-block';
+  $('nextbtn').textContent=idx===Q.length-1?'See Results →':'Next Question →';
+}
+$('nextbtn').onclick=()=>{
+  idx++;
+  if(idx>=Q.length){finish();return;}
+  render();
+};
+function finish(){
+  $('qtext').textContent='';$('opts').innerHTML='';$('explain').style.display='none';$('nextbtn').style.display='none';
+  $('qbar').style.width='100%';
+  const pct=Math.round(score/Q.length*100);
+  $('rtitle').textContent=pct+'%';
+  $('rtitle').style.color=pct>=80?'var(--go)':(pct>=60?'var(--hiviz)':'var(--stop)');
+  $('rtext').textContent=pct>=90?'You\'re ready. Go pass it.':(pct>=80?'Close — one more lap and you\'re golden.':(pct>=60?'Getting there. Re-read the cram sheet, ride again.':'Read the cram sheet top to bottom, then ride again. You\'ve got time.'));
+  $('result').style.display='block';
+  $('restart').style.display='inline-block';
+}
+$('restart').onclick=()=>{
+  for(let i=Q.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[Q[i],Q[j]]=[Q[j],Q[i]];}
+  idx=0;score=0;$('result').style.display='none';$('restart').style.display='none';render();
+};
+render();
+</script>
+</body>
+</html>
