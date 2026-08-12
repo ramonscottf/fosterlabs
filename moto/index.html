@@ -70,18 +70,38 @@ section p b, section li b{color:var(--text)}
 #result p{font-size:17px}
 .bar{height:10px;background:var(--panel2);border-radius:5px;overflow:hidden;margin:14px 0}
 .bar i{display:block;height:100%;background:var(--hiviz);border-radius:5px;transition:width .3s}
+
+/* ---- view tabs ---- */
+.tabs{position:sticky;top:0;z-index:50;background:rgba(23,24,28,.97);backdrop-filter:blur(6px);border-bottom:1px solid var(--line);padding:10px 0}
+.tabs .wrap{display:flex;gap:8px}
+.tab{flex:1;max-width:220px;text-align:center;padding:11px 10px;border-radius:8px;border:2px solid var(--line);background:var(--panel);color:var(--dim);font-family:'Archivo',sans-serif;font-weight:700;font-size:15px;cursor:pointer;text-transform:uppercase;letter-spacing:.04em}
+.tab.active{border-color:var(--hiviz);background:var(--hiviz);color:#17181C}
+#view-quiz{padding-top:14px}
+#view-quiz .qwrap{max-width:720px;margin:0 auto;padding:0 20px}
+#quiz{margin-top:8px}
+#qtext{min-height:3.6em}
+#opts{min-height:236px}
+#explain{display:block;min-height:76px;visibility:hidden}
+#explain.show{visibility:visible}
+#nextbtn{display:inline-block;visibility:hidden}
+#nextbtn.show{visibility:visible}
 footer{padding:46px 0 40px;color:var(--faint);font-size:14px}
 </style>
 </head>
 <body>
 <header class="wrap"><div class="brand">Foster Labs · Cram Series</div></header>
+<nav class="tabs"><div class="wrap">
+  <button class="tab active" id="tab-study" onclick="showView('study')">Study Guide</button>
+  <button class="tab" id="tab-quiz" onclick="showView('quiz')">Quiz</button>
+</div></nav>
 
+<div id="view-study">
 <div class="hero wrap">
   <div class="kicker">Utah Motorcycle Written Test</div>
   <h1>Pass <span class="yl">at 2.</span></h1>
   <p>The whole Utah Motorcycle Operator Manual, compressed to what the test actually asks. Read the cram sheet once (~12 min), then run the <b>43-question quiz</b> until you're scoring 90%+. The real test is drawn from this exact material — including the practice questions printed in the manual itself, which are all in the quiz below.</p>
   <div class="quickbtns">
-    <a class="qb solid" href="#quiz-sec">Skip to the Quiz</a>
+    <button class="qb solid" style="cursor:pointer;border:none" onclick="showView('quiz')">Start the Quiz</button>
     <a class="qb ghost" href="#utah">Utah-Only Rules</a>
   </div>
   <div class="roadline"></div>
@@ -201,7 +221,10 @@ footer{padding:46px 0 40px;color:var(--faint);font-size:14px}
   <div class="bigfact"><b>Also:</b> motorcycles get <b>full use of a lane</b> and may use <b>HOV lanes</b>; max <b>two abreast</b> per lane; insurance evidence must be <b>in your possession</b>; implied consent to chemical tests; register within <b>60 days</b> of residency; address change reported within <b>10 days</b>. Utah's top crash causes: <b>failure to yield</b>, following too closely, improper lane, speed for conditions, ran off road.</div>
 </section>
 
-<section class="wrap" id="quiz-sec">
+</div><!-- /view-study -->
+
+<div id="view-quiz" hidden>
+<section class="qwrap" id="quiz-sec">
   <div class="eyebrow">The Quiz Engine</div>
   <h2>43 questions. Ride until 90%.</h2>
   <p>Every practice question printed in the official manual is here (with its official answer), plus more written from the same material. Wrong answers show the fix immediately. Loop it.</p>
@@ -219,6 +242,7 @@ footer{padding:46px 0 40px;color:var(--faint);font-size:14px}
     <button id="restart">Ride Again ↻</button>
   </div>
 </section>
+</div><!-- /view-quiz -->
 
 <footer class="wrap">
   Built from the Utah Motorcycle Operator Manual (MSF 18th Ed.) · Part of <a href="/enneagram/">Foster Labs field guides</a><br>
@@ -286,7 +310,7 @@ function render(){
   $('qscore').textContent='Score: '+score;
   $('qbar').style.width=(idx/Q.length*100)+'%';
   $('qtext').textContent=Q[idx].q;
-  $('explain').style.display='none';$('nextbtn').style.display='none';
+  $('explain').classList.remove('show');$('explain').innerHTML='';$('nextbtn').classList.remove('show');
   const box=$('opts');box.innerHTML='';
   Q[idx].o.forEach((t,i)=>{
     const b=document.createElement('button');b.className='opt';b.textContent=t;
@@ -303,8 +327,8 @@ function pick(i,btn){
   if(!ok)btn.classList.add('wrong');else score++;
   $('qscore').textContent='Score: '+score;
   $('explain').innerHTML=(ok?'<b>Correct.</b> ':'<b>Not quite.</b> ')+Q[idx].x;
-  $('explain').style.display='block';
-  $('nextbtn').style.display='inline-block';
+  $('explain').classList.add('show');
+  $('nextbtn').classList.add('show');
   $('nextbtn').textContent=idx===Q.length-1?'See Results →':'Next Question →';
 }
 $('nextbtn').onclick=()=>{
@@ -313,7 +337,7 @@ $('nextbtn').onclick=()=>{
   render();
 };
 function finish(){
-  $('qtext').textContent='';$('opts').innerHTML='';$('explain').style.display='none';$('nextbtn').style.display='none';
+  $('qtext').textContent='';$('qtext').style.minHeight='0';$('opts').innerHTML='';$('opts').style.minHeight='0';$('explain').classList.remove('show');$('explain').innerHTML='';$('nextbtn').classList.remove('show');
   $('qbar').style.width='100%';
   const pct=Math.round(score/Q.length*100);
   $('rtitle').textContent=pct+'%';
@@ -324,9 +348,18 @@ function finish(){
 }
 $('restart').onclick=()=>{
   for(let i=Q.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[Q[i],Q[j]]=[Q[j],Q[i]];}
-  idx=0;score=0;$('result').style.display='none';$('restart').style.display='none';render();
+  idx=0;score=0;$('result').style.display='none';$('restart').style.display='none';$('qtext').style.minHeight='';$('opts').style.minHeight='';render();
 };
 render();
+
+function showView(v){
+  document.getElementById('view-study').hidden = v!=='study';
+  document.getElementById('view-quiz').hidden = v!=='quiz';
+  document.getElementById('tab-study').classList.toggle('active',v==='study');
+  document.getElementById('tab-quiz').classList.toggle('active',v==='quiz');
+  window.scrollTo(0,0);
+}
+if(location.hash==='#quiz'||location.hash==='#quiz-sec')showView('quiz');
 </script>
 </body>
 </html>
