@@ -9,6 +9,7 @@
     { href: '/mower',       label: 'Robot Mower' },
     { href: '/math',        label: 'Math Quiz' },
     { href: '/spelling',    label: 'Spelling' },
+    { href: '/bike',        label: 'Rider License' },
     { href: '/gin',         label: 'Vicious Gin' }
     /* Held back from the public menu — uncomment to surface:
     { href: '/warroom',    label: 'War Room' },     // covert Hires — keep private

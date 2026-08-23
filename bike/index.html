@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Farmington Junior Rider License — Foster Labs DSV</title>
+<meta name="description" content="A real DMV-style licensing program for a kid on a bike or scooter. Written test, closed-course skills exam, and a scored road test on Farmington residential streets.">
+<meta name="theme-color" content="#07112a">
+<link rel="icon" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+:root{
+  --bg:#07112a; --bg2:#0b1733; --surface:#0f1d3d; --surface2:#16294d;
+  --line:#21345b; --soft:rgba(125,150,205,.14);
+  --ink:#e9eefb; --muted:#93a2c2; --faint:#64729a;
+  --accent:#f28816; --accent2:#ff9a33; --accent-soft:rgba(242,136,22,.13); --accent-line:rgba(242,136,22,.38);
+  --good:#34d399; --good-soft:rgba(52,211,153,.12);
+  --warn:#fbbf24; --bad:#f87171; --bad-soft:rgba(248,113,113,.12);
+  --r:14px; --r-sm:10px; --r-lg:20px;
+  --display:'Space Grotesk',system-ui,-apple-system,sans-serif;
+  --body:'Inter',system-ui,-apple-system,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,'SF Mono',Menlo,monospace;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);line-height:1.55;
+  -webkit-font-smoothing:antialiased;padding-bottom:90px}
+h1,h2,h3,h4{font-family:var(--display);font-weight:700;letter-spacing:-.01em;color:#fff;line-height:1.15;margin:0 0 .4em}
+a{color:var(--accent);text-decoration:none}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+.mono{font-family:var(--mono)}
+
+/* ---------- masthead ---------- */
+.seal{width:46px;height:46px;flex:0 0 46px}
+header.top{border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0a1631,#07112a);padding:18px 0 14px}
+.mast{display:flex;gap:14px;align-items:center}
+.mast .t{flex:1;min-width:0}
+.eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent);margin:0 0 3px}
+.mast h1{font-size:19px;margin:0;letter-spacing:-.02em}
+.mast .sub{font-size:12px;color:var(--muted);margin-top:2px}
+.formno{font-family:var(--mono);font-size:10px;color:var(--faint);letter-spacing:.06em}
+
+/* ---------- status strip ---------- */
+.strip{display:flex;gap:8px;overflow-x:auto;padding:12px 16px 4px;max-width:900px;margin:0 auto;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.strip::-webkit-scrollbar{display:none}
+.gate{flex:0 0 auto;display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11px;
+  padding:6px 11px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--muted)}
+.gate.done{border-color:rgba(52,211,153,.5);background:var(--good-soft);color:var(--good)}
+.gate.fail{border-color:rgba(248,113,113,.5);background:var(--bad-soft);color:var(--bad)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--faint)}
+.gate.done .dot{background:var(--good)}.gate.fail .dot{background:var(--bad)}
+
+/* ---------- tabs ---------- */
+nav.tabs{position:sticky;top:0;z-index:50;background:rgba(7,17,42,.94);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);margin-top:8px}
+.tabrow{display:flex;gap:4px;overflow-x:auto;max-width:900px;margin:0 auto;padding:9px 12px;scrollbar-width:none}
+.tabrow::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;font-family:var(--display);font-weight:600;font-size:13px;padding:8px 14px;border-radius:999px;
+  border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap}
+.tab:hover{color:#fff}
+.tab.active{background:var(--accent);color:#0a1024}
+.tab .n{font-family:var(--mono);font-size:10px;opacity:.65;margin-right:5px}
+
+/* ---------- sections ---------- */
+section{display:none;padding:22px 0 40px}
+section.active{display:block}
+.lead{color:var(--muted);font-size:15px;margin:0 0 18px}
+h2.sec{font-size:24px;margin:0 0 4px}
+h3.blk{font-size:16px;margin:26px 0 10px;padding-left:11px;border-left:3px solid var(--accent)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:0 0 12px}
+.card.tight{padding:13px}
+.card h4{font-size:15px;margin:0 0 6px}
+.card p{margin:6px 0;font-size:14px;color:var(--muted)}
+.grid2{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+
+.badge{display:inline-flex;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;letter-spacing:.05em;
+  padding:3px 9px;border-radius:999px;background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-line);
+  text-transform:uppercase}
+.badge.g{background:var(--good-soft);color:var(--good);border-color:rgba(52,211,153,.4)}
+.badge.r{background:var(--bad-soft);color:var(--bad);border-color:rgba(248,113,113,.4)}
+.badge.y{background:rgba(251,191,36,.12);color:var(--warn);border-color:rgba(251,191,36,.4)}
+.badge.n{background:var(--surface2);color:var(--muted);border-color:var(--line)}
+
+.btn{font-family:var(--display);font-weight:600;font-size:14px;padding:11px 18px;border-radius:999px;
+  border:1px solid transparent;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:.15s}
+.btn-p{background:var(--accent);color:#0a1024}
+.btn-p:hover{background:var(--accent2)}
+.btn-g{background:transparent;color:var(--ink);border-color:var(--line)}
+.btn-g:hover{border-color:var(--accent);color:#fff}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btnrow{display:flex;gap:9px;flex-wrap:wrap;margin-top:14px}
+
+.inp{background:var(--bg2);border:1px solid var(--line);border-radius:var(--r-sm);color:var(--ink);
+  font-family:var(--body);font-size:15px;padding:10px 13px;width:100%}
+.inp:focus{border-color:var(--accent);outline:none}
+label.fld{display:block;font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--faint);margin:0 0 5px}
+
+/* ---------- checklist rows ---------- */
+.row{display:flex;gap:12px;align-items:flex-start;padding:12px 13px;border:1px solid var(--line);
+  border-radius:var(--r-sm);background:var(--bg2);margin-bottom:8px;cursor:pointer;transition:.12s}
+.row:hover{border-color:var(--faint)}
+.row.on{border-color:rgba(52,211,153,.55);background:var(--good-soft)}
+.box{flex:0 0 22px;width:22px;height:22px;border-radius:6px;border:1.5px solid var(--faint);
+  display:flex;align-items:center;justify-content:center;font-size:13px;color:transparent;margin-top:1px}
+.row.on .box{background:var(--good);border-color:var(--good);color:#07112a;font-weight:700}
+.row .tx{flex:1;min-width:0}
+.row .tx b{display:block;font-size:14.5px;color:var(--ink);font-weight:600}
+.row .tx span{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+
+/* ---------- scoring pills ---------- */
+.station{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:14px;margin-bottom:11px}
+.station.pass{border-color:rgba(52,211,153,.45)}
+.station.fail{border-color:rgba(248,113,113,.45)}
+.st-head{display:flex;gap:10px;align-items:baseline;margin-bottom:3px}
+.st-num{font-family:var(--mono);font-size:11px;color:var(--accent);flex:0 0 auto}
+.st-head b{font-size:15px;font-family:var(--display)}
+.st-body{font-size:13.5px;color:var(--muted);margin:6px 0 4px}
+.st-spec{font-family:var(--mono);font-size:11.5px;color:var(--faint);background:var(--bg2);border:1px solid var(--soft);
+  border-radius:8px;padding:8px 10px;margin:8px 0}
+.score{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.sc{font-family:var(--display);font-weight:600;font-size:12.5px;padding:7px 13px;border-radius:999px;
+  border:1px solid var(--line);background:var(--bg2);color:var(--muted);cursor:pointer}
+.sc[data-v="2"].on{background:var(--good);border-color:var(--good);color:#07112a}
+.sc[data-v="1"].on{background:var(--warn);border-color:var(--warn);color:#331f00}
+.sc[data-v="0"].on{background:var(--bad);border-color:var(--bad);color:#2a0808}
+
+/* ---------- quiz ---------- */
+.q{border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:16px;margin-bottom:12px}
+.qn{font-family:var(--mono);font-size:10.5px;color:var(--accent);letter-spacing:.12em;margin-bottom:7px}
+.q p.qt{font-size:16px;color:#fff;font-weight:600;margin:0 0 12px;line-height:1.4}
+.opt{display:flex;gap:11px;align-items:flex-start;padding:11px 13px;border:1px solid var(--line);border-radius:var(--r-sm);
+  background:var(--bg2);margin-bottom:7px;cursor:pointer;font-size:14.5px;transition:.12s}
+.opt:hover{border-color:var(--faint)}
+.opt .k{flex:0 0 22px;font-family:var(--mono);font-size:12px;color:var(--faint);font-weight:600}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.right .k{color:var(--good)}
+.opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.opt.wrong .k{color:var(--bad)}
+.opt.locked{cursor:default}
+.why{margin-top:10px;padding:11px 13px;border-left:3px solid var(--accent);background:var(--accent-soft);
+  border-radius:0 8px 8px 0;font-size:13.5px;color:var(--ink)}
+.why b{color:var(--accent);font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;display:block;margin-bottom:3px;text-transform:uppercase}
+.cite{font-family:var(--mono);font-size:10.5px;color:var(--faint);margin-top:5px;display:block}
+
+/* ---------- result banner ---------- */
+.banner{border-radius:var(--r);padding:18px;text-align:center;margin:0 0 16px;border:1px solid var(--line);background:var(--surface)}
+.banner.pass{border-color:var(--good);background:var(--good-soft)}
+.banner.fail{border-color:var(--bad);background:var(--bad-soft)}
+.banner .big{font-family:var(--display);font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1}
+.banner.pass .big{color:var(--good)}.banner.fail .big{color:var(--bad)}
+.banner .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:7px}
+
+/* ---------- meter ---------- */
+.meter{height:7px;border-radius:99px;background:var(--bg2);border:1px solid var(--soft);overflow:hidden;margin:9px 0}
+.meter i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .25s ease}
+.meter i.g{background:var(--good)}.meter i.r{background:var(--bad)}
+
+/* ---------- zones ---------- */
+.zone{display:flex;gap:12px;align-items:flex-start;padding:13px;border-radius:var(--r-sm);margin-bottom:9px;
+  border:1px solid var(--line);background:var(--bg2)}
+.zk{flex:0 0 40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:600;font-size:15px}
+.z1{background:var(--good-soft);color:var(--good);border:1px solid rgba(52,211,153,.4)}
+.z2{background:var(--accent-soft);color:var(--accent);border:1px solid var(--accent-line)}
+.z3{background:rgba(251,191,36,.12);color:var(--warn);border:1px solid rgba(251,191,36,.4)}
+.z4{background:var(--bad-soft);color:var(--bad);border:1px solid rgba(248,113,113,.4)}
+
+/* ---------- license card ---------- */
+.lic{background:linear-gradient(135deg,#0d2a5c 0%,#0a1e46 42%,#112f63 100%);border:1px solid #2f4d86;
+  border-radius:16px;padding:0;overflow:hidden;box-shadow:0 18px 50px rgba(0,0,0,.45);max-width:430px;margin:0 auto;position:relative}
+.lic .licbar{background:linear-gradient(90deg,var(--accent),#e0700c);padding:7px 14px;display:flex;justify-content:space-between;align-items:center}
+.lic .licbar b{font-family:var(--display);font-size:12px;color:#131007;letter-spacing:.04em}
+.lic .licbar span{font-family:var(--mono);font-size:10px;color:rgba(19,16,7,.75)}
+.lic .licbody{padding:14px;display:flex;gap:13px}
+.photo{flex:0 0 84px;height:104px;border-radius:9px;background:var(--bg2);border:1px solid #35558f;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:9px;color:var(--faint);text-align:center}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+.licf{flex:1;min-width:0}
+.licf .nm{font-family:var(--display);font-size:19px;font-weight:700;color:#fff;line-height:1.1;letter-spacing:-.01em}
+.licf .rowx{display:flex;gap:14px;margin-top:9px;flex-wrap:wrap}
+.licf .f{min-width:74px}
+.licf .f i{display:block;font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:#7f9dd4;font-style:normal;text-transform:uppercase}
+.licf .f b{display:block;font-family:var(--mono);font-size:12.5px;color:#fff;font-weight:500;margin-top:1px}
+.licrestr{padding:0 14px 13px}
+.licrestr .rt{font-family:var(--mono);font-size:8.5px;letter-spacing:.14em;color:#7f9dd4;text-transform:uppercase;margin-bottom:5px}
+.licrestr ul{margin:0;padding-left:16px}
+.licrestr li{font-size:11.5px;color:#d6e2fb;margin-bottom:2px}
+.licsig{border-top:1px dashed #35558f;margin:0 14px;padding:9px 0 12px;display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+.licsig .sg{flex:1}
+.licsig .sg i{display:block;font-family:var(--mono);font-size:8px;letter-spacing:.14em;color:#7f9dd4;font-style:normal;text-transform:uppercase;margin-bottom:3px}
+.licsig .sg b{display:block;border-bottom:1px solid #35558f;font-family:'Georgia',serif;font-style:italic;font-size:14px;color:#fff;font-weight:400;padding-bottom:2px;min-height:20px}
+.stamp{position:absolute;right:12px;bottom:56px;width:96px;height:96px;opacity:.5;pointer-events:none}
+
+/* ---------- misc ---------- */
+.note{font-size:12.5px;color:var(--faint);margin-top:10px}
+.warnbox{border:1px solid rgba(248,113,113,.45);background:var(--bad-soft);border-radius:var(--r-sm);padding:13px;margin:12px 0}
+.warnbox b{color:var(--bad);font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:6px}
+.warnbox ul{margin:0;padding-left:18px;font-size:13.5px;color:var(--ink)}
+.warnbox li{margin-bottom:4px}
+.okbox{border:1px solid rgba(52,211,153,.4);background:var(--good-soft);border-radius:var(--r-sm);padding:13px;margin:12px 0;font-size:13.5px}
+.okbox b{color:var(--good);font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:6px}
+svg.diagram{width:100%;height:auto;display:block;background:#08142e;border:1px solid var(--line);border-radius:var(--r);margin:10px 0}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:6px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block;margin-right:5px;vertical-align:-1px}
+footer{border-top:1px solid var(--line);margin-top:30px;padding:18px 0 30px;font-family:var(--mono);font-size:10.5px;color:var(--faint);text-align:center;line-height:1.8}
+
+/* ---------- sticky bar ---------- */
+.stick{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(9,20,46,.96);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.stickin{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px;justify-content:space-between}
+.stickin .l{font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.35}
+.stickin .l b{color:#fff;font-size:15px;display:block;font-family:var(--display)}
+
+@media print{
+  body{background:#fff;color:#000;padding:0}
+  header.top,nav.tabs,.strip,.stick,.btnrow,footer,.noprint{display:none!important}
+  section{display:none!important}
+  section.active{display:block!important;padding:0}
+  .card,.station,.q,.row{border-color:#bbb;background:#fff;color:#000;break-inside:avoid}
+  .st-body,.card p,.row .tx span{color:#333}
+  h2.sec,h3.blk,.card h4,.st-head b,.row .tx b{color:#000}
+  .lic{box-shadow:none;border:1px solid #333}
+  svg.diagram{background:#fff;border:1px solid #999}
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap mast">
+    <svg class="seal" viewBox="0 0 100 100" aria-hidden="true">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="#f28816" stroke-width="3"/>
+      <circle cx="50" cy="50" r="39" fill="none" stroke="#f28816" stroke-width="1" stroke-dasharray="2 3"/>
+      <path d="M30 62a10 10 0 1 0 0-.1M70 62a10 10 0 1 0 0-.1" fill="none" stroke="#e9eefb" stroke-width="3"/>
+      <path d="M30 62l10-18h14l-9 18h25l-11-18" fill="none" stroke="#e9eefb" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>
+      <circle cx="54" cy="41" r="4" fill="#f28816"/>
+      <path d="M50 12v6M50 82v6M12 50h6M82 50h6" stroke="#f28816" stroke-width="3" stroke-linecap="round"/>
+    </svg>
+    <div class="t">
+      <p class="eyebrow">Foster Labs · Dept. of Small Vehicles</p>
+      <h1>Farmington Junior Rider License</h1>
+      <div class="sub">Bicycle &amp; Scooter Operator Examination — Davis County, Utah</div>
+    </div>
+  </div>
+  <div class="strip" id="strip"></div>
+</header>
+
+<nav class="tabs"><div class="tabrow" id="tabrow"></div></nav>
+
+<!-- ============ 0 · OVERVIEW ============ -->
+<section id="s-overview" class="active"><div class="wrap">
+  <h2 class="sec">The License Program</h2>
+  <p class="lead">Four exams, one license. Same shape as a real Utah driver license: rules test, closed-course skills test, road test, and restrictions printed right on the card. Nothing here is a suggestion — a fail is a fail, and you take it again next week.</p>
+
+  <div class="card">
+    <h4>Applicant</h4>
+    <div class="grid2" style="margin-top:10px">
+      <div><label class="fld">Rider</label><input class="inp" id="f-rider" placeholder="Charles Foster"></div>
+      <div><label class="fld">Examining Officer</label><input class="inp" id="f-examiner" placeholder="Scott Foster"></div>
+    </div>
+    <div class="grid2" style="margin-top:12px">
+      <div><label class="fld">Vehicle Class</label>
+        <select class="inp" id="f-vehicle">
+          <option value="bike">Bicycle (pedal)</option>
+          <option value="scooter">Kick Scooter</option>
+          <option value="escooter">Motor-Assisted Scooter (electric)</option>
+          <option value="ebike">Electric-Assisted Bicycle</option>
+        </select></div>
+      <div><label class="fld">Exam Date</label><input class="inp" id="f-date" type="date"></div>
+    </div>
+    <div id="vehnote"></div>
+  </div>
+
+  <h3 class="blk">The four gates</h3>
+  <div class="grid2">
+    <div class="card tight"><span class="badge">Gate 1</span><h4 style="margin-top:8px">Pre-Ride Inspection</h4><p>15-point safety check. Every item passes or the exam does not start. Same as a vehicle failing inspection at the DMV.</p></div>
+    <div class="card tight"><span class="badge">Gate 2</span><h4 style="margin-top:8px">Written Knowledge Test</h4><p>15 questions pulled from a 28-question bank. Real Utah law. <b>12 of 15 to pass (80%).</b></p></div>
+    <div class="card tight"><span class="badge">Gate 3</span><h4 style="margin-top:8px">Closed-Course Skills</h4><p>8 stations in the driveway and cul-de-sac. Scored 0–2 each. <b>13 of 16 to pass</b>, and no station may score 0.</p></div>
+    <div class="card tight"><span class="badge">Gate 4</span><h4 style="margin-top:8px">Road Test</h4><p>16-leg route on real Farmington streets. Start at 100, lose points for errors. <b>80 to pass.</b> Ten auto-fails end it instantly.</p></div>
+  </div>
+
+  <h3 class="blk">Riding zones</h3>
+  <p class="lead" style="margin-bottom:12px">The license does not say "you can ride." It says <i>where</i>. Zones open up as scores go up — that's the whole point of the card.</p>
+  <div class="zone"><div class="zk z1">1</div><div><b>Zone 1 — Driveway &amp; cul-de-sac</b><div style="font-size:13px;color:var(--muted)">Home pavement only. No street crossings. Open to a learner permit with a helmet on.</div></div></div>
+  <div class="zone"><div class="zk z2">2</div><div><b>Zone 2 — The Loveland Lane block</b><div style="font-size:13px;color:var(--muted)">Our street, curb to curb, no crossing an intersection. Unlocked by a Class J license.</div></div></div>
+  <div class="zone"><div class="zk z3">3</div><div><b>Zone 3 — Neighborhood loop + Farmington Ranches Park</b><div style="font-size:13px;color:var(--muted)">Interior residential streets and the park path. Requires a road-test score of 90+, a buddy, and a check-in time.</div></div></div>
+  <div class="zone"><div class="zk z4">4</div><div><b>Zone 4 — Anything that carries real traffic</b><div style="font-size:13px;color:var(--muted)">Clark Ln, Glovers Ln, 1525 W, Frontage Rd, anything toward Station Park or the FrontRunner tracks. <b>Adult present. No exceptions, no version of the license.</b></div></div></div>
+
+  <div class="warnbox"><b>Non-negotiable — costs the license immediately</b>
+  <ul>
+    <li>Riding without a helmet, even once, even to the mailbox.</li>
+    <li>Crossing into Zone 4 without an adult.</li>
+    <li>Earbuds or a phone in hand while rolling.</li>
+    <li>Going somewhere nobody was told about.</li>
+  </ul></div>
+
+  <div class="btnrow"><button class="btn btn-p" onclick="go('inspection')">Start Gate 1 →</button>
+  <button class="btn btn-g" onclick="resetAll()">Reset all exams</button></div>
+</div></section>
+
+<!-- ============ 1 · INSPECTION ============ -->
+<section id="s-inspection"><div class="wrap">
+  <h2 class="sec">Gate 1 · Pre-Ride Inspection</h2>
+  <p class="lead">Done by the rider, out loud, with the examiner watching. Touch every part as you call it. Utah lets a peace officer stop and inspect a bike they think is unsafe (41-6a-1110) — so we do it first.</p>
+  <div class="banner" id="insp-banner"><div class="big" id="insp-count">0/15</div><div class="lbl">Items cleared</div><div class="meter" style="max-width:320px;margin:12px auto 0"><i id="insp-meter" style="width:0%"></i></div></div>
+  <div id="insp-list"></div>
+  <div class="btnrow noprint"><button class="btn btn-g" onclick="clearInspection()">Clear checks</button><button class="btn btn-g" onclick="window.print()">Print checklist</button><button class="btn btn-p" onclick="go('written')">Gate 2 →</button></div>
+</div></section>
+
+<!-- ============ 2 · WRITTEN ============ -->
+<section id="s-written"><div class="wrap">
+  <h2 class="sec">Gate 2 · Written Knowledge Test</h2>
+  <p class="lead">15 questions, drawn at random from the bank. Answer, get the explanation immediately, move on. 12 correct to pass. Miss it, and the whole test regenerates next time — no memorizing positions.</p>
+  <div id="w-status"></div>
+  <div id="w-body"></div>
+  <div class="btnrow noprint" id="w-controls"></div>
+  <h3 class="blk noprint">Study sheet</h3>
+  <p class="lead noprint" style="font-size:14px">Every question in the bank, with the answer and the law behind it. Read it before the test, not during.</p>
+  <div class="btnrow noprint"><button class="btn btn-g" onclick="toggleStudy()" id="studybtn">Show study sheet</button></div>
+  <div id="w-study" style="display:none"></div>
+</div></section>
+
+<!-- ============ 3 · SKILLS ============ -->
+<section id="s-skills"><div class="wrap">
+  <h2 class="sec">Gate 3 · Closed-Course Skills Test</h2>
+  <p class="lead">Chalk and cones in the driveway and the mouth of the cul-de-sac. Whole course fits in about 100 × 40 feet. Score each station 2 (clean) / 1 (wobbled, corrected) / 0 (failed). Need 13 of 16, and a zero anywhere is an automatic retest of that station on another day.</p>
+
+  <div class="banner" id="sk-banner"><div class="big" id="sk-score">—</div><div class="lbl" id="sk-lbl">Not scored yet</div><div class="meter" style="max-width:320px;margin:12px auto 0"><i id="sk-meter" style="width:0%"></i></div></div>
+
+  <h3 class="blk">Course layout</h3>
+  <svg class="diagram" viewBox="0 0 620 660" role="img" aria-label="Skills course layout diagram">
+    <defs>
+      <pattern id="hatch" width="8" height="8" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">
+        <line x1="0" y1="0" x2="0" y2="8" stroke="#21345b" stroke-width="3"/>
+      </pattern>
+    </defs>
+    <rect x="0" y="0" width="620" height="660" fill="#08142e"/>
+    <!-- driveway -->
+    <rect x="40" y="28" width="240" height="300" fill="url(#hatch)" opacity=".5"/>
+    <rect x="40" y="28" width="240" height="300" fill="none" stroke="#35558f" stroke-width="2" stroke-dasharray="7 5"/>
+    <text x="52" y="50" fill="#7f9dd4" font-family="monospace" font-size="16">DRIVEWAY</text>
+    <!-- cul de sac -->
+    <circle cx="400" cy="470" r="165" fill="none" stroke="#35558f" stroke-width="2" stroke-dasharray="7 5"/>
+    <text x="322" y="648" fill="#7f9dd4" font-family="monospace" font-size="16">CUL-DE-SAC</text>
+
+    <!-- 1 straight lane -->
+    <line x1="80" y1="80" x2="80" y2="300" stroke="#e9eefb" stroke-width="3" stroke-dasharray="12 9"/>
+    <line x1="128" y1="80" x2="128" y2="300" stroke="#e9eefb" stroke-width="3" stroke-dasharray="12 9"/>
+    <circle cx="104" cy="70" r="20" fill="#f28816"/><text x="104" y="77" text-anchor="middle" font-family="monospace" font-size="21" font-weight="700" fill="#0a1024">1</text>
+    <text x="104" y="322" text-anchor="middle" fill="#93a2c2" font-family="monospace" font-size="15">40 ft · 24 in wide</text>
+
+    <!-- 2 slow ride -->
+    <line x1="200" y1="120" x2="200" y2="240" stroke="#34d399" stroke-width="4"/>
+    <line x1="184" y1="120" x2="216" y2="120" stroke="#34d399" stroke-width="4"/>
+    <line x1="184" y1="240" x2="216" y2="240" stroke="#34d399" stroke-width="4"/>
+    <circle cx="200" cy="90" r="20" fill="#f28816"/><text x="200" y="97" text-anchor="middle" font-family="monospace" font-size="21" font-weight="700" fill="#0a1024">2</text>
+    <text x="200" y="266" text-anchor="middle" fill="#93a2c2" font-family="monospace" font-size="15">20 ft · 10 sec min</text>
+
+    <!-- 3 cone weave -->
+    <circle cx="330" cy="120" r="9" fill="#fbbf24"/><circle cx="330" cy="185" r="9" fill="#fbbf24"/>
+    <circle cx="330" cy="250" r="9" fill="#fbbf24"/><circle cx="330" cy="315" r="9" fill="#fbbf24"/>
+    <circle cx="330" cy="380" r="9" fill="#fbbf24"/>
+    <path d="M330 100c34 20 -34 45 0 65c34 20 -34 45 0 65c34 20 -34 45 0 65c34 20 -34 45 0 65" fill="none" stroke="#f28816" stroke-width="2.5" stroke-dasharray="6 5"/>
+    <circle cx="330" cy="70" r="20" fill="#f28816"/><text x="330" y="77" text-anchor="middle" font-family="monospace" font-size="21" font-weight="700" fill="#0a1024">3</text>
+    <text x="330" y="410" text-anchor="middle" fill="#93a2c2" font-family="monospace" font-size="15">5 cones · 8 ft apart</text>
+
+    <!-- 4 figure 8 -->
+    <rect x="430" y="120" width="150" height="240" fill="none" stroke="#e9eefb" stroke-width="2.5" stroke-dasharray="10 8"/>
+    <path d="M505 145c-45 0 -45 85 0 85c45 0 45 85 0 85c-45 0 -45 -85 0 -85c45 0 45 -85 0 -85" fill="none" stroke="#f28816" stroke-width="2.5"/>
+    <circle cx="505" cy="90" r="20" fill="#f28816"/><text x="505" y="97" text-anchor="middle" font-family="monospace" font-size="21" font-weight="700" fill="#0a1024">4</text>
+    <text x="505" y="386" text-anchor="middle" fill="#93a2c2" font-family="monospace" font-size="15">25 × 15 ft box</text>
+
+    <!-- 5 scan+signal -->
+    <line x1="255" y1="470" x2="400" y2="470" stroke="#e9eefb" stroke-width="3" stroke-dasharray="12 9"/>
+    <circle cx="255" cy="440" r="20" fill="#f28816"/><text x="255" y="447" text-anchor="middle" font-family="monospace" font-size="21" font-weight="700" fill="#0a1024">5</text>
+    <text x="300" y="500" fill="#93a2c2" font-family="monospace" font-size="15">scan · call · signal</text>
+
+    <!-- 6 controlled stop -->
+    <line x1="400" y1="440" x2="400" y2="500" stroke="#34d399" stroke-width="5"/>
+    <rect x="386" y="440" width="28" height="60" fill="none" stroke="#34d399" stroke-width="2" stroke-dasharray="5 4"/>
+    <circle cx="400" cy="408" r="20" fill="#f28816"/><text x="400" y="415" text-anchor="middle" font-family="monospace" font-size="21" font-weight="700" fill="#0a1024">6</text>
+
+    <!-- 7 quick stop -->
+    <line x1="440" y1="545" x2="560" y2="545" stroke="#f87171" stroke-width="3"/>
+    <line x1="440" y1="530" x2="440" y2="560" stroke="#f87171" stroke-width="4"/>
+    <circle cx="500" cy="590" r="20" fill="#f28816"/><text x="500" y="597" text-anchor="middle" font-family="monospace" font-size="21" font-weight="700" fill="#0a1024">7</text>
+    <text x="500" y="528" text-anchor="middle" fill="#93a2c2" font-family="monospace" font-size="15">whistle → stop</text>
+
+    <!-- 8 dodge -->
+    <circle cx="255" cy="560" r="22" fill="none" stroke="#f87171" stroke-width="3" stroke-dasharray="6 5"/>
+    <path d="M180 600c40 0 45 -40 75 -40c30 0 35 40 75 40" fill="none" stroke="#f28816" stroke-width="2.5" stroke-dasharray="6 5"/>
+    <circle cx="180" cy="560" r="20" fill="#f28816"/><text x="180" y="567" text-anchor="middle" font-family="monospace" font-size="21" font-weight="700" fill="#0a1024">8</text>
+    <text x="255" y="620" text-anchor="middle" fill="#93a2c2" font-family="monospace" font-size="15">last-second dodge</text>
+  </svg>
+  <div class="legend">
+    <span><i style="background:#e9eefb"></i>chalk line</span>
+    <span><i style="background:#fbbf24"></i>cone / shoe / cup</span>
+    <span><i style="background:#34d399"></i>timing gate</span>
+    <span><i style="background:#f28816"></i>rider path</span>
+    <span><i style="background:#f87171"></i>hazard</span>
+  </div>
+  <p class="note">Setup kit: sidewalk chalk, 5 cones (soda cans and shoes work), a tape measure, a stopwatch (phone), and a whistle. Takes about 10 minutes to lay out. Chalk it once and it survives a few days of sprinklers.</p>
+
+  <h3 class="blk">Stations</h3>
+  <div id="sk-list"></div>
+  <div class="btnrow noprint"><button class="btn btn-g" onclick="clearSkills()">Clear scores</button><button class="btn btn-g" onclick="window.print()">Print course + scorecard</button><button class="btn btn-p" onclick="go('road')">Gate 4 →</button></div>
+</div></section>
+
+<!-- ============ 4 · ROAD TEST ============ -->
+<section id="s-road"><div class="wrap">
+  <h2 class="sec">Gate 4 · Road Test</h2>
+  <p class="lead">The examiner follows on a bike or on foot, a bike length back and slightly left, saying nothing except directions. Start at 100 points. Every error costs. Below 80 is a fail; an auto-fail ends the test where it happens and the ride home is a walk.</p>
+
+  <div class="banner" id="rd-banner"><div class="big" id="rd-score">100</div><div class="lbl" id="rd-lbl">Points remaining · 80 to pass</div><div class="meter" style="max-width:320px;margin:12px auto 0"><i id="rd-meter" class="g" style="width:100%"></i></div></div>
+
+  <div class="warnbox"><b>Automatic failure — check any that happened</b><div id="rd-autofails" style="margin-top:8px"></div></div>
+
+  <h3 class="blk">Route legs</h3>
+  <p class="lead" style="font-size:14px">Defaults are set for the Loveland Lane block. Tap any street name to edit it for whichever route you actually ride.</p>
+  <div id="rd-list"></div>
+  <div class="btnrow noprint"><button class="btn btn-g" onclick="clearRoad()">Clear scoring</button><button class="btn btn-g" onclick="window.print()">Print scorecard</button><button class="btn btn-p" onclick="go('license')">Issue license →</button></div>
+</div></section>
+
+<!-- ============ 5 · LICENSE ============ -->
+<section id="s-license"><div class="wrap">
+  <h2 class="sec">The License</h2>
+  <p class="lead" id="lic-lead">All four gates have to be green before the card prints. No shortcuts — that's the deal that makes it worth having.</p>
+  <div id="lic-gates"></div>
+  <div id="lic-card"></div>
+  <div class="btnrow noprint" id="lic-controls"></div>
+  <div id="lic-endorse"></div>
+</div></section>
+
+<footer>
+  FL-DSV FORM 3B (REV. 2026) · FOSTER LABS DEPARTMENT OF SMALL VEHICLES<br>
+  Rules sourced from Utah Code 41-6a Part 11 · House rules are stricter than state law on purpose<br>
+  Scores are stored on this device only. Nothing is uploaded anywhere.
+</footer>
+
+<div class="stick noprint"><div class="stickin">
+  <div class="l"><b id="st-title">Overview</b><span id="st-sub">4 gates · 0 complete</span></div>
+  <button class="btn btn-p" id="st-next" onclick="nextTab()">Next →</button>
+</div></div>
+
+<script>
+/* =========================================================================
+   FOSTER LABS — DEPT OF SMALL VEHICLES
+   Junior Rider License examination engine. All state in localStorage.
+   ========================================================================= */
+
+const TABS = [
+  {id:'overview',   n:'',   label:'Overview'},
+  {id:'inspection', n:'1',  label:'Inspection'},
+  {id:'written',    n:'2',  label:'Written Test'},
+  {id:'skills',     n:'3',  label:'Skills Course'},
+  {id:'road',       n:'4',  label:'Road Test'},
+  {id:'license',    n:'',   label:'License'}
+];
+
+/* ---------------- Gate 1: inspection ---------------- */
+const INSPECTION = [
+  {t:'Helmet — two fingers', d:'Two fingers of gap between your eyebrows and the front edge. Not tipped back on the head.'},
+  {t:'Helmet — the V', d:'Straps make a V just under each ear. Sliders snug, not floating on the jaw.'},
+  {t:'Helmet — one finger', d:'Chin strap tight enough that only one finger fits under it. Open your mouth wide — the helmet should pull down.'},
+  {t:'Helmet — no cracks', d:'No cracks, no crush marks, no big drops since the last check. A cracked helmet is a dead helmet.'},
+  {t:'A — Air', d:'Squeeze both tires. Firm like an orange, not soft like a tomato. Pumped in the last week.'},
+  {t:'A — Tread and sidewalls', d:'No bald spots, no cuts, nothing stuck in the rubber, no bulges.'},
+  {t:'B — Front brake', d:'Roll forward, grab the front brake. The bike stops and the rear wheel stays down.'},
+  {t:'B — Rear brake', d:'Roll forward, grab or pedal-back the rear. It grabs before the lever hits the grip.'},
+  {t:'B — 25 feet', d:'Utah requires brakes that can stop you within 25 feet from 10 mph on dry pavement. Chalk it and try it once a month.'},
+  {t:'C — Chain and cranks', d:'Chain is on, dark and oily, not orange and dry. Cranks spin without grinding. (Scooter: deck bolts tight, no wobble in the stem.)'},
+  {t:'C — Cockpit', d:'Grab the front wheel between your knees and twist the bars. No slop. Bars are square to the wheel.'},
+  {t:'Q — Quick releases', d:'Both wheel levers closed and pointing back. Seat clamp tight. Fold-latch locked on a folding scooter.'},
+  {t:'Shoes and laces', d:'Closed-toe shoes. Laces tied and tucked. No flip-flops, no sandals, no bare feet.'},
+  {t:'Lights, if the sun is anywhere near down', d:'Utah requires a white front light and a red rear light or reflector visible 500 ft from a half hour after sunset to a half hour before sunrise.'},
+  {t:'Ears free, hands free', d:'No earbuds. Phone in the pocket, not the hand. Utah requires at least one hand on the bars at all times.'}
+];
+
+/* ---------------- Gate 2: question bank ---------------- */
+const QUESTIONS = [
+{q:'You are riding on the road. Which way do you go?',
+ o:['The same direction as the cars','Facing the cars so you can see them','Whichever side has less gravel','Down the middle of the lane'],a:0,
+ w:'A bike on the road goes the same direction as traffic, as far right as is practical. Riding at cars is how kids get hit — a driver pulling out of a driveway looks the way traffic comes from, not the other way.',c:'Utah Code 41-6a-1105(2)'},
+{q:'Under Utah law, a bicycle is legally treated as:',
+ o:['A toy','A pedestrian','A vehicle, with the same rules as a car','Nothing — bikes have no laws'],a:2,
+ w:'Your bike is a vehicle. Stop signs, red lights, right of way, signals — all of it applies to you exactly like it applies to a driver.',c:'Utah Code 41-6a-1102'},
+{q:'How do you signal a left turn?',
+ o:['Point down at the ground','Left arm straight out to the side','Wave at the driver','Yell "left"'],a:1,
+ w:'Left arm straight out, held long enough that the driver behind you actually sees it before you move.',c:'Utah Code 41-6a-804'},
+{q:'How do you signal a stop or a slowdown?',
+ o:['Left arm straight out','Left arm out and bent down at the elbow','Both arms up','Right arm straight up'],a:1,
+ w:'Left arm out, elbow bent, hand pointing down at the road. It is the one drivers recognize least, so make it big and hold it.',c:'Utah Code 41-6a-804'},
+{q:'When do you put the signal up?',
+ o:['As you turn','A couple of seconds before you turn, before you start slowing','After you turn','Only if a car is close'],a:1,
+ w:'Signal early — the law says continuously for at least the last two seconds, and the state cycling guide teaches three. Signal, then put the hand back on the bars to actually make the turn.',c:'Utah Code 41-6a-804 / 41-6a-1109'},
+{q:'Can a ten-year-old ride a bike on the sidewalk in Utah?',
+ o:['Never','Yes — and walkers always get the sidewalk first','Only with a permit','Only on the left side'],a:1,
+ w:'Sidewalks are legal in Utah unless a city posts otherwise, and a minor may always ride the sidewalk. But you yield to every person on foot, you slow down, and you never make someone step off into the grass.',c:'Utah Code 41-6a-1106'},
+{q:'You are coming up behind a lady walking a dog on the trail. What comes first?',
+ o:['Ring or say "on your left" while you are still back','Squeeze by quietly so you do not scare her','Speed up to get past fast','Ride around on the grass'],a:0,
+ w:'The law actually requires an audible signal before you pass someone on foot. Say it early and friendly — "on your left!" — then slow and pass wide. Dogs on long leashes swing across the whole path.',c:'Utah Code 41-6a-1106(1)(b)'},
+{q:'You reach a crosswalk on a busier road. The house rule is:',
+ o:['Ride across fast so you clear it','Get off and walk it across, looking left-right-left','Ride across slowly without looking','Follow whoever is in front of you'],a:1,
+ w:'Utah lets you ride across a crosswalk if you go slow and yield. Our rule is stricter: on any road with real traffic, feet down, walk it, and look left-right-left plus behind you for turning cars. A walker is easier to see than a rider, and you can stop instantly.',c:'Utah Code 41-6a-1106(4) + house rule'},
+{q:'A car in a driveway ahead has its white backup lights on. You should:',
+ o:['Ride behind it quickly','Slow way down or stop and wait until the driver sees you','Ring your bell and keep going','Ride up onto the lawn'],a:1,
+ w:'Backing drivers are looking at a screen or over one shoulder, and a kid on a bike is exactly the height they cannot see. Cover your brakes at every driveway. If the wheels are moving, you are stopped.',c:'House rule — the #1 way kids get hit'},
+{q:'You are passing a line of parked cars. How much room do you leave?',
+ o:['As close as possible so cars can pass you','About three feet — outside the door zone','Right against the mirrors','Ride between them'],a:1,
+ w:'A door opens in less than a second and there is nothing you can do about it. Ride a door-width out — three feet — the whole way past a parked line, in a straight predictable line, not swerving in and out of the gaps.',c:'House rule / 41-6a-1105(1)(d)'},
+{q:'A car is stopped at a side street waiting to pull out and you are about to cross in front of it. What do you do?',
+ o:['Assume the driver sees you','Get eye contact with the driver before you cross','Look at the car, not the driver','Speed up'],a:1,
+ w:'Until a driver looks at your face, you do not exist to them. Find the eyes. No eyes, no crossing — slow down, wait, or go behind the car.',c:'House rule'},
+{q:'Utah law lets a cyclist treat a stop sign as a yield. What is the Foster rule?',
+ o:['Same as the law — roll through if it looks clear','Full stop, one foot down, at every stop sign','Only stop if a car is there','Stop only at red lights'],a:1,
+ w:'True, since 2021 an adult cyclist in Utah may slow and yield at a stop sign. You are not doing that. Full stop, foot down, count one-two, look both ways. Habits built at ten are the ones you keep at sixteen in a car.',c:'Utah Code 41-6a-1105 (law) vs. house rule (stricter)'},
+{q:'What does Utah require on your bike if you ride after dark?',
+ o:['Nothing — reflectors are enough','A white front light and a red rear light or reflector, visible 500 feet','Only a headlight','Just wear white'],a:1,
+ w:'White in front, red in back, visible 500 feet, from a half hour after sunset until a half hour before sunrise. Your junior license is daylight-only until you earn the night endorsement anyway.',c:'Utah Code 41-6a-1114'},
+{q:'Utah bike brakes have to be able to do what?',
+ o:['Stop within 25 feet from 10 mph on dry pavement','Stop instantly','Skid the tire','Nothing specific'],a:0,
+ w:'25 feet from 10 mph, dry pavement. Chalk a line, ride at it, and measure. If it takes longer, the pads are worn or the cable is loose — that is a repair, not a "be careful."',c:'Utah Code 41-6a-1113'},
+{q:'What does Utah law say about helmets for a kid on a regular pedal bike?',
+ o:['Required by state law','Not required by state law — but required in this family, every ride','Only required at night','Only required on trails'],a:1,
+ w:'Utah has no statewide helmet law for a regular bike. It does require one for anyone under 21 on an e-bike or e-scooter on the road. Our rule beats both: helmet on, every wheel, every time. A helmet is $40; a brain is not replaceable.',c:'Utah Code 41-6a-1505 + house rule'},
+{q:'You are ten and you want to ride an electric scooter with the motor on. Utah says:',
+ o:['Go for it','A parent or guardian has to be right there supervising you','You need a driver license','It is completely illegal until 16'],a:1,
+ w:'Under 15, you may not run the motor unless a parent or guardian is directly supervising. Under 8, not at all. And no motor-assisted scooter may go over 15 mph, carry a passenger, or be modified to go faster.',c:'Utah Code 41-6a-1115'},
+{q:'Riding with earbuds in or a phone in your hand is:',
+ o:['Fine if the volume is low','Not allowed — you need your ears and at least one hand on the bars','Fine on the sidewalk','Fine on a scooter'],a:1,
+ w:'Utah requires at least one hand on the handlebars at all times, and your ears are half your warning system — you hear a car before you see it. Music stays home.',c:'Utah Code 41-6a-1112 + house rule'},
+{q:'A loose dog runs at you barking. Best move?',
+ o:['Sprint away as fast as you can','Slow down, stop, and keep the bike between you and the dog','Kick at it','Ride in a circle'],a:1,
+ w:'Sprinting turns you into prey and a chase. Stop, put the frame between you and the dog, speak calm and firm, walk away sideways. Almost every dog loses interest once you stop being a moving thing.',c:'House rule'},
+{q:'You are going straight and a car beside you has its right blinker on. You should:',
+ o:['Squeeze past on their right','Slow and stay back — never pass a turning car on the right','Speed up to beat them','Ring the bell and go'],a:1,
+ w:'That is the right hook, and it is one of the most common serious bike crashes. The car turns across you and never saw you in the blind spot. Hang back and let them go.',c:'Utah Code 41-6a-1105 / Bike Utah guidance'},
+{q:'Riding with a friend on a neighborhood street, how do you ride?',
+ o:['Two across, always','Two across only when it is clear — single file the moment a car appears','Three across is fine','One in front of the other, never side by side'],a:1,
+ w:'Utah allows two abreast as long as you do not hold up traffic. The instant you hear or see a car, you call it and go single file, right side.',c:'Utah Code 41-6a-1105(3)'},
+{q:'You are about to turn on a corner with sand and gravel on it. What do you do?',
+ o:['Brake hard in the middle of the turn','Slow down before the turn, then roll through it smoothly','Lean harder','Pedal faster through it'],a:1,
+ w:'Braking while leaned over on loose stuff is how the front wheel washes out. All the braking happens in a straight line before the corner. Then hands off the levers, look where you want to go, and roll.',c:'House rule'},
+{q:'For the hardest stop you can make without crashing:',
+ o:['Front brake only','Rear brake only','Both brakes together, with your weight pushed back behind the seat','Drag your feet'],a:2,
+ w:'Both levers together, butt slid back, arms straight. Front brake alone at speed sends you over the bars; rear alone just skids and takes longer. The weight shift is what lets you use the front brake hard and safely.',c:'House rule'},
+{q:'You have to cross a rail-trail seam, a gutter grate, or the FrontRunner tracks. How do you take it?',
+ o:['At a slant so it is smoother','Square — a right angle, at 90 degrees','As fast as possible','Standing on the pedals, at an angle'],a:1,
+ w:'Anything long and narrow eats a wheel that hits it at an angle. Aim square at it, straighten the bars, unweight the front wheel, cross, then get back on line.',c:'House rule'},
+{q:'Your chain comes off or something breaks mid-ride. You:',
+ o:['Try to fix it in the road','Get all the way off the road first, then look at it or walk home','Ride it broken','Leave the bike and walk'],a:1,
+ w:'Off the pavement, onto a driveway or the grass, and out of the traffic lane first. Then look. If you cannot fix it in a minute, you walk it — you never ride a bike you do not trust.',c:'House rule'},
+{q:'A car you do not know slows down next to you and someone starts talking to you. You:',
+ o:['Stop and answer politely','Ride away toward home or the nearest house with people, and tell an adult right away','Get closer so you can hear','Follow the car'],a:1,
+ w:'You never have to be polite to a stranger in a car. Turn the direction the car cannot easily follow, ride to a house or a person you know, and tell a grown-up immediately. Nobody will ever be upset with you for this.',c:'House rule'},
+{q:'How do you cross an intersection where you have a stop sign and the cross street does not?',
+ o:['Stop, look left-right-left plus behind, and go only when it is empty both ways','Look one way','Follow the car in front of you','Ride fast so you are exposed for less time'],a:0,
+ w:'Left, right, left again — because the lane closest to you is the one that hits you first — and a glance behind for a car turning in on top of you. Empty both directions or you do not move.',c:'Utah Code 41-6a-902 + house rule'},
+{q:'You are riding down a hill and picking up speed. What is the rule?',
+ o:['Let it run — hills are for speed','Ride only as fast as you could stop for something stepping out','Pedal harder','Stay off the brakes so they do not wear out'],a:1,
+ w:'The speed limit on any hill is however fast you can still stop for a kid, a ball, a dog, or a car backing out. Cover the brakes, sit back, and scrub speed early.',c:'House rule'},
+{q:'Nobody is home and you want to ride around the block. What has to happen first?',
+ o:['Nothing, it is our street','You tell an adult where you are going and when you will be back','You text later','You just stay close'],a:1,
+ w:'Where you are going, who is with you, and when you are back. Every time. This is the rule that most often takes a license away, and it is the easiest one to keep.',c:'House rule'}
+];
+
+/* ---------------- Gate 3: skills stations ---------------- */
+const STATIONS = [
+{t:'Straight Line Control', spec:'Two chalk lines 24 in apart, 40 ft long. Ride the whole lane without touching either line or putting a foot down.',
+ d:'This is the one that actually matters. A rider who cannot hold a line gets hit while wandering out into traffic. Do it at a normal riding pace, not a crawl.',
+ fail:'Touching a line twice, or any foot down.', scooter:'Scooter: same lane, kicking from one side only, deck straight.'},
+{t:'Slow Ride / Balance', spec:'20 ft between two chalk gates. Cover it in no less than 10 seconds, no foot down, no line touch.',
+ d:'Slow riding is what you need at a crosswalk, behind a walker, or waiting for a car to clear. Eyes up at the far gate — looking down is what makes you tip.',
+ fail:'Foot down, or crossing the gate under 10 seconds.', scooter:'Scooter: roll and balance, one kick maximum.'},
+{t:'Cone Weave', spec:'5 cones in a line, 8 ft apart. Weave the whole set, then turn around and weave back.',
+ d:'Steering and looking ahead. The rider should be looking at the next cone, not the one they are passing.',
+ fail:'Knocking a cone, skipping a cone, or a foot down.', scooter:'Scooter: same spacing, no dragging a foot for balance.'},
+{t:'Figure Eight', spec:'25 × 15 ft chalk box. Two full figure-eights inside the box without touching a line or a foot down.',
+ d:'Tight low-speed turns in both directions. Most kids have a strong side and a bad side — the bad side is the one that fails in a driveway.',
+ fail:'Line touch, foot down, or a putting-a-foot-down "dab" to save it.', scooter:'Scooter: allow a slightly bigger box, 30 × 18.'},
+{t:'Scan and Signal', spec:'Ride the 40 ft lane. On the call "SCAN," look back over the left shoulder, call out how many fingers the examiner is holding up, then signal left for three full seconds — all while staying in the lane.',
+ d:'The single hardest skill and the most important one. Looking back without swerving is what makes a left turn survivable. Expect to teach this one for weeks.',
+ fail:'Wrong finger count, swerving more than 2 ft, or dropping the signal early.', scooter:'Scooter: same, signal with the free hand.'},
+{t:'Controlled Stop', spec:'Approach at normal riding speed. Stop with the front wheel inside a 2 ft box at the chalk line.',
+ d:'Judging a stop from a distance. This is a stop sign, a crosswalk, and a driveway — every one of them is a spot where you have to land the bike in a specific place.',
+ fail:'Front wheel past the line, or a stop so late the tire skids.', scooter:'Scooter: rear fender brake, front wheel in the box.'},
+{t:'Emergency Stop', spec:'Sprint up to real speed. On the whistle, stop as fast as possible under control. Chalk-mark the distance and write it down.',
+ d:'Both brakes, weight shoved back behind the seat, arms straight. Run it three times and take the best. Log the number — it should shrink over the season.',
+ fail:'Rear wheel lifting, a long skid, going down, or freezing.', scooter:'Scooter: stops are far worse — expect double the distance and set expectations accordingly.'},
+{t:'Obstacle Dodge', spec:'Ride at a chalk circle "pothole." At the last second the examiner points left or right. Dodge that way without braking hard and without swerving more than one lane width.',
+ d:'Reacting to something appearing under the front wheel — a grate, a rock, a squirrel. The point is a controlled swerve, not a panic yank into the traffic lane.',
+ fail:'Braking instead of steering, swerving wildly, hitting the circle, or going down.', scooter:'Scooter: a smaller swerve is fine; small wheels dodge less.'}
+];
+
+/* ---------------- Gate 4: road test ---------------- */
+const ROAD = [
+{n:'Driveway launch', place:'Home driveway, Loveland Ln', d:'Full stop at the sidewalk, look both ways, walk or roll out slow, enter riding on the right side.', pts:6},
+{n:'First block — line control', place:'Loveland Ln', d:'Straight predictable line, right side, no wandering, no weaving between parked cars.', pts:6},
+{n:'Right turn with signal', place:'First corner', d:'Signal right, check behind, slow, turn into the right side of the new street.', pts:6},
+{n:'Stop sign #1', place:'Corner stop sign', d:'Full stop, foot down, left-right-left, then behind. Goes only when clear both ways.', pts:8},
+{n:'Left turn', place:'Interior intersection', d:'Scan back, signal left, take the turn from the correct position — or dismount and box-turn it. Either is a pass; hesitating in the middle of the road is not.', pts:8},
+{n:'Driveway scan sequence', place:'Any block with driveways', d:'Covers brakes and checks each driveway for backup lights and moving wheels. Slows for anything with a running engine.', pts:8},
+{n:'Passing a pedestrian', place:'Sidewalk or path', d:'Calls out early, slows, passes wide, thanks them. Nobody had to step aside.', pts:6},
+{n:'Crosswalk procedure', place:'Zone boundary crossing', d:'Dismounts, walks the bike, looks left-right-left plus behind for turning cars, crosses without stopping in the middle.', pts:8},
+{n:'Zone 4 boundary discipline', place:'Clark Ln / Glovers Ln / 1525 W', d:'Reaches the boundary and stops. Does not cross, does not ask, does not test it.', pts:8},
+{n:'Park approach', place:'Farmington Ranches Park', d:'Slows to walking speed near the playground, watches for little kids and balls, keeps off the grass.', pts:5},
+{n:'Trail etiquette', place:'Farmington Creek Trail', d:'Keeps right, announces passes, single file, slows at blind bends and bridges.', pts:5},
+{n:'Hill descent', place:'Any grade on the route', d:'Controls speed the whole way down, covers brakes, no coasting out of control at the bottom.', pts:6},
+{n:'Rough surface', place:'Gravel, sand, or a seam', d:'Sees it early, slows before it, crosses square, stays relaxed on the bars.', pts:5},
+{n:'Real traffic yield', place:'Wherever a car actually appears', d:'Sees the car first, gets eye contact or yields, never assumes the car will stop.', pts:8},
+{n:'Stop sign #2 / return leg', place:'Route home', d:'Same full-stop standard on the way back, when everyone is tired and sloppy.', pts:5},
+{n:'Park and secure', place:'Home', d:'Dismounts at the driveway, walks the bike in, puts it away, helmet hung up, not dropped on the lawn.', pts:2}
+];
+
+const AUTOFAILS = [
+'Rode any distance without a helmet',
+'Rolled a stop sign without stopping',
+'Rode against traffic on a road',
+'Entered a Zone 4 street without an adult',
+'Crashed or lost control',
+'Failed to yield to a car or a person on foot',
+'Earbuds in or phone in hand while rolling',
+'Hit the examiner, a parked car, or a fixed object',
+'Did not stop when the examiner called STOP',
+'Argued with the examiner mid-test'
+];
+
+/* ========================= STATE ========================= */
+const KEY='fl_dsv_junior_v1';
+const BLANK={rider:'',examiner:'',vehicle:'bike',date:'',
+  insp:[],written:{quiz:null,ans:{},best:0,attempts:0},skills:{},
+  road:{sc:{},places:{},af:[]},photo:'',endorse:{},issued:null};
+let S=load();
+function load(){try{const r=localStorage.getItem(KEY);if(!r)return JSON.parse(JSON.stringify(BLANK));
+  return Object.assign(JSON.parse(JSON.stringify(BLANK)),JSON.parse(r));}catch(e){return JSON.parse(JSON.stringify(BLANK));}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ========================= GATES ========================= */
+function gInsp(){return S.insp.length===INSPECTION.length;}
+function gWritten(){return S.written.best>=12;}
+function skTotal(){return Object.values(S.skills).reduce((a,b)=>a+b,0);}
+function skDone(){return Object.keys(S.skills).length===STATIONS.length;}
+function skZero(){return Object.values(S.skills).some(v=>v===0);}
+function gSkills(){return skDone()&&skTotal()>=13&&!skZero();}
+function rdDeduct(){let d=0;ROAD.forEach((l,i)=>{const v=S.road.sc[i];
+  if(v==='shaky')d+=Math.ceil(l.pts/2); else if(v==='failed')d+=l.pts;});return d;}
+function rdScore(){return Math.max(0,100-rdDeduct());}
+function rdDone(){return Object.keys(S.road.sc).length===ROAD.length;}
+function gRoad(){return rdDone()&&rdScore()>=80&&S.road.af.length===0;}
+function allGates(){return gInsp()&&gWritten()&&gSkills()&&gRoad();}
+function gateCount(){return [gInsp(),gWritten(),gSkills(),gRoad()].filter(Boolean).length;}
+
+/* ========================= NAV ========================= */
+let cur='overview';
+function buildTabs(){$('tabrow').innerHTML=TABS.map(t=>
+  `<button class="tab${t.id===cur?' active':''}" onclick="go('${t.id}')">${t.n?`<span class="n">${t.n}</span>`:''}${t.label}</button>`).join('');}
+function go(id){cur=id;TABS.forEach(t=>$('s-'+t.id).classList.toggle('active',t.id===id));
+  buildTabs();window.scrollTo({top:0,behavior:'instant'});renderStick();}
+function nextTab(){const i=TABS.findIndex(t=>t.id===cur);go(TABS[Math.min(i+1,TABS.length-1)].id);}
+function renderStick(){const t=TABS.find(x=>x.id===cur);$('st-title').textContent=t.label;
+  const sub={overview:`4 gates · ${gateCount()} complete`,
+    inspection:`${S.insp.length}/15 items cleared`,
+    written:S.written.attempts?`Best ${S.written.best}/15 · ${S.written.attempts} attempt${S.written.attempts>1?'s':''}`:'Not attempted',
+    skills:skDone()?`${skTotal()}/16 points`:`${Object.keys(S.skills).length}/8 stations scored`,
+    road:rdDone()?`${rdScore()}/100 points`:`${Object.keys(S.road.sc).length}/16 legs scored`,
+    license:allGates()?'All gates cleared':`${4-gateCount()} gate${4-gateCount()===1?'':'s'} remaining`}[cur];
+  $('st-sub').textContent=sub;
+  $('st-next').textContent=cur==='license'?'Top ↑':'Next →';
+  $('st-next').onclick=cur==='license'?()=>go('overview'):nextTab;}
+
+function renderStrip(){
+  const g=[['Inspection',gInsp(),S.insp.length===0],['Written',gWritten(),S.written.attempts===0],
+    ['Skills',gSkills(),Object.keys(S.skills).length===0],['Road',gRoad(),Object.keys(S.road.sc).length===0]];
+  $('strip').innerHTML=g.map(([n,ok,untouched])=>
+    `<div class="gate ${ok?'done':(untouched?'':'fail')}"><i class="dot"></i>${n}${ok?' ✓':''}</div>`).join('')
+    + `<div class="gate ${allGates()?'done':''}"><i class="dot"></i>License ${allGates()?'ISSUABLE':'PENDING'}</div>`;}
+
+/* ========================= APPLICANT ========================= */
+function bindApplicant(){
+  const map={'f-rider':'rider','f-examiner':'examiner','f-vehicle':'vehicle','f-date':'date'};
+  Object.entries(map).forEach(([id,k])=>{const el=$(id);
+    if(S[k])el.value=S[k];
+    el.addEventListener('input',()=>{S[k]=el.value;save();renderVehNote();renderLicense();});});
+  if(!S.date){const d=new Date();$('f-date').value=d.toISOString().slice(0,10);S.date=$('f-date').value;save();}
+  renderVehNote();}
+function renderVehNote(){
+  const v=S.vehicle,n=$('vehnote');
+  const notes={
+    bike:'',
+    scooter:'<b>Kick scooter</b> Utah treats a scooter with the motor off as a non-motorized vehicle — sidewalk rules and pedestrian courtesy apply. Small wheels stop worse and eat cracks; expect longer stopping distances on every station.',
+    escooter:'<b>Motor-assisted scooter · age 10</b> Utah Code 41-6a-1115: under 15, the motor may not be used unless a parent or guardian is <i>directly supervising</i>. Under 8, not at all. 15 mph cap, no passengers, no modifications, and helmets are required under 21 on roads. This vehicle can never be ridden alone on this license — that restriction prints on the card.',
+    ebike:'<b>Electric-assisted bicycle · age 10</b> Utah Code 41-6a-1115.5: under 14, the motor may not be engaged on public property, roads, paths, or sidewalks unless a parent or guardian is directly supervising. Class 3 is 16+. Helmet required under 21 on roads. Same deal — adult present, always.'};
+  n.innerHTML=notes[v]?`<div class="${v==='scooter'?'okbox':'warnbox'}" style="margin-bottom:0">${notes[v]}</div>`:'';}
+
+/* ========================= GATE 1 ========================= */
+function renderInsp(){
+  $('insp-list').innerHTML=INSPECTION.map((it,i)=>{const on=S.insp.includes(i);
+    return `<div class="row${on?' on':''}" onclick="toggleInsp(${i})"><div class="box">✓</div>
+      <div class="tx"><b>${esc(it.t)}</b><span>${esc(it.d)}</span></div></div>`;}).join('');
+  const n=S.insp.length,pct=Math.round(n/INSPECTION.length*100);
+  $('insp-count').textContent=n+'/'+INSPECTION.length;
+  $('insp-meter').style.width=pct+'%';$('insp-meter').className=n===INSPECTION.length?'g':'';
+  $('insp-banner').className='banner'+(n===INSPECTION.length?' pass':'');}
+function toggleInsp(i){const k=S.insp.indexOf(i);if(k>-1)S.insp.splice(k,1);else S.insp.push(i);
+  save();renderInsp();renderStrip();renderStick();renderLicense();}
+function clearInspection(){S.insp=[];save();renderInsp();renderStrip();renderStick();renderLicense();}
+
+/* ========================= GATE 2 ========================= */
+function newQuiz(){const idx=QUESTIONS.map((_,i)=>i);
+  for(let i=idx.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[idx[i],idx[j]]=[idx[j],idx[i]];}
+  S.written.quiz=idx.slice(0,15);S.written.ans={};save();renderWritten();}
+function answer(qi,oi){if(S.written.ans[qi]!==undefined)return;S.written.ans[qi]=oi;
+  const done=Object.keys(S.written.ans).length===S.written.quiz.length;
+  if(done){const sc=S.written.quiz.filter(q=>S.written.ans[q]===QUESTIONS[q].a).length;
+    S.written.attempts++;if(sc>S.written.best)S.written.best=sc;}
+  save();renderWritten();renderStrip();renderStick();renderLicense();}
+function renderWritten(){
+  const w=S.written,body=$('w-body'),ctl=$('w-controls'),st=$('w-status');
+  if(!w.quiz){st.innerHTML=w.attempts?`<div class="banner ${w.best>=12?'pass':'fail'}"><div class="big">${w.best}/15</div><div class="lbl">Best score · ${w.attempts} attempt${w.attempts>1?'s':''} · ${w.best>=12?'PASSED':'12 needed to pass'}</div></div>`:'';
+    body.innerHTML='';ctl.innerHTML=`<button class="btn btn-p" onclick="newQuiz()">${w.attempts?'Take it again':'Start the test'}</button>`;return;}
+  const answered=Object.keys(w.ans).length,total=w.quiz.length;
+  const correct=w.quiz.filter(q=>w.ans[q]===QUESTIONS[q].a).length;
+  const done=answered===total;
+  st.innerHTML=done
+    ?`<div class="banner ${correct>=12?'pass':'fail'}"><div class="big">${correct}/15</div><div class="lbl">${correct>=12?'PASS — knowledge test cleared':'FAIL — 12 correct required'}</div></div>`
+    :`<div class="card tight"><div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--muted)"><span>Question ${answered+1} of ${total}</span><span>${correct} correct</span></div><div class="meter"><i style="width:${answered/total*100}%"></i></div></div>`;
+  body.innerHTML=w.quiz.map((qi,n)=>{const q=QUESTIONS[qi],pick=w.ans[qi];
+    if(pick===undefined&&n>answered)return '';
+    return `<div class="q"><div class="qn">Question ${n+1}</div><p class="qt">${esc(q.q)}</p>
+      ${q.o.map((o,oi)=>{let c='opt';
+        if(pick!==undefined){c+=' locked';if(oi===q.a)c+=' right';else if(oi===pick)c+=' wrong';}
+        return `<div class="${c}" onclick="answer(${qi},${oi})"><span class="k">${'ABCD'[oi]}</span><span>${esc(o)}</span></div>`;}).join('')}
+      ${pick!==undefined?`<div class="why"><b>${pick===q.a?'Correct':'The answer is '+'ABCD'[q.a]}</b>${esc(q.w)}<span class="cite">${esc(q.c)}</span></div>`:''}
+    </div>`;}).join('');
+  ctl.innerHTML=done?`<button class="btn btn-p" onclick="newQuiz()">Retake with new questions</button><button class="btn btn-g" onclick="go('skills')">Gate 3 →</button>`
+    :`<button class="btn btn-g" onclick="if(confirm('Abandon this attempt?')){S.written.quiz=null;save();renderWritten();}">Abandon attempt</button>`;}
+function toggleStudy(){const el=$('w-study'),b=$('studybtn');
+  if(el.style.display==='none'){el.style.display='block';b.textContent='Hide study sheet';
+    el.innerHTML=QUESTIONS.map((q,i)=>`<div class="card tight"><div class="qn">${String(i+1).padStart(2,'0')}</div>
+      <b style="font-size:14.5px">${esc(q.q)}</b>
+      <p style="color:var(--good);margin:7px 0 4px;font-size:14px">→ ${esc(q.o[q.a])}</p>
+      <p style="font-size:13px">${esc(q.w)}</p><span class="cite">${esc(q.c)}</span></div>`).join('');}
+  else{el.style.display='none';b.textContent='Show study sheet';}}
+
+/* ========================= GATE 3 ========================= */
+function renderSkills(){
+  const isScoot=S.vehicle==='scooter'||S.vehicle==='escooter';
+  $('sk-list').innerHTML=STATIONS.map((s,i)=>{const v=S.skills[i];
+    const cls=v===undefined?'':(v===0?' fail':(v===2?' pass':''));
+    return `<div class="station${cls}">
+      <div class="st-head"><span class="st-num">STA ${String(i+1).padStart(2,'0')}</span><b>${esc(s.t)}</b></div>
+      <div class="st-body">${esc(s.d)}</div>
+      <div class="st-spec">SETUP · ${esc(s.spec)}<br>FAIL · ${esc(s.fail)}${isScoot?'<br>'+esc(s.scooter):''}</div>
+      <div class="score">
+        <button class="sc${v===2?' on':''}" data-v="2" onclick="setSk(${i},2)">2 · Clean</button>
+        <button class="sc${v===1?' on':''}" data-v="1" onclick="setSk(${i},1)">1 · Wobbled</button>
+        <button class="sc${v===0?' on':''}" data-v="0" onclick="setSk(${i},0)">0 · Failed</button>
+      </div></div>`;}).join('');
+  const t=skTotal(),done=skDone();
+  $('sk-score').textContent=done?t+'/16':(Object.keys(S.skills).length?t+'/16':'—');
+  $('sk-lbl').textContent=!done?`${Object.keys(S.skills).length} of 8 stations scored`
+    :(gSkills()?'PASS — skills course cleared':(skZero()?'FAIL — a zero requires a retest of that station':'FAIL — 13 of 16 required'));
+  $('sk-meter').style.width=(t/16*100)+'%';
+  $('sk-meter').className=done?(gSkills()?'g':'r'):'';
+  $('sk-banner').className='banner'+(done?(gSkills()?' pass':' fail'):'');}
+function setSk(i,v){S.skills[i]=S.skills[i]===v?undefined:v;
+  if(S.skills[i]===undefined)delete S.skills[i];
+  save();renderSkills();renderStrip();renderStick();renderLicense();}
+function clearSkills(){S.skills={};save();renderSkills();renderStrip();renderStick();renderLicense();}
+
+/* ========================= GATE 4 ========================= */
+function renderRoad(){
+  $('rd-autofails').innerHTML=AUTOFAILS.map((a,i)=>{const on=S.road.af.includes(i);
+    return `<div class="row${on?' on':''}" style="${on?'border-color:rgba(248,113,113,.6);background:var(--bad-soft)':''}" onclick="toggleAF(${i})">
+      <div class="box" style="${on?'background:var(--bad);border-color:var(--bad);color:#2a0808':''}">✓</div>
+      <div class="tx"><b style="font-size:13.5px">${esc(a)}</b></div></div>`;}).join('');
+  $('rd-list').innerHTML=ROAD.map((l,i)=>{const v=S.road.sc[i];
+    const cls=v==='failed'?' fail':(v==='clean'?' pass':'');
+    const place=S.road.places[i]!==undefined?S.road.places[i]:l.place;
+    return `<div class="station${cls}">
+      <div class="st-head"><span class="st-num">LEG ${String(i+1).padStart(2,'0')}</span><b>${esc(l.n)}</b>
+        <span class="badge n" style="margin-left:auto">${l.pts} pts</span></div>
+      <input class="inp" style="font-family:var(--mono);font-size:12px;padding:6px 10px;margin:7px 0 4px;color:var(--accent)"
+        value="${esc(place)}" oninput="setPlace(${i},this.value)">
+      <div class="st-body">${esc(l.d)}</div>
+      <div class="score">
+        <button class="sc${v==='clean'?' on':''}" data-v="2" onclick="setRd(${i},'clean')">Clean · −0</button>
+        <button class="sc${v==='shaky'?' on':''}" data-v="1" onclick="setRd(${i},'shaky')">Shaky · −${Math.ceil(l.pts/2)}</button>
+        <button class="sc${v==='failed'?' on':''}" data-v="0" onclick="setRd(${i},'failed')">Failed · −${l.pts}</button>
+      </div></div>`;}).join('');
+  const sc=rdScore(),af=S.road.af.length>0;
+  $('rd-score').textContent=af?'FAIL':sc;
+  $('rd-lbl').textContent=af?`Automatic failure — ${S.road.af.length} disqualifying error${S.road.af.length>1?'s':''}`
+    :(!rdDone()?`${Object.keys(S.road.sc).length} of 16 legs scored · 80 to pass`
+    :(sc>=90?'PASS — Zone 3 privileges earned':(sc>=80?'PASS — Zone 2 privileges earned':'FAIL — 80 points required')));
+  $('rd-meter').style.width=(af?100:sc)+'%';
+  $('rd-meter').className=af?'r':(sc>=80?'g':'r');
+  $('rd-banner').className='banner'+(af?' fail':(rdDone()?(sc>=80?' pass':' fail'):''));}
+function setRd(i,v){if(S.road.sc[i]===v)delete S.road.sc[i];else S.road.sc[i]=v;
+  save();renderRoad();renderStrip();renderStick();renderLicense();}
+function setPlace(i,v){S.road.places[i]=v;save();}
+function toggleAF(i){const k=S.road.af.indexOf(i);if(k>-1)S.road.af.splice(k,1);else S.road.af.push(i);
+  save();renderRoad();renderStrip();renderStick();renderLicense();}
+function clearRoad(){S.road={sc:{},places:S.road.places||{},af:[]};save();renderRoad();renderStrip();renderStick();renderLicense();}
+
+/* ========================= LICENSE ========================= */
+const ENDORSE=[
+ {k:'T',n:'Trail Endorsement',r:'Ten supervised miles on the Farmington Creek Trail with zero pedestrian complaints, plus a clean pass on Station 05 (scan and signal) on the trail itself.'},
+ {k:'N',n:'Night Endorsement',r:'A white front light and a red rear light mounted and working, a reflective vest or jacket owned and worn, and three supervised dusk rides with no speed errors.'},
+ {k:'M',n:'Motor Endorsement',r:'Motor-assisted scooter or e-bike. Utah requires a parent or guardian to be directly supervising until age 15 — this endorsement never means riding alone. Requires a retest of Stations 01, 02, 06 and 07 on the motorized vehicle.'}
+];
+function toggleEnd(k){S.endorse[k]=!S.endorse[k];save();renderLicense();}
+
+function restrictions(){
+  const r=['Helmet required at all times, every ride, no exceptions.'];
+  r.push(S.endorse.N?'Night riding permitted with lights mounted and working.':'Daylight only — home before the streetlights come on.');
+  r.push(rdScore()>=90?'Zones 1–3. Neighborhood loop and park path permitted with a buddy.':'Zones 1–2 only. No crossing an intersection alone.');
+  r.push('Zone 4 streets (Clark, Glovers, 1525 W, Frontage) require an adult riding with you.');
+  if(!S.endorse.T)r.push('No trail riding without an adult until the Trail endorsement is earned.');
+  if(S.vehicle==='escooter'||S.vehicle==='ebike'||S.endorse.M)
+    r.push('Motorized: parent or guardian must be directly supervising (Utah 41-6a-1115 / 1115.5). 15 mph maximum.');
+  r.push('An adult knows the route and the return time before the wheels move.');
+  return r;}
+
+function licNum(){
+  const i=(S.rider||'JR').trim().split(/\s+/).map(x=>x[0]||'').join('').toUpperCase().slice(0,2)||'JR';
+  const y=(S.date||'2026-01-01').slice(2,4);
+  const n=String((skTotal()*100)+rdScore()).padStart(4,'0');
+  return `J-${y}-${i}-${n}`;}
+
+function renderLicense(){
+  const gates=[['Gate 1 · Pre-Ride Inspection',gInsp(),`${S.insp.length}/15 items`],
+    ['Gate 2 · Written Test',gWritten(),S.written.attempts?`best ${S.written.best}/15`:'not attempted'],
+    ['Gate 3 · Skills Course',gSkills(),skDone()?`${skTotal()}/16 points`:`${Object.keys(S.skills).length}/8 scored`],
+    ['Gate 4 · Road Test',gRoad(),rdDone()?(S.road.af.length?'auto-fail':`${rdScore()}/100`):`${Object.keys(S.road.sc).length}/16 scored`]];
+  $('lic-gates').innerHTML=gates.map(([n,ok,d])=>
+    `<div class="row${ok?' on':''}" style="cursor:default"><div class="box">✓</div>
+      <div class="tx"><b>${n}</b><span>${d}</span></div>
+      <span class="badge ${ok?'g':'n'}" style="align-self:center">${ok?'CLEARED':'PENDING'}</span></div>`).join('');
+
+  const ok=allGates();
+  $('lic-lead').textContent=ok
+    ?'All four gates cleared. Fill in the photo, hit issue, and print it — one for the wallet, one for the fridge.'
+    :'All four gates have to be green before the card prints. No shortcuts — that is the deal that makes it worth having.';
+
+  if(!ok){$('lic-card').innerHTML='';$('lic-controls').innerHTML='';renderEndorse();return;}
+
+  const name=(S.rider||'JUNIOR RIDER').toUpperCase();
+  const exp=(()=>{const d=new Date(S.date||Date.now());d.setFullYear(d.getFullYear()+1);return d.toISOString().slice(0,10);})();
+  const veh={bike:'BICYCLE',scooter:'KICK SCOOTER',escooter:'MOTOR-ASSIST SCOOTER',ebike:'E-ASSIST BICYCLE'}[S.vehicle];
+  const ends=ENDORSE.filter(e=>S.endorse[e.k]).map(e=>e.k).join(' ')||'NONE';
+
+  $('lic-card').innerHTML=`<div class="lic">
+    <div class="licbar"><b>FOSTER LABS · DEPT OF SMALL VEHICLES</b><span>UTAH · DAVIS CO</span></div>
+    <div class="licbody">
+      <div class="photo" id="photobox">${S.photo?`<img src="${S.photo}" alt="">`:'TAP TO<br>ADD PHOTO'}</div>
+      <div class="licf">
+        <div class="nm">${esc(name)}</div>
+        <div class="rowx">
+          <div class="f"><i>Class</i><b>J</b></div>
+          <div class="f"><i>Endorsements</i><b>${ends}</b></div>
+          <div class="f"><i>Vehicle</i><b>${veh}</b></div>
+        </div>
+        <div class="rowx">
+          <div class="f"><i>License No.</i><b>${licNum()}</b></div>
+        </div>
+        <div class="rowx">
+          <div class="f"><i>Issued</i><b>${esc(S.date||'—')}</b></div>
+          <div class="f"><i>Expires</i><b>${exp}</b></div>
+        </div>
+        <div class="rowx">
+          <div class="f"><i>Written</i><b>${S.written.best}/15</b></div>
+          <div class="f"><i>Skills</i><b>${skTotal()}/16</b></div>
+          <div class="f"><i>Road</i><b>${rdScore()}/100</b></div>
+        </div>
+      </div>
+    </div>
+    <div class="licrestr"><div class="rt">Restrictions</div><ul>${restrictions().map(r=>`<li>${esc(r)}</li>`).join('')}</ul></div>
+    <div class="licsig">
+      <div class="sg"><i>Rider signature</i><b>&nbsp;</b></div>
+      <div class="sg"><i>Examining officer</i><b>${esc(S.examiner||'')}</b></div>
+    </div>
+    <svg class="stamp" viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" fill="none" stroke="#34d399" stroke-width="3"/>
+      <circle cx="50" cy="50" r="36" fill="none" stroke="#34d399" stroke-width="1"/>
+      <text x="50" y="46" text-anchor="middle" font-family="monospace" font-size="15" font-weight="700" fill="#34d399">PASSED</text>
+      <text x="50" y="62" text-anchor="middle" font-family="monospace" font-size="9" fill="#34d399">FL-DSV 2026</text></svg>
+  </div>
+  <input type="file" id="photoin" accept="image/*" style="display:none">`;
+
+  $('photobox').onclick=()=>$('photoin').click();
+  $('photoin').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();
+    rd.onload=ev=>{const img=new Image();img.onload=()=>{
+      const c=document.createElement('canvas'),W=200,H=248;c.width=W;c.height=H;
+      const s=Math.max(W/img.width,H/img.height),w=img.width*s,h=img.height*s;
+      c.getContext('2d').drawImage(img,(W-w)/2,(H-h)/2,w,h);
+      S.photo=c.toDataURL('image/jpeg',.75);save();renderLicense();};img.src=ev.target.result;};
+    rd.readAsDataURL(f);};
+
+  $('lic-controls').innerHTML=`<button class="btn btn-p" onclick="window.print()">Print the license</button>
+    ${S.photo?'<button class="btn btn-g" onclick="S.photo=\'\';save();renderLicense()">Remove photo</button>':''}`;
+  renderEndorse();}
+
+function renderEndorse(){
+  $('lic-endorse').innerHTML=`<h3 class="blk">Endorsements</h3>
+    <p class="lead" style="font-size:14px">Earned after the license, one at a time. Tap one when the requirement is actually met — it reprints on the card.</p>`
+    +ENDORSE.map(e=>{const on=!!S.endorse[e.k];
+      return `<div class="row${on?' on':''}" onclick="toggleEnd('${e.k}')"><div class="box">✓</div>
+        <div class="tx"><b>${e.k} · ${esc(e.n)}</b><span>${esc(e.r)}</span></div></div>`;}).join('');}
+
+/* ========================= RESET / INIT ========================= */
+function resetAll(){if(!confirm('Wipe every score and start the whole program over?'))return;
+  S=JSON.parse(JSON.stringify(BLANK));save();
+  ['f-rider','f-examiner','f-date'].forEach(i=>$(i).value='');$('f-vehicle').value='bike';
+  bindApplicant();renderAll();go('overview');}
+function renderAll(){renderInsp();renderWritten();renderSkills();renderRoad();renderLicense();renderStrip();renderStick();}
+bindApplicant();buildTabs();renderAll();
+</script>
+<script src="/menu.js" defer></script>
+</body>
+</html>
