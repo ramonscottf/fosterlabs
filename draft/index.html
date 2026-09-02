@@ -64,6 +64,24 @@ details.rules p{font-size:13px;line-height:1.6;color:var(--dim);margin-top:10px}
 #hideg{font-family:'IBM Plex Mono',monospace;font-size:11px;padding:0 14px;border-radius:12px;border:1px solid var(--line);background:var(--panel);color:var(--dim);cursor:pointer}
 #hideg.on{border-color:var(--turf);color:var(--turf)}
 
+/* settings + recommender */
+.setup{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:12px}
+.setrow{display:flex;align-items:center;gap:12px;margin:8px 0}
+.setrow label{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--dim);width:86px;flex-shrink:0;text-transform:uppercase;letter-spacing:.06em}
+.setrow .val{font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:var(--turf);width:30px;text-align:right;flex-shrink:0}
+input[type=range]{flex:1;-webkit-appearance:none;appearance:none;height:4px;background:var(--line);border-radius:2px;outline:none}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--turf);cursor:pointer;border:3px solid var(--bg)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--turf);cursor:pointer;border:3px solid var(--bg)}
+.rec{background:linear-gradient(135deg,rgba(61,220,132,.10),var(--panel));border:1px solid var(--turf);border-radius:14px;padding:15px 16px;margin-bottom:12px}
+.rec .rec-status{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--turf);margin-bottom:8px}
+.rec .rec-status.wait{color:var(--dim)}
+.rec .top{display:flex;align-items:center;gap:12px}
+.rec .top .nm{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;text-transform:uppercase;line-height:1}
+.rec .top .why{font-size:12px;color:var(--dim);margin-top:4px;line-height:1.45}
+.rec .top .why b{color:var(--ink)}
+.rec .alts{margin-top:10px;padding-top:10px;border-top:1px solid var(--line);font-size:12.5px;color:var(--dim);line-height:1.7}
+.rec .alts b{color:var(--ink);font-weight:600}
+.rec .danger{margin-top:8px;font-size:11.5px;color:var(--t1);line-height:1.5}
 /* board rows */
 .row{display:flex;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:9px 11px;margin-bottom:6px;position:relative;overflow:hidden}
 .row .stripe{position:absolute;left:0;top:0;bottom:0;width:4px}
@@ -133,6 +151,13 @@ footer a{color:var(--dim)}
 <h2 class="sec">The Board</h2>
 <p class="secsub">Consensus PPR big board · tap ✕ = drafted by someone · tap ★ = drafted by YOU</p>
 
+<div class="setup">
+  <div class="setrow"><label>Teams</label><input type="range" id="s-teams" min="8" max="16" step="1"><span class="val" id="v-teams">16</span></div>
+  <div class="setrow"><label>My pick #</label><input type="range" id="s-slot" min="1" max="16" step="1"><span class="val" id="v-slot">1</span></div>
+</div>
+
+<div class="rec" id="rec"></div>
+
 <div class="searchrow">
   <input id="q" type="search" placeholder="Search a name…" autocomplete="off">
   <button id="hideg" title="Hide drafted players">Hide ✕</button>
@@ -201,10 +226,96 @@ const P=[
 [137,"Mark Andrews","TE","BAL",13,"D"],[139,"Jake Ferguson","TE","DAL",14,"D"],[143,"Kyler Murray","QB","MIN",6,"D"]
 ];
 const POSC={QB:'var(--qb)',RB:'var(--rb)',WR:'var(--wr)',TE:'var(--te)',DEF:'var(--def)'};
-const KEY='fl-draft-2026';
+const KEY='fl-draft-2026', CFGKEY='fl-draft-cfg';
 let state=JSON.parse(localStorage.getItem(KEY)||'{}'); // rank -> 'gone' | 'mine'
+let cfg=Object.assign({teams:16,slot:1},JSON.parse(localStorage.getItem(CFGKEY)||'{}'));
 let filter='ALL', query='', hideGone=false;
+const ROUNDS=15;
 const save=()=>localStorage.setItem(KEY,JSON.stringify(state));
+const saveCfg=()=>localStorage.setItem(CFGKEY,JSON.stringify(cfg));
+
+/* snake math: my overall pick number in round r */
+const pickInRound=r=>(r-1)*cfg.teams + (r%2===1?cfg.slot:cfg.teams-cfg.slot+1);
+const myPicks=()=>Array.from({length:ROUNDS},(_,i)=>pickInRound(i+1));
+
+function counts(){
+  const c={QB:0,RB:0,WR:0,TE:0,DEF:0};
+  P.forEach(p=>{if(state[p[0]]==='mine')c[p[2]]++});
+  return c;
+}
+
+function recommend(){
+  const drafted=Object.keys(state).length;
+  const cur=drafted+1;                        // overall pick on the clock now
+  const mp=myPicks();
+  const next=mp.find(p=>p>=cur) ?? mp[mp.length-1];
+  const round=Math.ceil(next/cfg.teams);
+  const onClock=(next===cur);
+  const away=next-cur;
+  const c=counts();
+  const avail=P.filter(p=>!state[p[0]]);
+
+  // eligibility + need weighting (scarcity-aware: big leagues drain this board early)
+  const qbLeft=avail.filter(p=>p[2]==='QB').length;
+  const teLeft=avail.filter(p=>p[2]==='TE').length;
+  const drainDEF = round>=ROUNDS-2 || avail.length<=cfg.teams*1.5;
+  const scored=[];
+  for(const pl of avail){
+    const [rk,nm,pos]=pl;
+    let eff=rk, why=[];
+    if(pos==='QB'){
+      if(c.QB>=1)continue;
+      const value=next-rk>=5;
+      if(round<4&&!value)continue;
+      if(round>=6){eff-=6;}
+      if(round>=10||qbLeft<=3){eff-=25;why.push('you NEED a QB — almost none left');}
+      if(value&&round<6)why.push('elite QB value falling to you');
+    }else if(pos==='TE'){
+      if(c.TE>=1)continue;
+      const value=next-rk>=5;
+      if(round<4&&!value)continue;
+      if(round>=7){eff-=6;}
+      if(round>=10||teLeft<=3){eff-=25;why.push('you NEED a TE — almost none left');}
+      if(value&&round<6)why.push('elite TE value falling to you');
+    }else if(pos==='DEF'){
+      if(c.DEF>=1)continue;
+      if(!drainDEF)continue;
+      eff-=200;why.push('defense time — last rounds');
+    }else{ // RB/WR
+      if(drainDEF&&c.DEF===0)eff+=50; // push RB/WR down when DEF is due
+      if(pos==='RB'&&c.RB<2&&round>=4)why.push('fills your RB slot');
+      if(pos==='WR'&&c.WR<2&&round>=4)why.push('fills your WR slot');
+    }
+    scored.push({rk,nm,pos,tier:pl[5],team:pl[3],eff,why});
+  }
+  scored.sort((a,b)=>a.eff-b.eff);
+  const top=scored.slice(0,3);
+  top.forEach(t=>{
+    const left=P.filter(p=>p[5]===t.tier&&!state[p[0]]).length;
+    if(left<=2&&t.tier!=='D')t.why.unshift(`last ${left===1?'one':'two'} in the ${TIERS[t.tier][0]} tier`);
+    if(next-t.rk>=8)t.why.push(`ranked #${t.rk} — steal at pick ${next}`);
+    if(!t.why.length)t.why.push('best player available');
+  });
+
+  // who probably won't survive until my next turn
+  const nextNext=mp.find(p=>p>next)||next;
+  const gap=nextNext-next-1;
+  const dying=avail.filter(p=>p[0]!==top[0]?.rk&&p[0]<=next+Math.min(gap,10)).slice(0,3).map(p=>p[1]);
+
+  const el=document.getElementById('rec');
+  if(!top.length){el.innerHTML='<div class="rec-status wait">Board empty — nice draft.</div>';return;}
+  const statusTxt=onClock
+    ?`🟢 You're on the clock — pick ${next} · Round ${round}`
+    :`${away} pick${away===1?'':'s'} until your turn (overall #${next}, Round ${round})`;
+  el.innerHTML=`
+    <div class="rec-status ${onClock?'':'wait'}">${statusTxt}</div>
+    <div class="top"><div>
+      <div class="nm" style="color:${POSC[top[0].pos]}">${top[0].nm}</div>
+      <div class="why"><b>${top[0].pos} · ${top[0].team}</b> — ${top[0].why[0]}</div>
+    </div></div>
+    ${top.length>1?`<div class="alts">Also good: ${top.slice(1).map(t=>`<b>${t.nm}</b> <span style="color:${POSC[t.pos]}">${t.pos}</span> (${t.why[0]})`).join(' · ')}</div>`:''}
+    ${!onClock&&dying.length?`<div class="danger">⚠ Probably gone before your turn: ${dying.join(', ')}</div>`:''}`;
+}
 
 function render(){
   const board=document.getElementById('board');
@@ -230,7 +341,18 @@ function render(){
   }
   board.innerHTML=html||'<p style="color:var(--faint);font-size:13px;padding:20px 0">Nothing matches.</p>';
   renderTeam();
+  recommend();
 }
+
+function syncSliders(){
+  const t=document.getElementById('s-teams'),s=document.getElementById('s-slot');
+  t.value=cfg.teams; s.max=cfg.teams; if(cfg.slot>cfg.teams)cfg.slot=cfg.teams; s.value=cfg.slot;
+  document.getElementById('v-teams').textContent=cfg.teams;
+  document.getElementById('v-slot').textContent=cfg.slot;
+}
+document.getElementById('s-teams').addEventListener('input',e=>{cfg.teams=+e.target.value;saveCfg();syncSliders();recommend();});
+document.getElementById('s-slot').addEventListener('input',e=>{cfg.slot=+e.target.value;saveCfg();syncSliders();recommend();});
+syncSliders();
 
 function renderTeam(){
   const mine=P.filter(p=>state[p[0]]==='mine');
